@@ -44,7 +44,13 @@ node_t make_node(node_nature nature, int nops, ...);
 %token TOK_VOID TOK_INT TOK_INTVAL TOK_BOOL TOK_TRUE TOK_FALSE
 %token TOK_IDENT
 %token TOK_STRING
-
+%token TOK_MAIN
+%token TOK_IF
+%token TOK_ELSE
+%token TOK_FOR
+%token TOK_WHILE
+%token TOK_DO
+%token TOK_PRINT
 
 %type <intval> TOK_INTVAL
 %type <strval> TOK_IDENT TOK_STRING
@@ -92,7 +98,7 @@ void analyse_tree(node_t root) {
         // Appeler la passe 1
 
         if (!stop_after_verif) {
-            create_program(); 
+            create_program();
             // Appeler la passe 2
 
             dump_mips_program(outfile);
@@ -108,4 +114,3 @@ void yyerror(node_t * program_root, char * s) {
     fprintf(stderr, "Error line %d: %s\n", yylineno, s);
     exit(1);
 }
-

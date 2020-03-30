@@ -6,6 +6,13 @@
 #define TOK_FALSE 262
 #define TOK_IDENT 263
 #define TOK_STRING 264
+#define TOK_MAIN 265
+#define TOK_IF 266
+#define TOK_ELSE 267
+#define TOK_FOR 268
+#define TOK_WHILE 269
+#define TOK_DO 270
+#define TOK_PRINT 271
 #ifdef YYSTYPE
 #undef  YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1

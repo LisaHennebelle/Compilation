@@ -102,6 +102,13 @@ extern int YYPARSE_DECL();
 #define TOK_FALSE 262
 #define TOK_IDENT 263
 #define TOK_STRING 264
+#define TOK_MAIN 265
+#define TOK_IF 266
+#define TOK_ELSE 267
+#define TOK_FOR 268
+#define TOK_WHILE 269
+#define TOK_DO 270
+#define TOK_PRINT 271
 #define YYERRCODE 256
 typedef short YYINT;
 static const YYINT yylhs[] = {                           -1,
@@ -134,8 +141,8 @@ static const YYINT yycheck[] = {                          2,
 #ifndef YYDEBUG
 #define YYDEBUG 0
 #endif
-#define YYMAXTOKEN 264
-#define YYUNDFTOKEN 269
+#define YYMAXTOKEN 271
+#define YYUNDFTOKEN 276
 #define YYTRANSLATE(a) ((a) > YYMAXTOKEN ? YYUNDFTOKEN : (a))
 #if YYDEBUG
 static const char *const yyname[] = {
@@ -147,8 +154,8 @@ static const char *const yyname[] = {
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"TOK_VOID","TOK_INT","TOK_INTVAL",
-"TOK_BOOL","TOK_TRUE","TOK_FALSE","TOK_IDENT","TOK_STRING",0,0,0,0,
-"illegal-symbol",
+"TOK_BOOL","TOK_TRUE","TOK_FALSE","TOK_IDENT","TOK_STRING","TOK_MAIN","TOK_IF",
+"TOK_ELSE","TOK_FOR","TOK_WHILE","TOK_DO","TOK_PRINT",0,0,0,0,"illegal-symbol",
 };
 static const char *const yyrule[] = {
 "$accept : program",
@@ -193,7 +200,7 @@ typedef struct {
 } YYSTACKDATA;
 /* variables for the parser stack */
 static YYSTACKDATA yystack;
-#line 79 "grammar.y"
+#line 85 "grammar.y"
 
 /* A completer et/ou remplacer avec d'autres fonctions */
 node_t make_node(node_nature nature, int nops, ...) {
@@ -210,7 +217,7 @@ void analyse_tree(node_t root) {
         // Appeler la passe 1
 
         if (!stop_after_verif) {
-            create_program(); 
+            create_program();
             // Appeler la passe 2
 
             dump_mips_program(outfile);
@@ -226,8 +233,7 @@ void yyerror(node_t * program_root, char * s) {
     fprintf(stderr, "Error line %d: %s\n", yylineno, s);
     exit(1);
 }
-
-#line 231 "y.tab.c"
+#line 237 "y.tab.c"
 
 #if YYDEBUG
 #include <stdio.h>		/* needed for printf */
@@ -430,28 +436,28 @@ yyreduce:
     switch (yyn)
     {
 case 1:
-#line 58 "grammar.y"
+#line 64 "grammar.y"
 	{
             yyval.ptr = make_node(NODE_PROGRAM, 2, yystack.l_mark[-1].ptr, yystack.l_mark[0].ptr);
             *program_root = yyval.ptr;
         }
 break;
 case 2:
-#line 63 "grammar.y"
+#line 69 "grammar.y"
 	{
             yyval.ptr = make_node(NODE_PROGRAM, 2, NULL, yystack.l_mark[0].ptr);
             *program_root = yyval.ptr;
         }
 break;
 case 3:
-#line 70 "grammar.y"
+#line 76 "grammar.y"
 	{ yyval.ptr = NULL; }
 break;
 case 4:
-#line 74 "grammar.y"
+#line 80 "grammar.y"
 	{ yyval.ptr = NULL; }
 break;
-#line 455 "y.tab.c"
+#line 461 "y.tab.c"
     }
     yystack.s_mark -= yym;
     yystate = *yystack.s_mark;

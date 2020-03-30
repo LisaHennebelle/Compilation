@@ -30,14 +30,14 @@ extern int yydebug;
 CARAC_SPECIAUX [\040-\057\072-100\133-\140\173-\176]
 
 /*Super <3  il faut regarder les tokens à générer  aussi je pense ==> dès qu'on en génére un il faut le caler dans 'grammar.y' */
-//un token pour toutes les définitions?
+/*//un token pour toutes les définitions? ça dépend faut checke le sujet*/
 LETTRE          [a-zA-Z]
 CHIFFRE			[0-9]
 ENTIER			('-'|'')[1-9]{CHIFFRE}*
 IDF             {LETTRE}({LETTRE}|{CHIFFRE}|'_')*
 ASCII           [\040-\176]
-CHAINE          ({ASCII})+
-COMMENTAIRE     "//"({ASCII})*[\n]
+CHAINE          ({LETTRE}|{CHIFFRE}|{CARAC_SPECIAUX})+
+COMMENTAIRE     "//"({CHAINE})*[\n]
 
 %%
 
@@ -65,15 +65,58 @@ COMMENTAIRE     "//"({ASCII})*[\n]
 {CHAINE} {                      /*  complété mais pas testé */
                 yylval.strval = strdup(yytext);
                 printf("chaine %c",*yytext);
-                /*switch pour vérifier qu'il ne s'agit pas d'un mot réservé, sinon génération du token correspondant*/
-                switch (yytext)
-                {
-                    case "main":
-                        return
-                    default:
-                        return TOK_STRING;
 
+                /*switch pour vérifier qu'il ne s'agit pas d'un mot réservé, sinon génération du token correspondant*/
+                if ((strcmp(yytext,"if"))
+                {
+                    return TOK_IF;
                 }
+                else if((strcmp(yytext,"int")) /* heureusement tu es là, par contre tok_void est déjà défnini :/ */
+					//ah oui mmm
+                {
+                    return TOK_INT; /* ligne 45, peut ètre faut pas mettre celui la */
+                }
+                else if((strcmp(yytext,"bool"))
+                {
+                    return TOK_BOOL;
+                }
+                else if((strcmp(yytext,"true"))
+                {
+                    return TOK_TRUE;
+                }
+                else if((strcmp(yytext,"false"))
+                {
+                    return TOK_FALSE;
+                }
+                else if((strcmp(yytext,"else"))
+                {
+                    return TOK_ELSE;
+                }
+                else if((strcmp(yytext,"while"))
+                {
+                    return TOK_WHILE;
+                }
+                else if((strcmp(yytext,"for"))
+                {
+                    return TOK_FOR;
+                }
+                else if((strcmp(yytext,"do"))
+                {
+                    return TOK_DO;
+                }
+                else if((strcmp(yytext,"print"))
+                {
+                    return TOK_PRINT;
+                }
+                else
+                {return TOK_STRING;}
+
+
+
+
+
+
+
 }
 
 {COMMENTAIRE} { /* y a un token pour les commentaires ?*/ /* ça compile btw*/
