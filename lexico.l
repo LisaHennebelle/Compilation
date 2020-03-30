@@ -30,13 +30,18 @@ extern int yydebug;
 
 
 LETTRE          [a-zA-Z]
-/* A completer ; fausses definitions pour que lex ne fasse pas d'erreur */
-IDF             A
-ENTIER          0
-CHAINE          A
-COMMENTAIRE     A
-
+IDF             {LETTRE}({LETTRE}|{ENTIER}|_)*
+ENTIER          [0-9]
+ASCII           [\040-\176]
+CHAINE          ({ASCII})+
+COMMENTAIRE     "//"({ASCII})*[\n]
+/*
+[] = ensemble d'une valeur à une autre
+{} = contenu d'un autre identificateur
+() je pense que tu peux le repeter
+B'd'acc*/
 %%
+
 
 "void"          return TOK_VOID;
 
@@ -57,7 +62,7 @@ COMMENTAIRE     A
 
 {CHAINE} {
                 /* A completer : affecter yylval.strval */
-                return TOK_STRING;
+                return TOK_STRING; /*c'est bien une chaine de caractères*/
 }
 
 {COMMENTAIRE} {
