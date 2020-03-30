@@ -27,19 +27,18 @@ extern int yydebug;
 %}
 
 %option yylineno
+CARAC_SPECIAUX [\040-\057\072-100\133-\140\173-\176]
 
-
+/*Super <3  il faut regarder les tokens à générer  aussi je pense ==> dès qu'on en génére un il faut le caler dans 'grammar.y' */
+//un token pour toutes les définitions?
 LETTRE          [a-zA-Z]
-IDF             {LETTRE}({LETTRE}|{ENTIER}|_)*
-ENTIER          [0-9]
+CHIFFRE			[0-9]
+ENTIER			('-'|'')[1-9]{CHIFFRE}*
+IDF             {LETTRE}({LETTRE}|{CHIFFRE}|'_')*
 ASCII           [\040-\176]
 CHAINE          ({ASCII})+
 COMMENTAIRE     "//"({ASCII})*[\n]
-/*
-[] = ensemble d'une valeur à une autre
-{} = contenu d'un autre identificateur
-() je pense que tu peux le repeter
-B'd'acc*/
+
 %%
 
 
@@ -52,20 +51,34 @@ B'd'acc*/
 
 {IDF} {
                 yylval.strval = strdup(yytext);
+                printf("idf %c",*yytext);
                 return TOK_IDENT;
 }
 
-{ENTIER} {
-                /* A completer : affecter yylval.intval et faire des verifications */
+{ENTIER} {      /* complété mais pas testé */ /* tu veux qu'on ecrive un fichier minic et qu'on fasse des printf pour tester ? */
+				//comment on fait ça ? Le test? je sais pas XD mdr
+                yylval.intval = atoi(yytext);
+                printf("entier %c",*yytext);
                 return TOK_INTVAL;
+
+
+{CHAINE} {                      /*  complété mais pas testé */
+                yylval.strval = strdup(yytext);
+                printf("chaine %c",*yytext);
+                /*switch pour vérifier qu'il ne s'agit pas d'un mot réservé, sinon génération du token correspondant*/
+                switch (yytext)
+                {
+                    case "main":
+                        return
+                    default:
+                        return TOK_STRING;
+
+                }
 }
 
-{CHAINE} {
-                /* A completer : affecter yylval.strval */
-                return TOK_STRING; /*c'est bien une chaine de caractères*/
-}
-
-{COMMENTAIRE} {
+{COMMENTAIRE} { /* y a un token pour les commentaires ?*/ /* ça compile btw*/
+                yylval.strval = strdup(yytext);
+                printf("%c",*yytext);
 }
 
 

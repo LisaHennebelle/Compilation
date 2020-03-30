@@ -505,12 +505,7 @@ extern int yydebug;
 #endif
 
 #line 508 "lex.yy.c"
-/*
-[] = ensemble d'une valeur à une autre
-{} = contenu d'un autre identificateur
-() je pense que tu peux le repeter
-B'd'acc*/
-#line 514 "lex.yy.c"
+#line 509 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -727,11 +722,11 @@ YY_DECL
 		}
 
 	{
-#line 43 "lexico.l"
+#line 39 "lexico.l"
 
 
 
-#line 735 "lex.yy.c"
+#line 730 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -800,12 +795,12 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 46 "lexico.l"
+#line 42 "lexico.l"
 return TOK_VOID;
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 53 "lexico.l"
+#line 49 "lexico.l"
 {
                 yylval.strval = strdup(yytext);
                 return TOK_IDENT;
@@ -813,36 +808,38 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 58 "lexico.l"
+#line 54 "lexico.l"
 {
                 /* A completer : affecter yylval.intval et faire des verifications */
+                yylval.intval = atoi(yytext);
                 return TOK_INTVAL;
 }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 63 "lexico.l"
+#line 60 "lexico.l"
 {
                 /* A completer : affecter yylval.strval */
-                return TOK_STRING; /*c'est bien une chaine de caractères*/
+                yylval.strval = strdup(yytext);
+                return TOK_STRING;
 }
 	YY_BREAK
 case 5:
 /* rule 5 can match eol */
 YY_RULE_SETUP
-#line 68 "lexico.l"
-{
+#line 66 "lexico.l"
+{ /* y a un token pour les commentaires ?*/
 }
 	YY_BREAK
 case 6:
 /* rule 6 can match eol */
 YY_RULE_SETUP
-#line 72 "lexico.l"
+#line 70 "lexico.l"
 
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 74 "lexico.l"
+#line 72 "lexico.l"
 {
                 fprintf(stderr, "Error line %d: Lexical error\n", yylineno);
                 exit(1);
@@ -850,10 +847,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 80 "lexico.l"
+#line 78 "lexico.l"
 ECHO;
 	YY_BREAK
-#line 857 "lex.yy.c"
+#line 854 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1870,7 +1867,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 80 "lexico.l"
+#line 78 "lexico.l"
 
 
 int yywrap(void) {
