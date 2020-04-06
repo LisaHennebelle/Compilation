@@ -27,25 +27,42 @@ extern int yydebug;
 %}
 
 %option yylineno
-CARAC_SPECIAUX [\040-\057\072-100\133-\140\173-\176]
 
-/*Super <3  il faut regarder les tokens à générer  aussi je pense ==> dès qu'on en génére un il faut le caler dans 'grammar.y' */
-/*//un token pour toutes les définitions? ça dépend faut checke le sujet*/
+CARACSPECIAUX [\040-\057\072-100\133-\140\173-\176]
+
+/*je pose là les carcacteres speciaux et les token correspondant, je sais pas encore comment faire le lien*/
+/* "+" : TOK_PLUS "-": TOK_MINUS "*" : TOK_MUL  "/" :TOK_DIV "%" : TOK_MOD    ">":TOK_LT      "<": TOK_GT     "!": TOK_? : c'est la negation boolenne*/
+/* "~" : TOK_BNOT "&": TOK_BAND  "|" : TOK_BOR  "^" :TOK_BXOR "=": TOK_AFFECT ";":TOK_SEMICOL ",": TOK_COMMA  "(": TOKLPAR */
+/* ")" : TOK_RPAR "{" : TOK_LACC "}" : TOK_RACC ">>":TOK_SRL ">>>": TOK_SRA   "<<":TOK__SLL   ">=":TOK_GE     "<=":TOK_LE*/
+/* "==": TOK_EQ   "!=": TOK_NE   "&&": TOK_AND  "||": TOK_OR*/
+
+
+
+
 LETTRE          [a-zA-Z]
 CHIFFRE			[0-9]
 ENTIER			('-'|'')[1-9]{CHIFFRE}*
 IDF             {LETTRE}({LETTRE}|{CHIFFRE}|'_')*
 ASCII           [\040-\176]
-CHAINE          ({LETTRE}|{CHIFFRE}|{CARAC_SPECIAUX})+
+/* cf sujet : CHAINE_CAR est l’ensemble de tous les caractères imprimables, à l’exception des caractères ’"’ et ’\’.*/
+CHAINE_CAR      ({LETTRE}|{CHIFFRE}|{CARACSPECIAUX})+
+CHAINE          ’"’ (CHAINE_CAR | ’\"’ | ’\n’)*
 COMMENTAIRE     "//"({CHAINE})*[\n]
 
 %%
 
 
 "void"          return TOK_VOID;
-
-
-
+"if"            return TOK_IF;
+"bool"          return TOK_BOOL;
+"true"          return TOK_TRUE;
+"false"         return TOK_FALSE;
+"if"            return TOK_IF;
+"else"          return TOK_ELSE;
+"while"         return TOK_WHILE;
+"for"           return TOK_FOR;
+"do"            return TOK_DO;
+"print"         return TOK_PRINT;
 
 
 
@@ -55,79 +72,28 @@ COMMENTAIRE     "//"({CHAINE})*[\n]
                 return TOK_IDENT;
 }
 
-{ENTIER} {      /* complété mais pas testé */ /* tu veux qu'on ecrive un fichier minic et qu'on fasse des printf pour tester ? */
-				//comment on fait ça ? Le test? je sais pas XD mdr
+{ENTIER} {      /* complété mais pas testé */
                 yylval.intval = atoi(yytext);
                 printf("entier %c",*yytext);
                 return TOK_INTVAL;
-
+}
 
 {CHAINE} {                      /*  complété mais pas testé */
                 yylval.strval = strdup(yytext);
                 printf("chaine %c",*yytext);
 
-                /*switch pour vérifier qu'il ne s'agit pas d'un mot réservé, sinon génération du token correspondant*/
-                if ((strcmp(yytext,"if"))
-                {
-                    return TOK_IF;
-                }
-                else if((strcmp(yytext,"int")) /* heureusement tu es là, par contre tok_void est déjà défnini :/ */
-					//ah oui mmm
-                {
-                    return TOK_INT; /* ligne 45, peut ètre faut pas mettre celui la */
-                }
-                else if((strcmp(yytext,"bool"))
-                {
-                    return TOK_BOOL;
-                }
-                else if((strcmp(yytext,"true"))
-                {
-                    return TOK_TRUE;
-                }
-                else if((strcmp(yytext,"false"))
-                {
-                    return TOK_FALSE;
-                }
-                else if((strcmp(yytext,"else"))
-                {
-                    return TOK_ELSE;
-                }
-                else if((strcmp(yytext,"while"))
-                {
-                    return TOK_WHILE;
-                }
-                else if((strcmp(yytext,"for"))
-                {
-                    return TOK_FOR;
-                }
-                else if((strcmp(yytext,"do"))
-                {
-                    return TOK_DO;
-                }
-                else if((strcmp(yytext,"print"))
-                {
-                    return TOK_PRINT;
-                }
-                else
-                {return TOK_STRING;}
-
-
-
-
-
-
+                return TOK_STRING;
 
 }
 
 {COMMENTAIRE} { /* y a un token pour les commentaires ?*/ /* ça compile btw*/
                 yylval.strval = strdup(yytext);
                 printf("%c",*yytext);
+
 }
 
-
 [ \t\n]+
-
-. {
+.{
                 fprintf(stderr, "Error line %d: Lexical error\n", yylineno);
                 exit(1);
 }

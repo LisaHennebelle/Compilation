@@ -39,18 +39,38 @@ node_t make_node(node_nature nature, int nops, ...);
     node_t ptr;
 };
 
+/*se réfèrent au point IV/1) du sujet page 14 :*/
 
 /* Definir les token ici avec leur associativite, dans le bon ordre */
-%token TOK_VOID TOK_INT TOK_INTVAL TOK_BOOL TOK_TRUE TOK_FALSE
-%token TOK_IDENT
-%token TOK_STRING
-%token TOK_MAIN
-%token TOK_IF
-%token TOK_ELSE
-%token TOK_FOR
-%token TOK_WHILE
-%token TOK_DO
-%token TOK_PRINT
+%token TOK_VOID     TOK_INT     TOK_INTVAL  TOK_BOOL    TOK_TRUE    TOK_FALSE
+%token TOK_IDENT    TOK_IF      TOK_ELSE    TOK_WHILE   TOK_FOR     TOK_PRINT
+%token TOK_AFFECT   TOK_GE      TOK_LE      TOK_GT      TOK_LT      TOK_EQ
+%token TOK_NE       TOK_PLUS    TOK_MINUS   TOK_MUL     TOK_DIV     TOK_MOD
+%token TOK_UMINUS   TOK_SEMICOL TOK_COMMA   TOK_LPAR    TOK_RPAR    TOK_LACC
+%token TOK_RACC     TOK_STRING  TOK_DO
+
+/*non associativité*/
+%nonassoc TOK_THEN
+%nonassoc TOK_UMINUS /* d'après la description de la non associativité il semblerait qu'il y aie une erreur dans le sujet*/
+
+/* a = b = c + d <=> b = c + d ; a = b; */
+%right TOK_AFFECT /*l'affectation sera faite en dernier*/
+
+%left TOK_OR
+%left TOK_AND
+%left TOK_BOR
+%left TOK_BXOR
+%left TOK_EQ TOK_NE
+%left TOK_GT TOK_LT TOK_GE TOK_LE
+%left TOK_SRL TOK_SRA TOK_SLL
+
+/* a / b / c = (a / b) / c et a - b - c = (a - b) - c */
+
+%left TOK_PLUS TOK_MINUS
+%left TOK_MUL TOK_DIV TOK_MOD
+%left TOK_UMINUS TOK_NOT TOK_BNOT
+
+
 
 %type <intval> TOK_INTVAL
 %type <strval> TOK_IDENT TOK_STRING
