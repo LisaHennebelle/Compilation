@@ -14,12 +14,96 @@
 
 extern char * infile;
 extern char * outfile;
-/* A completer */
+extern int nbtraces;
+extern int nbregistres;
+extern int sflag;
+extern int vflag;
 
+/*
+Appels a ./minicc avec des options :
+• -b : Affiche une bannière indiquant le nom du compilateur et des membres du binôme
+• -o <filename> : Définit le nom du fichier assembleur produit (défaut : out.s).
+• -t <int> : Définit le niveau de trace à utiliser entre 0 et 5 (0 = pas de trace ; 5 = toutes les traces.
+defaut = 0).
+• -r <int> : Définit le nombre maximum de registres à utiliser, entre 4 et 8 (défaut : 8).
+• -s : Arrêter la compilation après l’analyse syntaxique (défaut = non).
+• -v : Arrêter la compilation après la passe de vérifications (défaut = non).
+• -h : Afficher la liste des options (fonction d’usage) et arrêter le parsing des arguments.
+*/
 
 void parse_args(int argc, char ** argv) {
-    /* A corriger et completer */
-    infile = argv[1];
+    int c = 0;
+	int indice;
+	char * filename;
+	extern char * optarg;
+    extern int optind;
+	nbtraces = 0;
+    //c = getopt(argc, argv,"nt:" );
+    while (c != -1)
+    {
+        c = getopt(argc, argv,"bo:t:r:svh" );
+        switch (c)
+        {
+
+            case 'h':
+            printf("Appels a ./minicc avec des options :\n"
+            "• -b : Affiche une bannière indiquant le nom du compilateur et des membres du binôme\n"
+            "• -o <filename> : Définit le nom du fichier assembleur produit (défaut : out.s).\n"
+            "• -t <int> : Définit le niveau de trace à utiliser entre 0 et 5 (0 = pas de trace ; 5 = toutes les traces ;\n"
+            "defaut = 0).\n"
+            "• -r <int> : Définit le nombre maximum de registres à utiliser, entre 4 et 8 (défaut : 8).\n"
+            "• -s : Arrêter la compilation après l’analyse syntaxique (défaut = non).\n"
+            "• -v : Arrêter la compilation après la passe de vérifications (défaut = non).\n"
+            "• -h : Afficher la liste des options (fonction d’usage) et arrêter le parsing des arguments.\n");
+            exit(0);
+
+            case 'b':
+	            printf("##################COMPILATEUR##################\n Binome: Lisa HENNEBELLE & Diego MORENO VILLANUEVA");
+	            exit(0);
+            case 'o':
+                filename = optarg;
+                printf("nom du fichier : %s\n", filename);
+                break;
+            case 't':
+                nbtraces = atoi(optarg);
+                if (nbtraces > 5)
+                {
+                    printf("Le nombre que vous avez indiqué est trop grand, remettez en un inférieur ou égal à 5\n");
+					exit(EXIT_FAILURE);
+                }
+                break;
+            case 'r':
+                nbregistres = atoi(optarg);
+                if (nbregistres < 4 || nbregistres > 8)
+                {
+                    printf("Le nombre que vous avez indiqué est incorrect, remettez en un entre 4 et 8\n");
+					exit(EXIT_FAILURE);
+                }
+                break;
+            case 's':
+                sflag = 1;
+                if (vflag == 1)
+                {
+                    printf("l'option -s n'est pas compatible avec l'option -v\n");
+                    exit(EXIT_FAILURE);
+                }
+                break;
+            case 'v':
+                vflag = 1;
+                if (sflag == 1)
+                {
+                    printf("l'option -v n'est pas compatible avec l'option -s\n");
+                    exit(EXIT_FAILURE);
+                }
+                break;
+
+
+			default :
+				break;
+        }
+    }
+    infile = argv[optind];
+    printf("le fichier .c s'appelle %s\n", infile);
 }
 
 
@@ -148,7 +232,7 @@ void dump_tree(node_t prog_root, const char * dotname) {
     f = fopen(dotname, "w");
     fprintf(f, "digraph global_vars {\n");
     dump_tree2dot(f, prog_root);
-    fprintf(f, "}");    
+    fprintf(f, "}");
     fclose(f);
 }
 
@@ -315,11 +399,3 @@ const char * node_nature2symb(node_nature t) {
             exit(1);
     }
 }
-
-
-
-
-
-
-
-

@@ -19,6 +19,10 @@ extern bool stop_after_syntax;
 extern bool stop_after_verif;
 extern char * infile;
 extern char * outfile;
+extern int nbtraces;
+extern int nbregistres;
+extern int sflag;
+extern int vflag;
 
 /* prototypes */
 int yylex(void);
@@ -68,7 +72,7 @@ node_t make_node(node_nature nature, int nops, ...);
 
 %left TOK_PLUS TOK_MINUS
 %left TOK_MUL TOK_DIV TOK_MOD
-%left TOK_UMINUS TOK_NOT TOK_BNOT
+%left TOK_ELSE TOK_NOT TOK_BNOT
 
 
 

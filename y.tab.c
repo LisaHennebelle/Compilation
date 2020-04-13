@@ -38,6 +38,10 @@ extern bool stop_after_syntax;
 extern bool stop_after_verif;
 extern char * infile;
 extern char * outfile;
+extern int nbtraces;
+extern int nbregistres;
+extern int sflag;
+extern int vflag;
 
 /* prototypes */
 int yylex(void);
@@ -48,7 +52,7 @@ void analyse_tree(node_t root);
 node_t make_node(node_nature nature, int nops, ...);
 /* A completer */
 
-#line 36 "grammar.y"
+#line 40 "grammar.y"
 #ifdef YYSTYPE
 #undef  YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1
@@ -61,7 +65,7 @@ typedef union {
     node_t ptr;
 } YYSTYPE;
 #endif /* !YYSTYPE_IS_DECLARED */
-#line 65 "y.tab.c"
+#line 69 "y.tab.c"
 
 /* compatibility with bison */
 #ifdef YYPARSE_PARAM
@@ -232,7 +236,7 @@ typedef struct {
 } YYSTACKDATA;
 /* variables for the parser stack */
 static YYSTACKDATA yystack;
-#line 105 "grammar.y"
+#line 109 "grammar.y"
 
 /* A completer et/ou remplacer avec d'autres fonctions */
 node_t make_node(node_nature nature, int nops, ...) {
@@ -265,7 +269,7 @@ void yyerror(node_t * program_root, char * s) {
     fprintf(stderr, "Error line %d: %s\n", yylineno, s);
     exit(1);
 }
-#line 269 "y.tab.c"
+#line 273 "y.tab.c"
 
 #if YYDEBUG
 #include <stdio.h>		/* needed for printf */
@@ -468,28 +472,28 @@ yyreduce:
     switch (yyn)
     {
 case 1:
-#line 84 "grammar.y"
+#line 88 "grammar.y"
 	{
             yyval.ptr = make_node(NODE_PROGRAM, 2, yystack.l_mark[-1].ptr, yystack.l_mark[0].ptr);
             *program_root = yyval.ptr;
         }
 break;
 case 2:
-#line 89 "grammar.y"
+#line 93 "grammar.y"
 	{
             yyval.ptr = make_node(NODE_PROGRAM, 2, NULL, yystack.l_mark[0].ptr);
             *program_root = yyval.ptr;
         }
 break;
 case 3:
-#line 96 "grammar.y"
-	{ yyval.ptr = NULL; }
-break;
-case 4:
 #line 100 "grammar.y"
 	{ yyval.ptr = NULL; }
 break;
-#line 493 "y.tab.c"
+case 4:
+#line 104 "grammar.y"
+	{ yyval.ptr = NULL; }
+break;
+#line 497 "y.tab.c"
     }
     yystack.s_mark -= yym;
     yystate = *yystack.s_mark;

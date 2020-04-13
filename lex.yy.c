@@ -567,6 +567,11 @@ void analyse_tree(node_t root);
 
 char * infile = NULL;
 char * outfile = NULL;
+int nbtraces;
+int nbregistres;
+int vflag;
+int sflag;
+
 bool stop_after_syntax = false;
 bool stop_after_verif = false;
 /* A completer */
@@ -575,14 +580,14 @@ bool stop_after_verif = false;
 extern int yydebug;
 #endif
 
-#line 579 "lex.yy.c"
+#line 584 "lex.yy.c"
 /*je pose là les carcacteres speciaux et les token correspondant, je sais pas encore comment faire le lien*/
 /* "+" : TOK_PLUS "-": TOK_MINUS "*" : TOK_MUL  "/" :TOK_DIV "%" : TOK_MOD    ">":TOK_LT      "<": TOK_GT     "!": TOK_? : c'est la negation boolenne*/
 /* "~" : TOK_BNOT "&": TOK_BAND  "|" : TOK_BOR  "^" :TOK_BXOR "=": TOK_AFFECT ";":TOK_SEMICOL ",": TOK_COMMA  "(": TOKLPAR */
 /* ")" : TOK_RPAR "{" : TOK_LACC "}" : TOK_RACC ">>":TOK_SRL ">>>": TOK_SRA   "<<":TOK__SLL   ">=":TOK_GE     "<=":TOK_LE*/
 /* "==": TOK_EQ   "!=": TOK_NE   "&&": TOK_AND  "||": TOK_OR*/
 /* cf sujet : CHAINE_CAR est l’ensemble de tous les caractères imprimables, à l’exception des caractères ’"’ et ’\’.*/
-#line 586 "lex.yy.c"
+#line 591 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -799,11 +804,11 @@ YY_DECL
 		}
 
 	{
-#line 52 "lexico.l"
+#line 57 "lexico.l"
 
 
 
-#line 807 "lex.yy.c"
+#line 812 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -872,62 +877,62 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 55 "lexico.l"
+#line 60 "lexico.l"
 return TOK_VOID;
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 56 "lexico.l"
+#line 61 "lexico.l"
 return TOK_IF;
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 57 "lexico.l"
+#line 62 "lexico.l"
 return TOK_BOOL;
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 58 "lexico.l"
+#line 63 "lexico.l"
 return TOK_TRUE;
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 59 "lexico.l"
+#line 64 "lexico.l"
 return TOK_FALSE;
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 60 "lexico.l"
+#line 65 "lexico.l"
 return TOK_IF;
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 61 "lexico.l"
+#line 66 "lexico.l"
 return TOK_ELSE;
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 62 "lexico.l"
+#line 67 "lexico.l"
 return TOK_WHILE;
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 63 "lexico.l"
+#line 68 "lexico.l"
 return TOK_FOR;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 64 "lexico.l"
+#line 69 "lexico.l"
 return TOK_DO;
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 65 "lexico.l"
+#line 70 "lexico.l"
 return TOK_PRINT;
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 69 "lexico.l"
+#line 74 "lexico.l"
 {
                 yylval.strval = strdup(yytext);
                 printf("idf %c",*yytext);
@@ -936,7 +941,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 75 "lexico.l"
+#line 80 "lexico.l"
 {      /* complété mais pas testé */
                 yylval.intval = atoi(yytext);
                 printf("entier %c",*yytext);
@@ -946,7 +951,7 @@ YY_RULE_SETUP
 case 14:
 /* rule 14 can match eol */
 YY_RULE_SETUP
-#line 81 "lexico.l"
+#line 86 "lexico.l"
 {                      /*  complété mais pas testé */
                 yylval.strval = strdup(yytext);
                 printf("chaine %c",*yytext);
@@ -958,19 +963,19 @@ YY_RULE_SETUP
 case 15:
 /* rule 15 can match eol */
 YY_RULE_SETUP
-#line 89 "lexico.l"
+#line 94 "lexico.l"
 {
 }
 	YY_BREAK
 case 16:
 /* rule 16 can match eol */
 YY_RULE_SETUP
-#line 92 "lexico.l"
+#line 97 "lexico.l"
 
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 94 "lexico.l"
+#line 99 "lexico.l"
 {
                 fprintf(stderr, "Error line %d: Lexical error\n", yylineno);
                 exit(1);
@@ -978,10 +983,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 100 "lexico.l"
+#line 105 "lexico.l"
 ECHO;
 	YY_BREAK
-#line 985 "lex.yy.c"
+#line 990 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1998,7 +2003,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 100 "lexico.l"
+#line 105 "lexico.l"
 
 
 int yywrap(void) {
@@ -2013,6 +2018,8 @@ int main(int argc, char ** argv) {
     #if YYDEBUG
     yydebug = 1;
     #endif
+
+
 
     yyin = fopen(infile, "r");
     yyparse(&program_root);

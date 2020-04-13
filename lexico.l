@@ -16,6 +16,11 @@ void analyse_tree(node_t root);
 
 char * infile = NULL;
 char * outfile = NULL;
+int nbtraces;
+int nbregistres;
+int vflag;
+int sflag;
+
 bool stop_after_syntax = false;
 bool stop_after_verif = false;
 /* A completer */
@@ -103,16 +108,6 @@ int yywrap(void) {
     return 1;
 }
 
-*/Appels a ./minicc avec des options :
-•  -b : Affiche une bannière indiquant le nom du compilateur et des membres du binôme
-• -o <filename> : Définit le nom du fichier assembleur produit (défaut : out.s).
-• -t <int> : Définit le niveau de trace à utiliser entre 0 et 5 (0 = pas de trace ; 5 = toutes les traces.
-defaut = 0).
-• -r <int> : Définit le nombre maximum de registres à utiliser, entre 4 et 8 (défaut : 8).
-• -s : Arrêter la compilation après l’analyse syntaxique (défaut = non).
-• -v : Arrêter la compilation après la passe de vérifications (défaut = non).
-• -h : Afficher la liste des options (fonction d’usage) et arrêter le parsing des arguments.
-*/
 
 int main(int argc, char ** argv) {
     /* A completer */
