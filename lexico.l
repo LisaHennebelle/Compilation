@@ -46,7 +46,7 @@ IDF             {LETTRE}({LETTRE}|{CHIFFRE}|'_')*
 ASCII           [\040-\176]
 /* cf sujet : CHAINE_CAR est l’ensemble de tous les caractères imprimables, à l’exception des caractères ’"’ et ’\’.*/
 CHAINE_CAR      ({LETTRE}|{CHIFFRE}|{CARACSPECIAUX})+
-CHAINE          ’"’ (CHAINE_CAR | ’\"’ | ’\n’)*
+CHAINE          """({CHAINE_CAR} | '\"' | '\n')*"""
 COMMENTAIRE     "//"({CHAINE})*[\n]
 
 %%
@@ -86,14 +86,12 @@ COMMENTAIRE     "//"({CHAINE})*[\n]
 
 }
 
-{COMMENTAIRE} { /* y a un token pour les commentaires ?*/ /* ça compile btw*/
-                yylval.strval = strdup(yytext);
-                printf("%c",*yytext);
-
+{COMMENTAIRE} {
 }
 
 [ \t\n]+
-.{
+
+. {
                 fprintf(stderr, "Error line %d: Lexical error\n", yylineno);
                 exit(1);
 }
@@ -105,6 +103,16 @@ int yywrap(void) {
     return 1;
 }
 
+*/Appels a ./minicc avec des options :
+•  -b : Affiche une bannière indiquant le nom du compilateur et des membres du binôme
+• -o <filename> : Définit le nom du fichier assembleur produit (défaut : out.s).
+• -t <int> : Définit le niveau de trace à utiliser entre 0 et 5 (0 = pas de trace ; 5 = toutes les traces.
+defaut = 0).
+• -r <int> : Définit le nombre maximum de registres à utiliser, entre 4 et 8 (défaut : 8).
+• -s : Arrêter la compilation après l’analyse syntaxique (défaut = non).
+• -v : Arrêter la compilation après la passe de vérifications (défaut = non).
+• -h : Afficher la liste des options (fonction d’usage) et arrêter le parsing des arguments.
+*/
 
 int main(int argc, char ** argv) {
     /* A completer */
@@ -113,6 +121,8 @@ int main(int argc, char ** argv) {
     #if YYDEBUG
     yydebug = 1;
     #endif
+
+
 
     yyin = fopen(infile, "r");
     yyparse(&program_root);
