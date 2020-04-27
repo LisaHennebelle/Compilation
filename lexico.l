@@ -62,7 +62,6 @@ COMMENTAIRE     "//"({CHAINE})*[\n]
 "bool"          return TOK_BOOL;
 "true"          return TOK_TRUE;
 "false"         return TOK_FALSE;
-"if"            return TOK_IF;
 "else"          return TOK_ELSE;
 "while"         return TOK_WHILE;
 "for"           return TOK_FOR;

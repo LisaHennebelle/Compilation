@@ -370,8 +370,8 @@ static void yynoreturn yy_fatal_error ( const char* msg  );
 	(yy_hold_char) = *yy_cp; \
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
-#define YY_NUM_RULES 18
-#define YY_END_OF_BUFFER 19
+#define YY_NUM_RULES 17
+#define YY_END_OF_BUFFER 18
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -381,18 +381,18 @@ struct yy_trans_info
 	};
 static const flex_int16_t yy_accept[112] =
     {   0,
-        0,    0,   19,   17,   16,   16,   17,   17,   17,   12,
-       12,   12,   12,   12,   12,   12,   12,   12,   12,   16,
-        0,    0,    0,    0,    0,   12,   12,   10,   12,   12,
-       12,    2,   12,   12,   12,   12,   13,    0,   15,    0,
-        0,   12,   12,   12,    9,   12,   12,   12,   12,   13,
-        0,    0,    3,    7,   12,   12,    4,    1,   12,    0,
-        0,    5,   11,    8,    0,    0,    0,    0,    0,    0,
+        0,    0,   18,   16,   15,   15,   16,   16,   16,   11,
+       11,   11,   11,   11,   11,   11,   11,   11,   11,   15,
+        0,    0,    0,    0,    0,   11,   11,    9,   11,   11,
+       11,    2,   11,   11,   11,   11,   12,    0,   14,    0,
+        0,   11,   11,   11,    8,   11,   11,   11,   11,   12,
+        0,    0,    3,    6,   11,   11,    4,    1,   11,    0,
+        0,    5,   10,    7,    0,    0,    0,    0,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
 
-        0,    0,    0,    0,    0,    0,   14,    0,    0,    0,
+        0,    0,    0,    0,    0,    0,   13,    0,    0,    0,
         0
     } ;
 
@@ -530,9 +530,9 @@ static const flex_int16_t yy_chk[231] =
     } ;
 
 /* Table of booleans, true if rule could match eol. */
-static const flex_int32_t yy_rule_can_match_eol[19] =
+static const flex_int32_t yy_rule_can_match_eol[18] =
     {   0,
-0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0,     };
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0,     };
 
 static yy_state_type yy_last_accepting_state;
 static char *yy_last_accepting_cpos;
@@ -903,55 +903,50 @@ return TOK_FALSE;
 case 6:
 YY_RULE_SETUP
 #line 65 "lexico.l"
-return TOK_IF;
+return TOK_ELSE;
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
 #line 66 "lexico.l"
-return TOK_ELSE;
+return TOK_WHILE;
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 67 "lexico.l"
-return TOK_WHILE;
+return TOK_FOR;
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
 #line 68 "lexico.l"
-return TOK_FOR;
+return TOK_DO;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 69 "lexico.l"
-return TOK_DO;
+return TOK_PRINT;
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 70 "lexico.l"
-return TOK_PRINT;
-	YY_BREAK
-case 12:
-YY_RULE_SETUP
-#line 74 "lexico.l"
+#line 73 "lexico.l"
 {
                 yylval.strval = strdup(yytext);
                 printf("idf %c",*yytext);
                 return TOK_IDENT;
 }
 	YY_BREAK
-case 13:
+case 12:
 YY_RULE_SETUP
-#line 80 "lexico.l"
+#line 79 "lexico.l"
 {      /* complété mais pas testé */
                 yylval.intval = atoi(yytext);
                 printf("entier %c",*yytext);
                 return TOK_INTVAL;
 }
 	YY_BREAK
-case 14:
-/* rule 14 can match eol */
+case 13:
+/* rule 13 can match eol */
 YY_RULE_SETUP
-#line 86 "lexico.l"
+#line 85 "lexico.l"
 {                      /*  complété mais pas testé */
                 yylval.strval = strdup(yytext);
                 printf("chaine %c",*yytext);
@@ -960,33 +955,33 @@ YY_RULE_SETUP
 
 }
 	YY_BREAK
-case 15:
-/* rule 15 can match eol */
+case 14:
+/* rule 14 can match eol */
 YY_RULE_SETUP
-#line 94 "lexico.l"
+#line 93 "lexico.l"
 {
 }
 	YY_BREAK
-case 16:
-/* rule 16 can match eol */
+case 15:
+/* rule 15 can match eol */
 YY_RULE_SETUP
-#line 97 "lexico.l"
+#line 96 "lexico.l"
 
 	YY_BREAK
-case 17:
+case 16:
 YY_RULE_SETUP
-#line 99 "lexico.l"
+#line 98 "lexico.l"
 {
                 fprintf(stderr, "Error line %d: Lexical error\n", yylineno);
                 exit(1);
 }
 	YY_BREAK
-case 18:
+case 17:
 YY_RULE_SETUP
-#line 105 "lexico.l"
+#line 104 "lexico.l"
 ECHO;
 	YY_BREAK
-#line 990 "lex.yy.c"
+#line 985 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2003,7 +1998,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 105 "lexico.l"
+#line 104 "lexico.l"
 
 
 int yywrap(void) {
