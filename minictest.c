@@ -1,2 +1,5 @@
-int i = 0;
-int a = i;
+void main()
+{
+    int i = 0;
+    int a = i;
+}

@@ -67,6 +67,7 @@ COMMENTAIRE     "//"({CHAINE})*[\n]
 "for"           return TOK_FOR;
 "do"            return TOK_DO;
 "print"         return TOK_PRINT;
+"int"           return TOK_INT;
 
 
 

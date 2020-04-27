@@ -82,6 +82,7 @@ void parse_args(int argc, char ** argv) {
                 break;
             case 's':
                 sflag = 1;
+                /*stop_after_syntax = true;*/
                 if (vflag == 1)
                 {
                     printf("l'option -s n'est pas compatible avec l'option -v\n");
@@ -90,6 +91,7 @@ void parse_args(int argc, char ** argv) {
                 break;
             case 'v':
                 vflag = 1;
+                /*stop_after_verif = true;*/
                 if (sflag == 1)
                 {
                     printf("l'option -v n'est pas compatible avec l'option -s\n");

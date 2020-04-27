@@ -41,6 +41,15 @@
 #define TOK_SLL 297
 #define TOK_NOT 298
 #define TOK_BNOT 299
+#define listtypedecl 300
+#define verdecl 301
+#define type 302
+#define decl 303
+#define listinst 304
+#define listinstnonnull 305
+#define inst 306
+#define block 307
+#define expr 308
 #ifdef YYSTYPE
 #undef  YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1

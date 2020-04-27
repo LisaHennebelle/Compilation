@@ -24,6 +24,7 @@ extern int nbregistres;
 extern int sflag;
 extern int vflag;
 
+
 /* prototypes */
 int yylex(void);
 extern int yylineno;
@@ -79,6 +80,9 @@ node_t make_node(node_nature nature, int nops, ...);
 %type <intval> TOK_INTVAL
 %type <strval> TOK_IDENT TOK_STRING
 %type <ptr> program listdeclnonnull maindecl
+%type <ptr> listtypedecl listdecl verdecl type
+%type <ptr> decl listinst listinstnonnull
+%type <ptr> inst block expr
 
 %%
 
@@ -86,15 +90,21 @@ node_t make_node(node_nature nature, int nops, ...);
 program:
         listdeclnonnull maindecl
         {
+            printf(" liste main dollar un vaut %f\n", $1->value);
             $$ = make_node(NODE_PROGRAM, 2, $1, $2);
             *program_root = $$;
         }
         | maindecl
         {
+            printf(" main dollar un vaut %f\n", $1->value);
             $$ = make_node(NODE_PROGRAM, 2, NULL, $1);
             *program_root = $$;
         }
         ;
+listdecl: listdeclnonnull
+        {
+            /*$$ = make_node();*/
+        }
 
 listdeclnonnull:
             { $$ = NULL; }
@@ -108,17 +118,24 @@ maindecl:
 %%
 
 /* A completer et/ou remplacer avec d'autres fonctions */
-node_t make_node(node_nature nature, int nops, ...) {
-    va_list ap;
 
-    return NULL;
+node_t make_node(node_nature nature, int nops, ...) {
+    va_list ap; /*liste des arguments supplémentaires*/
+    node_t retour;
+    retour->nature = nature;
+    retour->nops = nops;
+    for (int i = 0; i < nops; i++)
+    {
+        retour->opr+i =va_list[i];
+    }
+    return retour;
 }
 
 
 
 /* A completer */
 void analyse_tree(node_t root) {
-    if (!stop_after_syntax) {
+        if (!stop_after_syntax) {
         // Appeler la passe 1
 
         if (!stop_after_verif) {

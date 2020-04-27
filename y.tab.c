@@ -43,6 +43,7 @@ extern int nbregistres;
 extern int sflag;
 extern int vflag;
 
+
 /* prototypes */
 int yylex(void);
 extern int yylineno;
@@ -52,7 +53,7 @@ void analyse_tree(node_t root);
 node_t make_node(node_nature nature, int nops, ...);
 /* A completer */
 
-#line 40 "grammar.y"
+#line 41 "grammar.y"
 #ifdef YYSTYPE
 #undef  YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1
@@ -65,7 +66,7 @@ typedef union {
     node_t ptr;
 } YYSTYPE;
 #endif /* !YYSTYPE_IS_DECLARED */
-#line 69 "y.tab.c"
+#line 70 "y.tab.c"
 
 /* compatibility with bison */
 #ifdef YYPARSE_PARAM
@@ -141,19 +142,28 @@ extern int YYPARSE_DECL();
 #define TOK_SLL 297
 #define TOK_NOT 298
 #define TOK_BNOT 299
+#define listtypedecl 300
+#define verdecl 301
+#define type 302
+#define decl 303
+#define listinst 304
+#define listinstnonnull 305
+#define inst 306
+#define block 307
+#define expr 308
 #define YYERRCODE 256
 typedef short YYINT;
 static const YYINT yylhs[] = {                           -1,
-    0,    0,    1,    2,
+    0,    0,    3,    1,    2,
 };
 static const YYINT yylen[] = {                            2,
-    2,    1,    0,    0,
+    2,    1,    1,    0,    0,
 };
-static const YYINT yydefred[] = {                         3,
-    0,    4,    2,    1,
+static const YYINT yydefred[] = {                         4,
+    0,    5,    2,    1,
 };
 static const YYINT yydgoto[] = {                          1,
-    2,    3,
+    2,    3,    0,
 };
 static const YYINT yysindex[] = {                         0,
     0,    0,    0,    0,
@@ -162,7 +172,7 @@ static const YYINT yyrindex[] = {                         0,
     0,    0,    0,    0,
 };
 static const YYINT yygindex[] = {                         0,
-    0,   -2,
+    0,   -2,    0,
 };
 #define YYTABLESIZE 0
 static const YYINT yytable[] = {                          4,
@@ -173,8 +183,8 @@ static const YYINT yycheck[] = {                          2,
 #ifndef YYDEBUG
 #define YYDEBUG 0
 #endif
-#define YYMAXTOKEN 299
-#define YYUNDFTOKEN 304
+#define YYMAXTOKEN 308
+#define YYUNDFTOKEN 314
 #define YYTRANSLATE(a) ((a) > YYMAXTOKEN ? YYUNDFTOKEN : (a))
 #if YYDEBUG
 static const char *const yyname[] = {
@@ -191,12 +201,15 @@ static const char *const yyname[] = {
 "TOK_NE","TOK_PLUS","TOK_MINUS","TOK_MUL","TOK_DIV","TOK_MOD","TOK_UMINUS",
 "TOK_SEMICOL","TOK_COMMA","TOK_LPAR","TOK_RPAR","TOK_LACC","TOK_RACC",
 "TOK_STRING","TOK_DO","TOK_THEN","TOK_OR","TOK_AND","TOK_BOR","TOK_BXOR",
-"TOK_SRL","TOK_SRA","TOK_SLL","TOK_NOT","TOK_BNOT",0,0,0,0,"illegal-symbol",
+"TOK_SRL","TOK_SRA","TOK_SLL","TOK_NOT","TOK_BNOT","listtypedecl","verdecl",
+"type","decl","listinst","listinstnonnull","inst","block","expr",0,0,0,0,0,
+"illegal-symbol",
 };
 static const char *const yyrule[] = {
 "$accept : program",
 "program : listdeclnonnull maindecl",
 "program : maindecl",
+"listdecl : listdeclnonnull",
 "listdeclnonnull :",
 "maindecl :",
 
@@ -236,20 +249,27 @@ typedef struct {
 } YYSTACKDATA;
 /* variables for the parser stack */
 static YYSTACKDATA yystack;
-#line 109 "grammar.y"
+#line 119 "grammar.y"
 
 /* A completer et/ou remplacer avec d'autres fonctions */
-node_t make_node(node_nature nature, int nops, ...) {
-    va_list ap;
 
-    return NULL;
+node_t make_node(node_nature nature, int nops, ...) {
+    va_list ap; /*liste des arguments supplémentaires*/
+    node_t retour;
+    retour->nature = nature;
+    retour->nops = nops;
+    for (int i = 0; i < nops; i++)
+    {
+        retour->opr+i =va_list[i];
+    }
+    return retour;
 }
 
 
 
 /* A completer */
 void analyse_tree(node_t root) {
-    if (!stop_after_syntax) {
+        if (!stop_after_syntax) {
         // Appeler la passe 1
 
         if (!stop_after_verif) {
@@ -269,7 +289,7 @@ void yyerror(node_t * program_root, char * s) {
     fprintf(stderr, "Error line %d: %s\n", yylineno, s);
     exit(1);
 }
-#line 273 "y.tab.c"
+#line 293 "y.tab.c"
 
 #if YYDEBUG
 #include <stdio.h>		/* needed for printf */
@@ -472,28 +492,36 @@ yyreduce:
     switch (yyn)
     {
 case 1:
-#line 88 "grammar.y"
+#line 92 "grammar.y"
 	{
+            printf(" liste main dollar un vaut %f\n", yystack.l_mark[-1].ptr->value);
             yyval.ptr = make_node(NODE_PROGRAM, 2, yystack.l_mark[-1].ptr, yystack.l_mark[0].ptr);
             *program_root = yyval.ptr;
         }
 break;
 case 2:
-#line 93 "grammar.y"
+#line 98 "grammar.y"
 	{
+            printf(" main dollar un vaut %f\n", yystack.l_mark[0].ptr->value);
             yyval.ptr = make_node(NODE_PROGRAM, 2, NULL, yystack.l_mark[0].ptr);
             *program_root = yyval.ptr;
         }
 break;
 case 3:
-#line 100 "grammar.y"
-	{ yyval.ptr = NULL; }
+#line 105 "grammar.y"
+	{
+            /*$$ = make_node();*/
+        }
 break;
 case 4:
-#line 104 "grammar.y"
+#line 110 "grammar.y"
 	{ yyval.ptr = NULL; }
 break;
-#line 497 "y.tab.c"
+case 5:
+#line 114 "grammar.y"
+	{ yyval.ptr = NULL; }
+break;
+#line 525 "y.tab.c"
     }
     yystack.s_mark -= yym;
     yystate = *yystack.s_mark;
