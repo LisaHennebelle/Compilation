@@ -79,10 +79,9 @@ node_t make_node(node_nature nature, int nops, ...);
 
 %type <intval> TOK_INTVAL
 %type <strval> TOK_IDENT TOK_STRING
-%type <ptr> program listdeclnonnull maindecl
-%type <ptr> listtypedecl listdecl verdecl type
-%type <ptr> decl listinst listinstnonnull
-%type <ptr> inst block expr
+%type <ptr> vardecl ident type listtypedecl decl
+%type <ptr> maindecl listinst listinstnonnull inst
+%type <ptr> block expr listparamprint paramprint
 
 %%
 

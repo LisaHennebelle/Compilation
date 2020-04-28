@@ -36,17 +36,17 @@ extern int yydebug;
 CARACSPECIAUX [\040-\057\072-100\133-\140\173-\176]
 
 /*je pose là les carcacteres speciaux et les token correspondant, je sais pas encore comment faire le lien*/
-/* "+" : TOK_PLUS "-": TOK_MINUS "*" : TOK_MUL  "/" :TOK_DIV "%" : TOK_MOD    ">":TOK_LT      "<": TOK_GT     "!": TOK_? : c'est la negation boolenne*/
-/* "~" : TOK_BNOT "&": TOK_BAND  "|" : TOK_BOR  "^" :TOK_BXOR "=": TOK_AFFECT ";":TOK_SEMICOL ",": TOK_COMMA  "(": TOKLPAR */
-/* ")" : TOK_RPAR "{" : TOK_LACC "}" : TOK_RACC ">>":TOK_SRL ">>>": TOK_SRA   "<<":TOK__SLL   ">=":TOK_GE     "<=":TOK_LE*/
+/* "+" : TOK_PLUS "-": TOK_MINUS "*" : TOK_MUL  "/" :TOK_DIV "%" : TOK_MOD    ">":TOK_GT      "<": TOK_LT     "!": TOK_? : c'est la negation boolenne*/
+/* "~" : TOK_BNOT "&": TOK_BAND  "|" : TOK_BOR  "^" :TOK_BXOR "=": TOK_AFFECT ";":TOK_SEMICOL ",": TOK_COMMA  "(": TOK_LPAR */
+/* ")" : TOK_RPAR "{" : TOK_LACC "}" : TOK_RACC ">>":TOK_SRL ">>>": TOK_SRA   "<<":TOK_SLL    ">=":TOK_GE     "<=":TOK_LE*/
 /* "==": TOK_EQ   "!=": TOK_NE   "&&": TOK_AND  "||": TOK_OR*/
 
 
 
 
 LETTRE          [a-zA-Z]
-CHIFFRE			[0-9]
-ENTIER			('-'|'')[1-9]{CHIFFRE}*
+CHIFFRE         [0-9]
+ENTIER          ('-'|'')[1-9]{CHIFFRE}*
 IDF             {LETTRE}({LETTRE}|{CHIFFRE}|'_')*
 ASCII           [\040-\176]
 /* cf sujet : CHAINE_CAR est l’ensemble de tous les caractères imprimables, à l’exception des caractères ’"’ et ’\’.*/
