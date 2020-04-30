@@ -23,6 +23,7 @@ extern int nbtraces;
 extern int nbregistres;
 extern int sflag;
 extern int vflag;
+extern int cptnodes;
 
 
 /* prototypes */
@@ -91,108 +92,224 @@ node_t make_node(node_nature nature, int nops, ...);
 program:
         listdeclnonnull maindecl /* presence de variables globales*/
         {
+            printf("liste non nulle et main\n");
             $$ = make_node(NODE_PROGRAM, 2, $1, $2); // Erreur : $$ is untyped
             *program_root = $$;
         }
         | maindecl // presence de variables locales seulement
         {
+            printf("main\n");
             $$ = make_node(NODE_PROGRAM, 2, NULL, $1);
             *program_root = $$;
         }
         ;
 listdecl: listdeclnonnull
         {
-            /*$$ = make_node();*/
+            printf("listdecl\n");
+            // combien d'enfants pour un node list?
+            $$ = make_node(NODE_LIST, 1, $1 );
+            *program_root = $$;
         }
         |
         { $$ = NULL; }
 
 listdeclnonnull: vardecl
-            { $$ = NULL; }
+            {
+                printf("listdecl non nulle\n");
+				$$ = make_node(NODE_LIST, 1, $1);
+            	*program_root = $$;
+			}
             | listdeclnonnull vardecl
-            { $$ = NULL; }
+            {
+				$$ = make_node(NODE_LIST, 2, $1, $2);
+            	*program_root = $$;
+			}
         ;
 vardecl : type listtypedecl TOK_SEMICOL
-            { $$ = NULL; }
-            ;
+            {
+                printf("vardecl\n");
+				$$ = make_node(NODE_LIST, 1, $1);
+            	*program_root = $$;
+			}
+        ;
 type : TOK_INT
-        { $$ = NULL; }
+        {
+            printf("int\n");
+			$$ = make_node(NODE_TYPE, 0, TYPE_INT);
+        	*program_root = $$;
+		}
         | TOK_BOOL
-        { $$ = NULL; }
+        {
+            printf("bool\n");
+			$$ = make_node(NODE_TYPE, 0, TYPE_BOOL);
+			*program_root = $$;
+		}
         | TOK_VOID
-        { $$ = NULL; }
+        {
+            printf("void\n");
+			$$ = make_node(NODE_TYPE, 0, TYPE_VOID);
+			*program_root = $$;
+		}
         ;
 listtypedecl : decl
-                { $$ = NULL; }
+                {
+                    printf("\n");
+					$$ = make_node(NODE_LIST, 1 ,$1);
+                	*program_root = $$;
+				}
                 | listtypedecl TOK_COMMA decl
-                { $$ = NULL; }
+                {
+					$$ = make_node(NODE_LIST, 2 , $1, $3);
+                	*program_root = $$;
+				}
                 ;
 decl : ident
-       { $$ = NULL; }
-       | ident TOK_AFFECT expr
-       { $$ = NULL; }
-       ;
+       	{
+	   		$$ = make_node(NODE_DECL, 2, $1, NULL );
+       		*program_root = $$;
+		}
+       	| ident TOK_AFFECT expr
+       	{
+			$$ = make_node(NODE_DECL, 2 ,$1, $3);
+       		*program_root = $$;
+		}
+       	;
 
 maindecl: type ident TOK_LPAR TOK_RPAR block
-            { $$ = NULL; }
+            {
+				$$ = make_node(NODE_FUNC, 3, $1, $2, $5);
+            	*program_root = $$;
+			}
         ;
 listinst : listinstnonnull
-            { $$ = NULL; }
+            {
+				$$ = make_node(NODE_LIST, 1, $1);
+            	*program_root = $$;
+			}
             |
-            { $$ = NULL; }
+            {
+				$$ = NULL;
+			}
 listinstnonnull : inst
-                 { $$ = NULL; }
-                 | listinstnonnull inst
-                 { $$ = NULL; }
-                 ;
+                {
+					$$ = make_node(NODE_LIST, 1, $1);
+                	*program_root = $$;
+				}
+                | listinstnonnull inst
+                {
+					$$ = make_node(NODE_LIST, 2, $1, $2);
+                	*program_root = $$;
+				}
+                ;
 inst: expr TOK_SEMICOL
-        { $$ = NULL; }
+        {
+			$$ = make_node(NODE_BLOCK, 1, $1); // NODE_BLOCK ?
+        	*program_root = $$;
+		}
         | TOK_IF TOK_LPAR expr TOK_RPAR inst TOK_ELSE inst
-        { $$ = NULL; }
+        {
+			$$ = make_node(NODE_IF, 3, $3, $5, $7);
+			*program_root = $$;
+		}
         | TOK_IF TOK_LPAR expr TOK_RPAR inst %prec TOK_THEN
-        { $$ = NULL; }
+        {
+			$$ = make_node(NODE_IF, 2, $3, $5);
+        	*program_root = $$;
+		}
         | TOK_WHILE TOK_LPAR expr TOK_RPAR inst
-        { $$ = NULL; }
-        |TOK_FOR TOK_LPAR expr TOK_SEMICOL expr TOK_SEMICOL expr TOK_RPAR inst
-        { $$ = NULL; }
-        |TOK_DO inst TOK_WHILE TOK_PAR expr TOK_RPAR TOK_SEMICOL
-        { $$ = NULL; }
+        {
+			$$ = make_node(NODE_WHILE, 2, $3, $5);
+        	*program_root = $$;
+		}
+        | TOK_FOR TOK_LPAR expr TOK_SEMICOL expr TOK_SEMICOL expr TOK_RPAR inst
+        {
+			$$ = make_node(NODE_FOR, 4, $3 ,$5, $7, $9);
+        	*program_root = $$;
+		}
+        | TOK_DO inst TOK_WHILE TOK_PAR expr TOK_RPAR TOK_SEMICOL
+        {
+			$$ = make_node(NODE_DOWHILE, 2, $2, $5);
+        	*program_root = $$;
+		}
         | block
-        { $$ = NULL; }
+        {
+			$$ = make_node(NODE_BLOCK, 1, $1);
+        	*program_root = $$;
+		}
         | TOK_SEMICOL
-        { $$ = NULL; }
-        | TOK_PRINT TOK_LPAR lisparamprint TOK_RPAR TOK_SEMICOL
-        { $$ = NULL; }
+        {
+			$$ = NULL;
+		}
+        | TOK_PRINT TOK_LPAR listparamprint TOK_RPAR TOK_SEMICOL
+        {
+			$$ = make_node(NODE_PRINT, 1, $3);
+        	*program_root = $$;
+		}
         ;
 block: TOK_LACC listdecl listinst TOK_RACC
-        { $$ = NULL; }
+        {
+			$$ = make_node(NODE_BLOCK, 2, $2, $3);
+        	*program_root = $$;
+		}
         ;
 expr : expr TOK_MUL expr
-        { $$ = NULL; }
+        {
+			$$ = make_node(NODE_MUL, 2,$1, $3);
+        	*program_root = $$;
+		}
         |expr TOK_DIV expr
-        { $$ = NULL; }
+        {
+			$$ = make_node(NODE_DIV, 2, $1, $3);
+        	*program_root = $$;
+		}
         | expr TOK_PLUS expr
-        { $$ = NULL; }
+        {
+			$$ = make_node(NODE_PLUS, 2, $1, $3);
+        	*program_root = $$;
+		}
         | expr TOK_MINUS expr
-        { $$ = NULL; }
+        {
+			$$ = make_node(NODE_MINUS, 2, $1, $3);
+        	*program_root = $$;
+		}
         | expr TOK_MOD expr
-        { $$ = NULL; }
+        {
+			$$ = make_node(NODE_MOD, 2, $1, $3);
+        	*program_root = $$;
+		}
         | expr TOK_LT expr
-        { $$ = NULL; }
+        {
+			$$ = make_node(NODE_LT, 2, $1, $3);
+        	*program_root = $$;
+		}
         | expr TOK_GT expr
-        { $$ = NULL; }
+        {
+			$$ = make_node(NODE_GT, 2, $1, $3);
+        	*program_root = $$;
+		}
         | TOK_MINUS expr %prec TOK_UMINUS
-        { $$ = NULL; }
+        {
+			$$ = make_node(NODE_UMINUS, 1, $2);
+        	*program_root = $$;
+		}
         | expr TOK_GE expr
-        { $$ = NULL; }
+        {
+			$$ = make_node(NODE_GE, 2, $1, $3);
+        	*program_root = $$;
+		}
         ;
 %%
 /* A completer et/ou remplacer avec d'autres fonctions */
 
 node_t make_node(node_nature nature, int nops, ...) {
+    printf("NODE CREE");
+
+    //cptnodes ++;
+    //printf("on make le node n°%d\n", cptnodes);
     va_list ap; /*liste des arguments supplémentaires*/
     va_start(ap,nops);
     node_t retour;/* malloc?*/
+    //retour->node_num = cptnodes;
     retour->nature = nature;
     retour->nops = nops;
     node_s **hop;

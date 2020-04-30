@@ -45,7 +45,6 @@
 #define listparamprint 301
 #define paramprint 302
 #define TOK_PAR 303
-#define lisparamprint 304
 #ifdef YYSTYPE
 #undef  YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1
