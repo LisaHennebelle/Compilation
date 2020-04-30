@@ -72,8 +72,8 @@ COMMENTAIRE     "//"({CHAINE})*[\n]
 
 
 {IDF} {
-                yylval.strval = strdup(yytext);
-                printf("idf %c\n",*yytext);
+				yylval.strval = strdup(yytext);
+                printf("idf %s\n",yytext);
                 return TOK_IDENT;
 }
 
@@ -118,11 +118,16 @@ int main(int argc, char ** argv) {
     #endif
 
 
-
+	printf("main1\n");
     yyin = fopen(infile, "r");
+	printf("main2\n");
     yyparse(&program_root);
+	printf("main3\n");
     fclose(yyin);
+	printf("main4\n");
     analyse_tree(program_root);
+	printf("main5\n");
     yylex_destroy();
+	printf("main6\n");
     return 0;
 }

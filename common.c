@@ -49,8 +49,7 @@ void parse_args(int argc, char ** argv) {
             printf("Appels a ./minicc avec des options :\n"
             "• -b : Affiche une bannière indiquant le nom du compilateur et des membres du binôme\n"
             "• -o <filename> : Définit le nom du fichier assembleur produit (défaut : out.s).\n"
-            "• -t <int> : Définit le niveau de trace à utiliser entre 0 et 5 (0 = pas de trace ; 5 = toutes les traces ;\n"
-            "defaut = 0).\n"
+            "• -t <int> : Définit le niveau de trace à utiliser entre 0 et 5 (0 = pas de trace ; 5 = toutes les traces; defaut = 0).\n"
             "• -r <int> : Définit le nombre maximum de registres à utiliser, entre 4 et 8 (défaut : 8).\n"
             "• -s : Arrêter la compilation après l’analyse syntaxique (défaut = non).\n"
             "• -v : Arrêter la compilation après la passe de vérifications (défaut = non).\n"
@@ -58,7 +57,7 @@ void parse_args(int argc, char ** argv) {
             exit(0);
 
             case 'b':
-	            printf("##################COMPILATEUR##################\n Binome: Lisa HENNEBELLE & Diego MORENO VILLANUEVA");
+	            printf("##################COMPILATEUR##################\n Binome: Lisa HENNEBELLE & Diego MORENO VILLANUEVA\n");
 	            exit(0);
             case 'o':
                 filename = optarg;
@@ -105,7 +104,7 @@ void parse_args(int argc, char ** argv) {
         }
     }
     infile = argv[optind];
-    printf("le fichier .c s'appelle %s\n", infile);
+    printf("Le fichier .c s'appelle %s\n", infile);
 }
 
 
