@@ -56,7 +56,7 @@ node_t make_node(node_nature nature, int nops, ...);
 
 /*non associativité*/
 %nonassoc TOK_THEN
-%nonassoc TOK_UMINUS /* d'après la description de la non associativité il semblerait qu'il y aie une erreur dans le sujet*/
+%nonassoc TOK_ELSE /* d'après la description de la non associativité il semblerait qu'il y aie une erreur dans le sujet*/
 
 /* a = b = c + d <=> b = c + d ; a = b; */
 %right TOK_AFFECT /*l'affectation sera faite en dernier*/
@@ -73,7 +73,7 @@ node_t make_node(node_nature nature, int nops, ...);
 
 %left TOK_PLUS TOK_MINUS
 %left TOK_MUL TOK_DIV TOK_MOD
-%left TOK_ELSE TOK_NOT TOK_BNOT
+%left TOK_UMINUS TOK_NOT TOK_BNOT
 
 
 
@@ -82,17 +82,19 @@ node_t make_node(node_nature nature, int nops, ...);
 %type <ptr> vardecl ident type listtypedecl decl
 %type <ptr> maindecl listinst listinstnonnull inst
 %type <ptr> block expr listparamprint paramprint
+%type <ptr> program listdecl listdeclnonnull
 
+%start program
 %%
 
 /* Regles ici */
 program:
-        listdeclnonnull maindecl
+        listdeclnonnull maindecl /* presence de variables globales*/
         {
-            $$ = make_node(NODE_PROGRAM, 2, $1, $2);
+            $$ = make_node(NODE_PROGRAM, 2, $1, $2); // Erreur : $$ is untyped
             *program_root = $$;
         }
-        | maindecl
+        | maindecl // presence de variables locales seulement
         {
             $$ = make_node(NODE_PROGRAM, 2, NULL, $1);
             *program_root = $$;
@@ -153,7 +155,7 @@ inst: expr TOK_SEMICOL
         { $$ = NULL; }
         |TOK_FOR TOK_LPAR expr TOK_SEMICOL expr TOK_SEMICOL expr TOK_RPAR inst
         { $$ = NULL; }
-        |TOK_DO inst TOK_WHLE TOK_PAR expr TOK_RPAR TOK_SEMICOL
+        |TOK_DO inst TOK_WHILE TOK_PAR expr TOK_RPAR TOK_SEMICOL
         { $$ = NULL; }
         | block
         { $$ = NULL; }
@@ -184,7 +186,7 @@ expr : expr TOK_MUL expr
         | expr TOK_GE expr
         { $$ = NULL; }
         ;
-
+%%
 /* A completer et/ou remplacer avec d'autres fonctions */
 
 node_t make_node(node_nature nature, int nops, ...) {
@@ -206,6 +208,36 @@ node_t make_node(node_nature nature, int nops, ...) {
         printf("hop affecté!, hop =%d et contient %d\n", hop , *(hop + i));
     }
     retour->opr = hop;
+    // recherche des arguments supplementaires en fonction de la nature du noeud
+    switch(nature)
+    {
+        case NODE_IDENT ://   type =  TYPE_NONE,TYPE_INT,TYPE_BOOL,TYPE_STRING,TYPE_VOID
+
+            retour->type      =va_arg(ap,node_type); // argument supp à la position nops + 1 = type de noeud
+            retour->decl_node =va_arg(ap,node_t); // argument supp à la position nops + 2 = declaration de noeud
+            retour->offset    =va_arg(ap,int32_t ); // argument supp à la position nops + 3 = declaration de l'emplacement mémoire de la variable int32_t
+            retour->global_decl=va_arg(ap,bool); // argument supp à la position nops + 4 = declaration globale?
+            break;
+        case NODE_AFFECT :
+            retour->type      =va_arg(ap,node_type); // argument supp à la position nops + 1 = type de noeud
+            break;
+        case NODE_FUNC :
+            retour->offset    =va_arg(ap,int32_t); // argument supp à la position nops + 1 = declaration de l'emplacement mémoire de la variable int32_t
+            retour->stack_size=va_arg(ap,int32_t); // argument supp à la position nops + 2 = declaration de
+            break;
+        case NODE_TYPE:
+            retour->type = va_arg(ap,node_type);
+        case NODE_INTVAL:
+            retour->value = va_arg(ap,int64_t);
+		case NODE_BOOLVAL:
+			retour->value = va_arg(ap,int64_t);
+        case NODE_STRINGVAL :
+            retour->str = va_arg(ap,char*);
+			retour->offset = va_arg(ap,int32_t);
+		default:
+            break;
+    }
+
     va_end(ap);
     return retour;
 }
