@@ -73,7 +73,7 @@ COMMENTAIRE     "//"({CHAINE})*[\n]
 
 {IDF} {
                 yylval.strval = strdup(yytext);
-                printf("idf %c",*yytext);
+                printf("idf %c\n",*yytext);
                 return TOK_IDENT;
 }
 
@@ -83,7 +83,7 @@ COMMENTAIRE     "//"({CHAINE})*[\n]
                 return TOK_INTVAL;
 }
 
-{CHAINE} {                      /*  complété mais pas testé */
+{CHAINE} {
                 yylval.strval = strdup(yytext);
                 printf("chaine %c",*yytext);
 

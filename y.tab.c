@@ -357,17 +357,17 @@ typedef struct {
 } YYSTACKDATA;
 /* variables for the parser stack */
 static YYSTACKDATA yystack;
-#line 302 "grammar.y"
+#line 309 "grammar.y"
 /* A completer et/ou remplacer avec d'autres fonctions */
 
 node_t make_node(node_nature nature, int nops, ...) {
-    printf("NODE CREE");
+    printf("NODE CREE\n");
 
     //cptnodes ++;
     //printf("on make le node n°%d\n", cptnodes);
     va_list ap; /*liste des arguments supplémentaires*/
     va_start(ap,nops);
-    node_t retour;/* malloc?*/
+    node_t retour = malloc (sizeof(node_t));
     //retour->node_num = cptnodes;
     retour->nature = nature;
     retour->nops = nops;
@@ -649,32 +649,37 @@ case 1:
 	{
             printf("liste non nulle et main\n");
             yyval.ptr = make_node(NODE_PROGRAM, 2, yystack.l_mark[-1].ptr, yystack.l_mark[0].ptr); /* Erreur : $$ is untyped*/
+			printf("program 1\n");
             *program_root = yyval.ptr;
+			printf("program 2\n");
         }
 break;
 case 2:
-#line 100 "grammar.y"
+#line 102 "grammar.y"
 	{
             printf("main\n");
             yyval.ptr = make_node(NODE_PROGRAM, 2, NULL, yystack.l_mark[0].ptr);
+			printf("program 3\n");
             *program_root = yyval.ptr;
+			printf("program 4\n");
         }
 break;
 case 3:
-#line 107 "grammar.y"
+#line 111 "grammar.y"
 	{
             printf("listdecl\n");
             /* combien d'enfants pour un node list?*/
             yyval.ptr = make_node(NODE_LIST, 1, yystack.l_mark[0].ptr );
+			printf("listdecl 1\n");
             *program_root = yyval.ptr;
         }
 break;
 case 4:
-#line 114 "grammar.y"
+#line 119 "grammar.y"
 	{ yyval.ptr = NULL; }
 break;
 case 5:
-#line 117 "grammar.y"
+#line 122 "grammar.y"
 	{
                 printf("listdecl non nulle\n");
 				yyval.ptr = make_node(NODE_LIST, 1, yystack.l_mark[0].ptr);
@@ -682,14 +687,14 @@ case 5:
 			}
 break;
 case 6:
-#line 123 "grammar.y"
+#line 128 "grammar.y"
 	{
 				yyval.ptr = make_node(NODE_LIST, 2, yystack.l_mark[-1].ptr, yystack.l_mark[0].ptr);
             	*program_root = yyval.ptr;
 			}
 break;
 case 7:
-#line 129 "grammar.y"
+#line 134 "grammar.y"
 	{
                 printf("vardecl\n");
 				yyval.ptr = make_node(NODE_LIST, 1, yystack.l_mark[-2].ptr);
@@ -697,7 +702,7 @@ case 7:
 			}
 break;
 case 8:
-#line 136 "grammar.y"
+#line 141 "grammar.y"
 	{
             printf("int\n");
 			yyval.ptr = make_node(NODE_TYPE, 0, TYPE_INT);
@@ -705,7 +710,7 @@ case 8:
 		}
 break;
 case 9:
-#line 142 "grammar.y"
+#line 147 "grammar.y"
 	{
             printf("bool\n");
 			yyval.ptr = make_node(NODE_TYPE, 0, TYPE_BOOL);
@@ -713,7 +718,7 @@ case 9:
 		}
 break;
 case 10:
-#line 148 "grammar.y"
+#line 153 "grammar.y"
 	{
             printf("void\n");
 			yyval.ptr = make_node(NODE_TYPE, 0, TYPE_VOID);
@@ -721,201 +726,203 @@ case 10:
 		}
 break;
 case 11:
-#line 155 "grammar.y"
+#line 160 "grammar.y"
 	{
-                    printf("\n");
+                    printf("listtypedecl : decl\n");
 					yyval.ptr = make_node(NODE_LIST, 1 ,yystack.l_mark[0].ptr);
                 	*program_root = yyval.ptr;
 				}
 break;
 case 12:
-#line 161 "grammar.y"
+#line 166 "grammar.y"
 	{
+                    printf("listtypedecl : listtypedecl, decl\n");
 					yyval.ptr = make_node(NODE_LIST, 2 , yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
                 	*program_root = yyval.ptr;
 				}
 break;
 case 13:
-#line 167 "grammar.y"
+#line 173 "grammar.y"
 	{
+            printf("decl : ident\n");
 	   		yyval.ptr = make_node(NODE_DECL, 2, yystack.l_mark[0].ptr, NULL );
        		*program_root = yyval.ptr;
 		}
 break;
 case 14:
-#line 172 "grammar.y"
+#line 179 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_DECL, 2 ,yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
        		*program_root = yyval.ptr;
 		}
 break;
 case 15:
-#line 179 "grammar.y"
+#line 186 "grammar.y"
 	{
 				yyval.ptr = make_node(NODE_FUNC, 3, yystack.l_mark[-4].ptr, yystack.l_mark[-3].ptr, yystack.l_mark[0].ptr);
             	*program_root = yyval.ptr;
 			}
 break;
 case 16:
-#line 185 "grammar.y"
+#line 192 "grammar.y"
 	{
 				yyval.ptr = make_node(NODE_LIST, 1, yystack.l_mark[0].ptr);
             	*program_root = yyval.ptr;
 			}
 break;
 case 17:
-#line 190 "grammar.y"
+#line 197 "grammar.y"
 	{
 				yyval.ptr = NULL;
 			}
 break;
 case 18:
-#line 194 "grammar.y"
+#line 201 "grammar.y"
 	{
 					yyval.ptr = make_node(NODE_LIST, 1, yystack.l_mark[0].ptr);
                 	*program_root = yyval.ptr;
 				}
 break;
 case 19:
-#line 199 "grammar.y"
+#line 206 "grammar.y"
 	{
 					yyval.ptr = make_node(NODE_LIST, 2, yystack.l_mark[-1].ptr, yystack.l_mark[0].ptr);
                 	*program_root = yyval.ptr;
 				}
 break;
 case 20:
-#line 205 "grammar.y"
+#line 212 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_BLOCK, 1, yystack.l_mark[-1].ptr); /* NODE_BLOCK ?*/
         	*program_root = yyval.ptr;
 		}
 break;
 case 21:
-#line 210 "grammar.y"
+#line 217 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_IF, 3, yystack.l_mark[-4].ptr, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 			*program_root = yyval.ptr;
 		}
 break;
 case 22:
-#line 215 "grammar.y"
+#line 222 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_IF, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
         	*program_root = yyval.ptr;
 		}
 break;
 case 23:
-#line 220 "grammar.y"
+#line 227 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_WHILE, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
         	*program_root = yyval.ptr;
 		}
 break;
 case 24:
-#line 225 "grammar.y"
+#line 232 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_FOR, 4, yystack.l_mark[-6].ptr ,yystack.l_mark[-4].ptr, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
         	*program_root = yyval.ptr;
 		}
 break;
 case 25:
-#line 230 "grammar.y"
+#line 237 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_DOWHILE, 2, yystack.l_mark[-5].ptr, yystack.l_mark[-2].ptr);
         	*program_root = yyval.ptr;
 		}
 break;
 case 26:
-#line 235 "grammar.y"
+#line 242 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_BLOCK, 1, yystack.l_mark[0].ptr);
         	*program_root = yyval.ptr;
 		}
 break;
 case 27:
-#line 240 "grammar.y"
+#line 247 "grammar.y"
 	{
 			yyval.ptr = NULL;
 		}
 break;
 case 28:
-#line 244 "grammar.y"
+#line 251 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_PRINT, 1, yystack.l_mark[-2].ptr);
         	*program_root = yyval.ptr;
 		}
 break;
 case 29:
-#line 250 "grammar.y"
+#line 257 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_BLOCK, 2, yystack.l_mark[-2].ptr, yystack.l_mark[-1].ptr);
         	*program_root = yyval.ptr;
 		}
 break;
 case 30:
-#line 256 "grammar.y"
+#line 263 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_MUL, 2,yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
         	*program_root = yyval.ptr;
 		}
 break;
 case 31:
-#line 261 "grammar.y"
+#line 268 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_DIV, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
         	*program_root = yyval.ptr;
 		}
 break;
 case 32:
-#line 266 "grammar.y"
+#line 273 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_PLUS, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
         	*program_root = yyval.ptr;
 		}
 break;
 case 33:
-#line 271 "grammar.y"
+#line 278 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_MINUS, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
         	*program_root = yyval.ptr;
 		}
 break;
 case 34:
-#line 276 "grammar.y"
+#line 283 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_MOD, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
         	*program_root = yyval.ptr;
 		}
 break;
 case 35:
-#line 281 "grammar.y"
+#line 288 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_LT, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
         	*program_root = yyval.ptr;
 		}
 break;
 case 36:
-#line 286 "grammar.y"
+#line 293 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_GT, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
         	*program_root = yyval.ptr;
 		}
 break;
 case 37:
-#line 291 "grammar.y"
+#line 298 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_UMINUS, 1, yystack.l_mark[0].ptr);
         	*program_root = yyval.ptr;
 		}
 break;
 case 38:
-#line 296 "grammar.y"
+#line 303 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_GE, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
         	*program_root = yyval.ptr;
 		}
 break;
-#line 919 "y.tab.c"
+#line 926 "y.tab.c"
     }
     yystack.s_mark -= yym;
     yystate = *yystack.s_mark;

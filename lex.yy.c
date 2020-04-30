@@ -937,7 +937,7 @@ YY_RULE_SETUP
 #line 74 "lexico.l"
 {
                 yylval.strval = strdup(yytext);
-                printf("idf %c",*yytext);
+                printf("idf %c\n",*yytext);
                 return TOK_IDENT;
 }
 	YY_BREAK
@@ -954,7 +954,7 @@ case 14:
 /* rule 14 can match eol */
 YY_RULE_SETUP
 #line 86 "lexico.l"
-{                      /*  complété mais pas testé */
+{
                 yylval.strval = strdup(yytext);
                 printf("chaine %c",*yytext);
 

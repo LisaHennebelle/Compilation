@@ -94,13 +94,17 @@ program:
         {
             printf("liste non nulle et main\n");
             $$ = make_node(NODE_PROGRAM, 2, $1, $2); // Erreur : $$ is untyped
+			printf("program 1\n");
             *program_root = $$;
+			printf("program 2\n");
         }
         | maindecl // presence de variables locales seulement
         {
             printf("main\n");
             $$ = make_node(NODE_PROGRAM, 2, NULL, $1);
+			printf("program 3\n");
             *program_root = $$;
+			printf("program 4\n");
         }
         ;
 listdecl: listdeclnonnull
@@ -108,7 +112,9 @@ listdecl: listdeclnonnull
             printf("listdecl\n");
             // combien d'enfants pour un node list?
             $$ = make_node(NODE_LIST, 1, $1 );
+			printf("listdecl 1\n");
             *program_root = $$;
+			printf("listdecl 2\n");
         }
         |
         { $$ = NULL; }
@@ -153,18 +159,20 @@ type : TOK_INT
         ;
 listtypedecl : decl
                 {
-                    printf("\n");
+                    printf("listtypedecl : decl\n");
 					$$ = make_node(NODE_LIST, 1 ,$1);
                 	*program_root = $$;
 				}
                 | listtypedecl TOK_COMMA decl
                 {
+                    printf("listtypedecl : listtypedecl, decl\n");
 					$$ = make_node(NODE_LIST, 2 , $1, $3);
                 	*program_root = $$;
 				}
                 ;
 decl : ident
        	{
+            printf("decl : ident\n");
 	   		$$ = make_node(NODE_DECL, 2, $1, NULL );
        		*program_root = $$;
 		}
@@ -302,17 +310,23 @@ expr : expr TOK_MUL expr
 /* A completer et/ou remplacer avec d'autres fonctions */
 
 node_t make_node(node_nature nature, int nops, ...) {
-    printf("NODE CREE");
+    printf("NODE CREE\n");
 
     //cptnodes ++;
     //printf("on make le node n°%d\n", cptnodes);
     va_list ap; /*liste des arguments supplémentaires*/
+	printf("make_node 1\n");
     va_start(ap,nops);
-    node_t retour;/* malloc?*/
+	printf("make_node 2\n");
+    node_t retour = malloc (sizeof(node_t));
+	printf("make_node 3\n");
     //retour->node_num = cptnodes;
     retour->nature = nature;
+	printf("make_node 4\n");
     retour->nops = nops;
+	printf("make_node 5\n");
     node_s **hop;
+	printf("make_node 6\n");
 
     for (int i = 0; i < nops; i++)
     {
