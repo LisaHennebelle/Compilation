@@ -81,11 +81,11 @@ typedef struct _node_s {
     int64_t value;
     int32_t offset;
     bool global_decl;
-    int32_t lineno;
+    int32_t lineno; // numero de ligne du texte dans le fichier source
     int32_t stack_size;
 
-    int32_t nops;
-    struct _node_s ** opr;
+    int32_t nops; // nombre d'enfants ou taille du tableau opr
+    struct _node_s ** opr; // tableau de pointeurs vers noeuds enfants
 
     struct _node_s * decl_node;
 
