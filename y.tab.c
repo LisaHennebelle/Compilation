@@ -173,11 +173,12 @@ extern int yydebug;
     TOK_AND = 293,
     TOK_BOR = 294,
     TOK_BXOR = 295,
-    TOK_SRL = 296,
-    TOK_SRA = 297,
-    TOK_SLL = 298,
-    TOK_NOT = 299,
-    TOK_BNOT = 300
+    TOK_BAND = 296,
+    TOK_SRL = 297,
+    TOK_SRA = 298,
+    TOK_SLL = 299,
+    TOK_NOT = 300,
+    TOK_BNOT = 301
   };
 #endif
 /* Tokens.  */
@@ -219,11 +220,12 @@ extern int yydebug;
 #define TOK_AND 293
 #define TOK_BOR 294
 #define TOK_BXOR 295
-#define TOK_SRL 296
-#define TOK_SRA 297
-#define TOK_SLL 298
-#define TOK_NOT 299
-#define TOK_BNOT 300
+#define TOK_BAND 296
+#define TOK_SRL 297
+#define TOK_SRA 298
+#define TOK_SLL 299
+#define TOK_NOT 300
+#define TOK_BNOT 301
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -236,7 +238,7 @@ union YYSTYPE
     char * strval;
     node_t ptr;
 
-#line 240 "y.tab.c" /* yacc.c:355  */
+#line 242 "y.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -253,7 +255,7 @@ int yyparse (node_t * program_root);
 
 /* Copy the second part of user declarations.  */
 
-#line 257 "y.tab.c" /* yacc.c:358  */
+#line 259 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -498,7 +500,7 @@ union yyalloc
 #define YYLAST   33
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  46
+#define YYNTOKENS  47
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  16
 /* YYNRULES -- Number of rules.  */
@@ -509,7 +511,7 @@ union yyalloc
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   300
+#define YYMAXUTOK   301
 
 #define YYTRANSLATE(YYX)                                                \
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -548,16 +550,16 @@ static const yytype_uint8 yytranslate[] =
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
       25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
       35,    36,    37,    38,    39,    40,    41,    42,    43,    44,
-      45
+      45,    46
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    93,    93,   101,   110,   120,   122,   128,   134,   141,
-     149,   157,   166,   172,   179,   192,   198,   204,   207,   212,
-     248,   253,   257,   263,   316,   321,   327,   331,   338
+       0,    94,    94,   102,   111,   121,   123,   129,   135,   142,
+     150,   158,   167,   173,   180,   194,   200,   206,   209,   214,
+     250,   255,   259,   265,   318,   323,   329,   333,   340
 };
 #endif
 
@@ -573,10 +575,11 @@ static const char *const yytname[] =
   "TOK_MUL", "TOK_DIV", "TOK_MOD", "TOK_UMINUS", "TOK_SEMICOL",
   "TOK_COMMA", "TOK_LPAR", "TOK_RPAR", "TOK_LACC", "TOK_RACC",
   "TOK_STRING", "TOK_DO", "TOK_THEN", "TOK_OR", "TOK_AND", "TOK_BOR",
-  "TOK_BXOR", "TOK_SRL", "TOK_SRA", "TOK_SLL", "TOK_NOT", "TOK_BNOT",
-  "$accept", "program", "listdecl", "listdeclnonnull", "vardecl", "type",
-  "listtypedecl", "decl", "maindecl", "listinst", "listinstnonnull",
-  "inst", "block", "listparamprint", "paramprint", "ident", YY_NULLPTR
+  "TOK_BXOR", "TOK_BAND", "TOK_SRL", "TOK_SRA", "TOK_SLL", "TOK_NOT",
+  "TOK_BNOT", "$accept", "program", "listdecl", "listdeclnonnull",
+  "vardecl", "type", "listtypedecl", "decl", "maindecl", "listinst",
+  "listinstnonnull", "inst", "block", "listparamprint", "paramprint",
+  "ident", YY_NULLPTR
 };
 #endif
 
@@ -589,7 +592,7 @@ static const yytype_uint16 yytoknum[] =
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
      275,   276,   277,   278,   279,   280,   281,   282,   283,   284,
      285,   286,   287,   288,   289,   290,   291,   292,   293,   294,
-     295,   296,   297,   298,   299,   300
+     295,   296,   297,   298,   299,   300,   301
 };
 # endif
 
@@ -663,19 +666,19 @@ static const yytype_int8 yycheck[] =
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     3,     4,     6,    47,    49,    50,    51,    54,     0,
-      50,    54,     9,    52,    53,    61,    28,    29,    30,    53,
-      61,    31,    32,    58,    48,    49,    51,    14,    28,    55,
-      56,    57,    58,    30,    33,    57,    34,    59,    60,    61,
-      29,    31,    60,    28
+       0,     3,     4,     6,    48,    50,    51,    52,    55,     0,
+      51,    55,     9,    53,    54,    62,    28,    29,    30,    54,
+      62,    31,    32,    59,    49,    50,    52,    14,    28,    56,
+      57,    58,    59,    30,    33,    58,    34,    60,    61,    62,
+      29,    31,    61,    28
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    46,    47,    47,    48,    48,    49,    49,    50,    51,
-      51,    51,    52,    52,    53,    54,    55,    55,    56,    56,
-      57,    57,    57,    58,    59,    59,    60,    60,    61
+       0,    47,    48,    48,    49,    49,    50,    50,    51,    52,
+      52,    52,    53,    53,    54,    55,    56,    56,    57,    57,
+      58,    58,    58,    59,    60,    60,    61,    61,    62
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
@@ -1362,7 +1365,7 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 94 "grammar.y" /* yacc.c:1646  */
+#line 95 "grammar.y" /* yacc.c:1646  */
     {
             printf("liste non nulle et main\n");
             (yyval.ptr) = make_node(NODE_PROGRAM, 2, (yyvsp[-1].ptr), (yyvsp[0].ptr)); // Erreur : $$ is untyped
@@ -1370,11 +1373,11 @@ yyreduce:
             *program_root = (yyval.ptr);
 			printf("program 2\n");
         }
-#line 1374 "y.tab.c" /* yacc.c:1646  */
+#line 1377 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 102 "grammar.y" /* yacc.c:1646  */
+#line 103 "grammar.y" /* yacc.c:1646  */
     {
             printf("main\n");
             (yyval.ptr) = make_node(NODE_PROGRAM, 2, NULL, (yyvsp[0].ptr));
@@ -1382,11 +1385,11 @@ yyreduce:
             *program_root = (yyval.ptr);
 			printf("program 4\n");
         }
-#line 1386 "y.tab.c" /* yacc.c:1646  */
+#line 1389 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 111 "grammar.y" /* yacc.c:1646  */
+#line 112 "grammar.y" /* yacc.c:1646  */
     {
             printf("listdecl\n");
             // combien d'enfants pour un node list?
@@ -1395,234 +1398,235 @@ yyreduce:
             *program_root = (yyval.ptr);
 			printf("listdecl 2\n");
         }
-#line 1399 "y.tab.c" /* yacc.c:1646  */
+#line 1402 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 120 "grammar.y" /* yacc.c:1646  */
+#line 121 "grammar.y" /* yacc.c:1646  */
     { (yyval.ptr) = NULL; }
-#line 1405 "y.tab.c" /* yacc.c:1646  */
+#line 1408 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 123 "grammar.y" /* yacc.c:1646  */
+#line 124 "grammar.y" /* yacc.c:1646  */
     {
                 printf("listdecl non nulle\n");
 				(yyval.ptr) = make_node(NODE_LIST, 1, (yyvsp[0].ptr));
             	*program_root = (yyval.ptr);
 			}
-#line 1415 "y.tab.c" /* yacc.c:1646  */
+#line 1418 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 129 "grammar.y" /* yacc.c:1646  */
+#line 130 "grammar.y" /* yacc.c:1646  */
     {
 				(yyval.ptr) = make_node(NODE_LIST, 2, (yyvsp[-1].ptr), (yyvsp[0].ptr));
             	*program_root = (yyval.ptr);
 			}
-#line 1424 "y.tab.c" /* yacc.c:1646  */
+#line 1427 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 135 "grammar.y" /* yacc.c:1646  */
+#line 136 "grammar.y" /* yacc.c:1646  */
     {
                 printf("vardecl\n");
 				(yyval.ptr) = make_node(NODE_LIST, 1, (yyvsp[-2].ptr));
             	*program_root = (yyval.ptr);
 			}
-#line 1434 "y.tab.c" /* yacc.c:1646  */
+#line 1437 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 142 "grammar.y" /* yacc.c:1646  */
+#line 143 "grammar.y" /* yacc.c:1646  */
     {
             printf("int1\n");
-			(yyval.ptr) = make_node(NODE_TYPE, 1, TYPE_INT);
+			(yyval.ptr) = make_node(NODE_TYPE, 2, TYPE_INT);
 	        printf("int2\n");
         	*program_root = (yyval.ptr);
 	        printf("int3\n");
 		}
-#line 1446 "y.tab.c" /* yacc.c:1646  */
+#line 1449 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 150 "grammar.y" /* yacc.c:1646  */
+#line 151 "grammar.y" /* yacc.c:1646  */
     {
             printf("bool1\n");
-			(yyval.ptr) = make_node(NODE_TYPE, 1, TYPE_BOOL);
+			(yyval.ptr) = make_node(NODE_TYPE, 2, TYPE_BOOL);
 	            printf("bool2\n");
 			*program_root = (yyval.ptr);
 	            printf("bool3\n");
 		}
-#line 1458 "y.tab.c" /* yacc.c:1646  */
+#line 1461 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 158 "grammar.y" /* yacc.c:1646  */
+#line 159 "grammar.y" /* yacc.c:1646  */
     {
             printf("void1\n");
-			(yyval.ptr) = make_node(NODE_TYPE, 1, TYPE_VOID);
+			(yyval.ptr) = make_node(NODE_TYPE, 2, TYPE_VOID);
 	            printf("void2\n");
 			*program_root = (yyval.ptr);
 	            printf("void3\n");
 		}
-#line 1470 "y.tab.c" /* yacc.c:1646  */
+#line 1473 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 167 "grammar.y" /* yacc.c:1646  */
+#line 168 "grammar.y" /* yacc.c:1646  */
     {
                     printf("listtypedecl : decl\n");
 					(yyval.ptr) = (yyvsp[0].ptr);//$$ = make_node(NODE_LIST, 1 ,$1);
-                	*program_root = (yyval.ptr);
+                	//*program_root = $$;
 				}
-#line 1480 "y.tab.c" /* yacc.c:1646  */
+#line 1483 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 173 "grammar.y" /* yacc.c:1646  */
+#line 174 "grammar.y" /* yacc.c:1646  */
     {
                     printf("listtypedecl : listtypedecl, decl\n");
 					(yyval.ptr) = make_node(NODE_LIST, 2 , (yyvsp[-2].ptr), (yyvsp[0].ptr));
-                	*program_root = (yyval.ptr);
+                	//*program_root = $$;
 				}
-#line 1490 "y.tab.c" /* yacc.c:1646  */
+#line 1493 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 180 "grammar.y" /* yacc.c:1646  */
+#line 181 "grammar.y" /* yacc.c:1646  */
     {
             printf("decl : ident\n");
 	   		(yyval.ptr) = (yyvsp[0].ptr);//$$ = make_node(NODE_DECL, 2, $1, NULL );
        		*program_root = (yyval.ptr);
 		}
-#line 1500 "y.tab.c" /* yacc.c:1646  */
+#line 1503 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 193 "grammar.y" /* yacc.c:1646  */
+#line 195 "grammar.y" /* yacc.c:1646  */
     {
 				(yyval.ptr) = make_node(NODE_FUNC, 3, (yyvsp[-4].ptr), (yyvsp[-3].ptr), (yyvsp[0].ptr));
             	*program_root = (yyval.ptr);
 			}
-#line 1509 "y.tab.c" /* yacc.c:1646  */
+#line 1512 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 199 "grammar.y" /* yacc.c:1646  */
+#line 201 "grammar.y" /* yacc.c:1646  */
     {
 				(yyval.ptr) = make_node(NODE_LIST, 1, (yyvsp[0].ptr));
             	*program_root = (yyval.ptr);
 			}
-#line 1518 "y.tab.c" /* yacc.c:1646  */
+#line 1521 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 204 "grammar.y" /* yacc.c:1646  */
+#line 206 "grammar.y" /* yacc.c:1646  */
     {
 				(yyval.ptr) = NULL;
 			}
-#line 1526 "y.tab.c" /* yacc.c:1646  */
+#line 1529 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 208 "grammar.y" /* yacc.c:1646  */
+#line 210 "grammar.y" /* yacc.c:1646  */
     {
 					(yyval.ptr) = (yyvsp[0].ptr);//$$ = make_node(NODE_LIST, 1, $1);
                 	*program_root = (yyval.ptr);
 				}
-#line 1535 "y.tab.c" /* yacc.c:1646  */
+#line 1538 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 213 "grammar.y" /* yacc.c:1646  */
+#line 215 "grammar.y" /* yacc.c:1646  */
     {
 					(yyval.ptr) = make_node(NODE_LIST, 2, (yyvsp[-1].ptr), (yyvsp[0].ptr));
                 	*program_root = (yyval.ptr);
 				}
-#line 1544 "y.tab.c" /* yacc.c:1646  */
+#line 1547 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 249 "grammar.y" /* yacc.c:1646  */
+#line 251 "grammar.y" /* yacc.c:1646  */
     {
 			(yyval.ptr) = (yyvsp[0].ptr);
         	*program_root = (yyval.ptr);
 		}
-#line 1553 "y.tab.c" /* yacc.c:1646  */
+#line 1556 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 254 "grammar.y" /* yacc.c:1646  */
+#line 256 "grammar.y" /* yacc.c:1646  */
     {
 			(yyval.ptr) = NULL;
 		}
-#line 1561 "y.tab.c" /* yacc.c:1646  */
+#line 1564 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 258 "grammar.y" /* yacc.c:1646  */
+#line 260 "grammar.y" /* yacc.c:1646  */
     {
 			(yyval.ptr) = make_node(NODE_PRINT, 1, (yyvsp[-2].ptr));
         	*program_root = (yyval.ptr);
 		}
-#line 1570 "y.tab.c" /* yacc.c:1646  */
+#line 1573 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 264 "grammar.y" /* yacc.c:1646  */
+#line 266 "grammar.y" /* yacc.c:1646  */
     {
 			(yyval.ptr) = make_node(NODE_BLOCK, 2, (yyvsp[-2].ptr), (yyvsp[-1].ptr));
         	*program_root = (yyval.ptr);
 		}
-#line 1579 "y.tab.c" /* yacc.c:1646  */
+#line 1582 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 317 "grammar.y" /* yacc.c:1646  */
+#line 319 "grammar.y" /* yacc.c:1646  */
     {
 					(yyval.ptr) = make_node(NODE_PRINT, 2, (yyvsp[-2].ptr), (yyvsp[0].ptr)); // a verifier
 					*program_root = (yyval.ptr);
 				}
-#line 1588 "y.tab.c" /* yacc.c:1646  */
+#line 1591 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 322 "grammar.y" /* yacc.c:1646  */
+#line 324 "grammar.y" /* yacc.c:1646  */
     {
 					(yyval.ptr) = (yyvsp[0].ptr);
 				}
-#line 1596 "y.tab.c" /* yacc.c:1646  */
+#line 1599 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 328 "grammar.y" /* yacc.c:1646  */
+#line 330 "grammar.y" /* yacc.c:1646  */
     {
 				(yyval.ptr) = (yyvsp[0].ptr);
 			}
-#line 1604 "y.tab.c" /* yacc.c:1646  */
+#line 1607 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 332 "grammar.y" /* yacc.c:1646  */
+#line 334 "grammar.y" /* yacc.c:1646  */
     {
 				(yyval.ptr) = make_node(NODE_PRINT, 1, (yyvsp[0].strval));
 				*program_root = (yyval.ptr);
 			}
-#line 1613 "y.tab.c" /* yacc.c:1646  */
+#line 1616 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 339 "grammar.y" /* yacc.c:1646  */
+#line 341 "grammar.y" /* yacc.c:1646  */
     {
+			printf("ident : TOK_IDENT\n");
 			(yyval.ptr) = make_node(NODE_IDENT, 1, (yyvsp[0].strval));
 			*program_root = (yyval.ptr);
 		}
-#line 1622 "y.tab.c" /* yacc.c:1646  */
+#line 1626 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1626 "y.tab.c" /* yacc.c:1646  */
+#line 1630 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1850,7 +1854,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 346 "grammar.y" /* yacc.c:1906  */
+#line 349 "grammar.y" /* yacc.c:1906  */
 
 /* A completer et/ou remplacer avec d'autres fonctions */
 
@@ -1860,53 +1864,57 @@ node_t make_node(node_nature nature, int nops, ...) {
     //cptnodes ++;
     //printf("on make le node n°%d\n", cptnodes);
     va_list ap; /*liste des arguments supplémentaires*/
-				printf("make_node 1\n");
+				//printf("make_node 1\n");
     va_start(ap,nops);
-				printf("make_node 2\n");
+				//printf("make_node 2\n");
     node_t retour = malloc (sizeof(node_t));
-				printf("make_node 3\n");
+				//printf("make_node 3\n");
     //retour->node_num = cptnodes;
 	retour->nature = nature;
-				printf("make_node 4\n");
+				//printf("make_node 4\n");
     retour->nops = nops;
-				printf("make_node 5\n");
+				//printf("make_node 5\n");
     node_s **hop;
 	hop = (node_s**)malloc(sizeof(node_s*)*nops);
 	for(int i = 0; i < nops; i++)
 	{
 		hop[i] = (node_s*)malloc(sizeof(node_s));
 	}
-				printf("make_node 6\n");
-				printf("nops=%d\n",nops);
+				//printf("make_node 6\n");
+				//printf("nops=%d\n",nops);
 
     for (int i = 0; i < nops; i++)
     {
-				printf("make_node for 1\n");
+				//printf("make_node for 1\n");
         if(va_arg(ap, node_t) == NULL)
         {
-				printf("make_node for if\n");
+				//printf("make_node for if\n");
             continue;
         }
-				printf("make_node for 2\n");
-				//printf("arg supp n°%d = %d\n ", i+1 , va_arg(ap, node_t));
-				printf("make_node for 3\n");
+				//printf("make_node for 2\n");
+			//printf("arg supp n°%d = %d\n ", i+1 , va_arg(ap, node_t));
+				//printf("make_node for 3\n");
         hop[i] = va_arg(ap,node_t);
-				printf("make_node for 4\n");
-				//printf("hop affecté!, hop =%d et contient %d\n", hop , hop[i]);
+				//printf("make_node for 4\n");
+			//printf("hop affecté!, hop =%d et contient %d\n", hop , hop[i]);
     }
-				printf("make_node 7\n");
+				//printf("make_node 7\n");
     retour->opr = hop;
-				printf("make_node 8\n");
+				//printf("make_node 8\n");
     // recherche des arguments supplementaires en fonction de la nature du noeud
     switch(nature)
     {
         case NODE_IDENT ://   type =  TYPE_NONE,TYPE_INT,TYPE_BOOL,TYPE_STRING,TYPE_VOID
 
-				printf("make_node node_ident 1\n");
+				//printf("make_node node_ident 1\n");
             retour->type      =va_arg(ap,node_type); // argument supp à la position nops + 1 = type de noeud
+				//printf("make_node node_ident 2\n");
             retour->decl_node =va_arg(ap,node_t); // argument supp à la position nops + 2 = declaration de noeud
+				//printf("make_node node_ident 3\n");
             retour->offset    =va_arg(ap,int32_t ); // argument supp à la position nops + 3 = declaration de l'emplacement mémoire de la variable int32_t
-            retour->global_decl=va_arg(ap,bool); // argument supp à la position nops + 4 = declaration globale?
+				//printf("make_node node_ident 4\n");
+            retour->global_decl=va_arg(ap,int); // argument supp à la position nops + 4 = declaration globale?
+				//printf("make_node node_ident 5\n");
             break;
         case NODE_AFFECT :
             retour->type      =va_arg(ap,node_type); // argument supp à la position nops + 1 = type de noeud
@@ -1916,9 +1924,9 @@ node_t make_node(node_nature nature, int nops, ...) {
             retour->stack_size=va_arg(ap,int32_t); // argument supp à la position nops + 2 = declaration de
             break;
         case NODE_TYPE:
-				printf("make_node node_type 1\n");
+				//printf("make_node node_type 1\n");
             retour->type = va_arg(ap,node_type);
-				printf("make_node node_type 2\n");
+				//printf("make_node node_type 2\n");
         case NODE_INTVAL:
             retour->value = va_arg(ap,int64_t);
 		case NODE_BOOLVAL:
@@ -1929,16 +1937,20 @@ node_t make_node(node_nature nature, int nops, ...) {
 		default:
             break;
     }
-
+/*
 	for(int i = 0; i < nops; i++)
 	{
+		printf("free%d\n",i+1);
 		free(hop[i]);
-	}
+		printf("free%d\n",i+1);
+	}*/
+	//printf("before free\n");
 	free(hop);
+	//printf("after free\n");
 
-				printf("make_node 20\n");
+				//printf("make_node 20\n");
     va_end(ap);
-				printf("make_node 21\n");
+				//printf("make_node 21\n");
     return retour;
 }
 

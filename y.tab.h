@@ -83,11 +83,12 @@ extern int yydebug;
     TOK_AND = 293,
     TOK_BOR = 294,
     TOK_BXOR = 295,
-    TOK_SRL = 296,
-    TOK_SRA = 297,
-    TOK_SLL = 298,
-    TOK_NOT = 299,
-    TOK_BNOT = 300
+    TOK_BAND = 296,
+    TOK_SRL = 297,
+    TOK_SRA = 298,
+    TOK_SLL = 299,
+    TOK_NOT = 300,
+    TOK_BNOT = 301
   };
 #endif
 /* Tokens.  */
@@ -129,11 +130,12 @@ extern int yydebug;
 #define TOK_AND 293
 #define TOK_BOR 294
 #define TOK_BXOR 295
-#define TOK_SRL 296
-#define TOK_SRA 297
-#define TOK_SLL 298
-#define TOK_NOT 299
-#define TOK_BNOT 300
+#define TOK_BAND 296
+#define TOK_SRL 297
+#define TOK_SRA 298
+#define TOK_SLL 299
+#define TOK_NOT 300
+#define TOK_BNOT 301
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -146,7 +148,7 @@ union YYSTYPE
     char * strval;
     node_t ptr;
 
-#line 150 "y.tab.h" /* yacc.c:1909  */
+#line 152 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
