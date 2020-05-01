@@ -52,7 +52,7 @@ ASCII           [\040-\176]
 /* cf sujet : CHAINE_CAR est l’ensemble de tous les caractères imprimables, à l’exception des caractères ’"’ et ’\’.*/
 CHAINE_CAR      ({ASCII})+
 /*({LETTRE}|{CHIFFRE}|{CARACSPECIAUX})+*/
-CHAINE          '"'({CHAINE_CAR} | '\"' | '\n')*'"'
+CHAINE          '"'({CHAINE_CAR}|'\"'|'\n')*'"'
 COMMENTAIRE     "//"({ASCII})*[\n]
 
 %%
@@ -82,7 +82,7 @@ COMMENTAIRE     "//"({ASCII})*[\n]
 "|"				return TOK_BOR;
 "^"				return TOK_BXOR;
 "="				{printf("Detecté '='\n");return TOK_AFFECT;}
-";"				return TOK_SEMICOL;
+";"				{printf("Detecté ';'\n");return TOK_SEMICOL;}
 ","				return TOK_COMMA;
 "("				return TOK_LPAR;
 ")"				return TOK_RPAR;
@@ -154,7 +154,7 @@ int main(int argc, char ** argv) {
 	printf("main3\n");
     fclose(yyin);
 	printf("main4\n");
-    analyse_tree(program_root);
+    //analyse_tree(program_root);
 	printf("main5\n");
     yylex_destroy();
 	printf("main6\n");
