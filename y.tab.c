@@ -2305,10 +2305,10 @@ node_t make_node(node_nature nature, int nops, ...) {
 				//printf("make_node 5\n");
     node_s **hop;
 	hop = (node_s**)malloc(sizeof(node_s*)*nops);
-	for(int i = 0; i < nops; i++)
+	/*for(int i = 0; i < nops; i++)
 	{
 		hop[i] = (node_s*)malloc(sizeof(node_s));
-	}
+	}*/
 				//printf("make_node 6\n");
 				//printf("nops=%d\n",nops);
 

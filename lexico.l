@@ -46,7 +46,7 @@ extern int yydebug;
 CARACSPECIAUX	[\040-\057\072-\100\133-\140\173-\176]
 LETTRE          [a-zA-Z]
 CHIFFRE         [0-9]
-ENTIER          ('-'|'')[1-9]{CHIFFRE}*
+ENTIER          ("-")?[1-9]{CHIFFRE}*
 IDF             {LETTRE}({LETTRE}|{CHIFFRE}|'_')*
 ASCII           [\040-\176]
 /* cf sujet : CHAINE_CAR est l’ensemble de tous les caractères imprimables, à l’exception des caractères ’"’ et ’\’.*/
@@ -58,7 +58,7 @@ COMMENTAIRE     "//"({ASCII})*[\n]
 %%
 
 
-"void"          return TOK_VOID;
+"void"          {printf("Detecté 'void'\n");return TOK_VOID;}
 "if"            return TOK_IF;
 "bool"          return TOK_BOOL;
 "true"          return TOK_TRUE;
@@ -84,10 +84,10 @@ COMMENTAIRE     "//"({ASCII})*[\n]
 "="				{printf("Detecté '='\n");return TOK_AFFECT;}
 ";"				{printf("Detecté ';'\n");return TOK_SEMICOL;}
 ","				return TOK_COMMA;
-"("				return TOK_LPAR;
-")"				return TOK_RPAR;
-"{"				return TOK_LACC;
-"}"				return TOK_RACC;
+"("				{printf("Detecté '('\n");return TOK_LPAR;}
+")"				{printf("Detecté ')'\n");return TOK_RPAR;}
+"{"				{printf("Detecté '{'\n");return TOK_LACC;}
+"}"				{printf("Detecté '}'\n");return TOK_RACC;}
 ">>"			return TOK_SRL;
 ">>>"			return TOK_SRA;
 "<<"			return TOK_SLL;
@@ -108,7 +108,7 @@ COMMENTAIRE     "//"({ASCII})*[\n]
 
 {ENTIER} {      /* complété mais pas testé */
                 yylval.intval = atoi(yytext);
-                printf("Detecté entier %c",*yytext);
+                printf("Detecté entier %s\n",yytext);
                 return TOK_INTVAL;
 }
 
@@ -147,16 +147,21 @@ int main(int argc, char ** argv) {
     #endif
 
 
-	printf("main1\n");
+	//printf("main1\n");
     yyin = fopen(infile, "r");
-	printf("main2\n");
-    yyparse(&program_root);
-	printf("main3\n");
+	//printf("main2\n");
+    //yyparse(&program_root);
+	while(yylex());
+	/*yylex();
+	yylex();
+	yylex();
+	yylex();*/
+	//printf("main3\n");
     fclose(yyin);
-	printf("main4\n");
+	//printf("main4\n");
     //analyse_tree(program_root);
-	printf("main5\n");
+	//printf("main5\n");
     yylex_destroy();
-	printf("main6\n");
+	//printf("main6\n");
     return 0;
 }
