@@ -1,8 +1,9 @@
 %{
+
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-
+#define couleur(param) printf("\033[%sm",param)
 #include "defs.h"
 #include "common.h"
 
@@ -58,63 +59,63 @@ COMMENTAIRE     "//"({ASCII})*[\n]
 %%
 
 
-"void"          {printf("Detecté 'void'\n");return TOK_VOID;}
-"if"            return TOK_IF;
-"bool"          return TOK_BOOL;
-"true"          return TOK_TRUE;
-"false"         return TOK_FALSE;
-"else"          return TOK_ELSE;
-"while"         return TOK_WHILE;
-"for"           return TOK_FOR;
-"do"            return TOK_DO;
-"print"         return TOK_PRINT;
-"int"           {printf("Detecté 'int'\n");return TOK_INT;}
-"+" 			return TOK_PLUS;
-"-"				return TOK_MINUS;
-"*"				return TOK_MUL;
-"/"				return TOK_DIV;
-"%"				return TOK_MOD;
-">"				return TOK_GT;
-"<"				return TOK_LT;
-"!"				return TOK_NOT; /*c'est la negation boolenne*/
-"~"				return TOK_BNOT; /*difference entre '!' et '~' ?*/
-"&"				return TOK_BAND;
-"|"				return TOK_BOR;
-"^"				return TOK_BXOR;
-"="				{printf("Detecté '='\n");return TOK_AFFECT;}
-";"				{printf("Detecté ';'\n");return TOK_SEMICOL;}
-","				return TOK_COMMA;
-"("				{printf("Detecté '('\n");return TOK_LPAR;}
-")"				{printf("Detecté ')'\n");return TOK_RPAR;}
-"{"				{printf("Detecté '{'\n");return TOK_LACC;}
-"}"				{printf("Detecté '}'\n");return TOK_RACC;}
-">>"			return TOK_SRL;
-">>>"			return TOK_SRA;
-"<<"			return TOK_SLL;
-">="			return TOK_GE;
-"<="			return TOK_LE;
-"=="			return TOK_EQ;
-"!="			return TOK_NE;
-"&&"			return TOK_AND;
-"||"			return TOK_OR;
+"void"          {printf("Detecté 'void' TOK_VOID genere\n");return TOK_VOID;}
+"if"            {printf("Detecté 'if' TOK_IF genere\n");return TOK_IF;}
+"bool"          {printf("Detecté 'bool' TOK_BOOL genere\n");return TOK_BOOL;}
+"true"          {printf("Detecté 'true' TOK_TRUE genere\n");return TOK_TRUE;}
+"false"         {printf("Detecté 'false' TOK_FALSE genere\n");return TOK_FALSE;}
+"else"          {printf("Detecté 'else' TOK_ELSE genere\n");return TOK_ELSE;}
+"while"         {printf("Detecté 'while' TOK_WHILE genere\n");return TOK_WHILE;}
+"for"           {printf("Detecté 'for' TOK_FOR genere\n");return TOK_FOR;}
+"do"            {printf("Detecté 'do' TOK_DO genere\n");return TOK_DO;}
+"print"         {printf("Detecté 'print' TOK_PRINT genere\n");return TOK_PRINT;}
+"int"           {printf("Detecté 'int' TOK_INT généré\n");return TOK_INT;}
+"+" 			{printf("Detecté '+' TOK_PLUS généré\n");return TOK_PLUS;}
+"-"				{printf("Detecté '-' TOK_MINUS généré\n");return TOK_MINUS;}
+"*"				{printf("Detecté '*' TOK_MUL généré\n");return TOK_MUL;}
+"/"				{printf("Detecté '/' TOK_DIV généré\n");return TOK_DIV;}
+"%"				{printf("Detecté '%' TOK_MOD généré\n");return TOK_MOD;}
+">"				{printf("Detecté '>' TOK_GT généré\n");return TOK_GT;}
+"<"				{printf("Detecté '<' TOK_LT généré\n");return TOK_LT;}
+"!"				{printf("Detecté '!' TOK_NOT généré\n");return TOK_NOT;} /*c'est la negation boolenne*/
+"~"				{printf("Detecté '~' TOK_BNOT généré\n");return TOK_BNOT;}
+"&"				{printf("Detecté '&' TOK_BAND généré\n");return TOK_BAND;}
+"|"				{printf("Detecté '|' TOK_BOR généré\n");return TOK_BOR;}
+"^"				{printf("Detecté '^' TOK_BXOR généré\n");return TOK_BXOR;}
+"="				{printf("Detecté '=' TOK_AFFECT généré\n");return TOK_AFFECT;}
+";"				{printf("Detecté ';' ROK_SEMICOL généré\n");return TOK_SEMICOL;}
+","				{printf("Detecté ',' TOK_COMMA généré\n");return TOK_COMMA;}
+"("				{printf("Detecté '(' TOK_LPAR généré\n");return TOK_LPAR;}
+")"				{printf("Detecté ')' TOK_RPAR généré\n");return TOK_RPAR;}
+"{"				{printf("Detecté '{' TOK_LACC généré\n");return TOK_LACC;}
+"}"				{printf("Detecté '}' TOK_RACC généré\n");return TOK_RACC;}
+">>"			{printf("Detecté '>>' TOK_SRL généré\n");return TOK_SRL;}
+">>>"			{printf("Detecté '>>>' TOK_SRA généré\n");return TOK_SRA;}
+"<<"			{printf("Detecté '<<' TOK_SLL généré\n");return TOK_SLL;}
+">="			{printf("Detecté '>=' TOK_GE généré\n");return TOK_GE;}
+"<="			{printf("Detecté '<=' TOK_LE généré\n");return TOK_LE;}
+"=="			{printf("Detecté '==' TOK_EQ généré\n");return TOK_EQ;}
+"!="			{printf("Detecté '!=' TOK_NE généré\n");return TOK_NE;}
+"&&"			{printf("Detecté '&&' TOK_AND généré\n");return TOK_AND;}
+"||"			{printf("Detecté '||' TOK_OR généré\n");return TOK_OR;}
 
 
 
 {IDF} {
 				yylval.strval = strdup(yytext);
-                printf("Detecté idf '%s'\n",yytext);
+                printf("Detecté idf '%s' TOK_IDENT généré\n",yytext);
                 return TOK_IDENT;
 }
 
 {ENTIER} {      /* complété mais pas testé */
                 yylval.intval = atoi(yytext);
-                printf("Detecté entier %s\n",yytext);
+                printf("Detecté entier %s TOK_INTVAL généré\n",yytext);
                 return TOK_INTVAL;
 }
 
 {CHAINE} {
                 yylval.strval = strdup(yytext);
-                printf("Detecté chaine %c",*yytext);
+                printf("Detecté chaine %c TOK_STRING généré",*yytext);
 
                 return TOK_STRING;
 
@@ -141,26 +142,27 @@ int yywrap(void) {
 int main(int argc, char ** argv) {
     /* A completer */
     node_t program_root;
+
+	printf("-----parse args-----\n");
     parse_args(argc, argv);
     #if YYDEBUG
     yydebug = 1;
     #endif
 
 
-	//printf("main1\n");
     yyin = fopen(infile, "r");
-	//printf("main2\n");
-    //yyparse(&program_root);
+	printf("main2\n");
+    yyparse(&program_root);
 	while(yylex());
 	/*yylex();
 	yylex();
 	yylex();
 	yylex();*/
-	//printf("main3\n");
+	printf("main3\n");
     fclose(yyin);
-	//printf("main4\n");
-    //analyse_tree(program_root);
-	//printf("main5\n");
+	printf("main4\n");
+    analyse_tree(program_root);
+	printf("main5\n");
     yylex_destroy();
 	//printf("main6\n");
     return 0;

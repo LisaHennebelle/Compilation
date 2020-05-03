@@ -24,7 +24,7 @@ extern int sflag;
 extern int vflag;
 extern int cptnodes;
 
-
+#define couleur(param) printf("\033[%sm",param)
 /* prototypes */
 int yylex(void);
 extern int yylineno;
@@ -93,43 +93,44 @@ node_t make_node(node_nature nature, int nops, ...);
 program:
         listdeclnonnull maindecl /* presence de variables globales*/
         {
-            printf("liste non nulle et main\n");
+            printf("program : liste non nulle et main\n");
             $$ = make_node(NODE_PROGRAM, 2, $1, $2); // Erreur : $$ is untyped
-			printf("program 1\n");
+			couleur("34"); printf("NODE_PROGRAM\n");couleur("0");
             *program_root = $$;
-			printf("program 2\n");
+
         }
         | maindecl // presence de variables locales seulement
         {
-            printf("main\n");
+            printf("program : main\n");
             $$ = make_node(NODE_PROGRAM, 2, NULL, $1);
-			printf("program 3\n");
+			couleur("34"); printf("NODE_PROGRAM\n");couleur("0");
             *program_root = $$;
-			printf("program 4\n");
+
         }
         ;
 listdecl: listdeclnonnull
         {
-            printf("listdecl\n");
-            // combien d'enfants pour un node list?
+            printf("listdecl : listdeclnonnull\n");
             $$ = make_node(NODE_LIST, 1, $1 );
-			printf("listdecl 1\n");
-            //*program_root = $$;
-			printf("listdecl 2\n");
+			couleur("34"); printf("NODE_LIST\n");couleur("0");
+            *program_root = $$;
+
         }
         |
-        { $$ = NULL; }
+        { printf("listdecl : epsilon");$$ = NULL; }
 
 listdeclnonnull: vardecl
             {
                 printf("listdecl non nulle\n");
 				$$ = make_node(NODE_LIST, 1, $1);
-            	//*program_root = $$;
+                couleur("34"); printf("NODE_LIST\n");couleur("0");
+            	*program_root = $$;
 			}
             | listdeclnonnull vardecl
             {
 				$$ = make_node(NODE_LIST, 2, $1, $2);
-            	//*program_root = $$;
+                couleur("34"); printf("NODE_LIST\n");couleur("0");
+            	*program_root = $$;
 			}
         ;
 vardecl : type listtypedecl TOK_SEMICOL
@@ -428,7 +429,7 @@ ident : TOK_IDENT
 /* A completer et/ou remplacer avec d'autres fonctions */
 
 node_t make_node(node_nature nature, int nops, ...) {
-			    printf("NODE CREE\n");
+	couleur("34"); printf("NODE CREE\n");
 
     //cptnodes ++;
     //printf("on make le node n°%d\n", cptnodes);
@@ -513,20 +514,30 @@ node_t make_node(node_nature nature, int nops, ...) {
 		free(hop[i]);
 		printf("free%d\n",i+1);
 	}*/
-	//printf("before free\n");
-	free(hop);
-	//printf("after free\n");
+    //free(hop);
 
 				//printf("make_node 20\n");
     va_end(ap);
 				//printf("make_node 21\n");
+    couleur("0");
     return retour;
 }
+
+void free_node(node_t noeud)
+    {
+
+    noeud->opr = NULL; // tableau de pointeurs vers noeuds enfants
+
+    noeud->decl_node = NULL;
+    free(noeud);
+
+    }
 
 
 
 /* A completer */
 void analyse_tree(node_t root) {
+
         if (!stop_after_syntax) {
         // Appeler la passe 1
 
@@ -534,7 +545,7 @@ void analyse_tree(node_t root) {
             create_program();
             // Appeler la passe 2
 
-            dump_mips_program(outfile);
+            //dump_mips_program(outfile);
             free_program();
         }
         free_global_strings();
