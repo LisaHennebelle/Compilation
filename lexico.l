@@ -47,7 +47,7 @@ extern int yydebug;
 CARACSPECIAUX	[\040-\057\072-\100\133-\140\173-\176]
 LETTRE          [a-zA-Z]
 CHIFFRE         [0-9]
-ENTIER          ("-")?[1-9]{CHIFFRE}*
+ENTIER          ("-")?[0-9]{CHIFFRE}*
 IDF             {LETTRE}({LETTRE}|{CHIFFRE}|'_')*
 ASCII           [\040-\176]
 /* cf sujet : CHAINE_CAR est l’ensemble de tous les caractères imprimables, à l’exception des caractères ’"’ et ’\’.*/

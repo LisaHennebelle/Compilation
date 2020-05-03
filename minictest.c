@@ -1,4 +1,7 @@
+int a, b = 1;
+bool boo;
+
 void main()
 {
-	int b = 3;
+	int c = 3;
 }
