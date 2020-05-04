@@ -523,7 +523,7 @@ typedef struct {
 } YYSTACKDATA;
 /* variables for the parser stack */
 static YYSTACKDATA yystack;
-#line 430 "grammar.y"
+#line 431 "grammar.y"
 /* A completer et/ou remplacer avec d'autres fonctions */
 
 node_t make_node(node_nature nature, int nops, ...) {
@@ -564,7 +564,7 @@ node_t make_node(node_nature nature, int nops, ...) {
 				//printf("make_node for 3\n");
         retour->opr[i] = va_arg(ap,node_t);
 				//printf("make_node for 4\n");
-			//printf("hop affecté!, hop =%d et contient %d\n", hop , hop[i]);
+			printf("hop affecté! contient %d\n" , retour->opr[i]);
     }
 				//printf("make_node 7\n");
     //retour->opr = hop;
@@ -852,7 +852,7 @@ case 1:
 #line 95 "grammar.y"
 	{
             printf("program : liste non nulle et main\n");
-            yyval.ptr = make_node(NODE_PROGRAM, 2, yystack.l_mark[-1].ptr, yystack.l_mark[0].ptr); /* Erreur : $$ is untyped*/
+            yyval.ptr = make_node(NODE_PROGRAM, 2, yystack.l_mark[-1].ptr, yystack.l_mark[0].ptr);
 			couleur("34"); printf("NODE_PROGRAM\n");couleur("0");
             *program_root = yyval.ptr;
 
@@ -885,7 +885,7 @@ break;
 case 5:
 #line 123 "grammar.y"
 	{
-                printf("listdecl non nulle\n");
+                printf("listdecl non nulle : vardecl\n");
 				yyval.ptr = make_node(NODE_LIST, 1, yystack.l_mark[0].ptr);
                 couleur("34"); printf("NODE_LIST\n");couleur("0");
             	/**program_root = $$;*/
@@ -894,13 +894,14 @@ break;
 case 6:
 #line 130 "grammar.y"
 	{
+                printf("listdecl non nulle : list + vardecl\n");
 				yyval.ptr = make_node(NODE_LIST, 2, yystack.l_mark[-1].ptr, yystack.l_mark[0].ptr);
                 couleur("34"); printf("NODE_LIST\n");couleur("0");
             	/**program_root = $$;*/
 			}
 break;
 case 7:
-#line 137 "grammar.y"
+#line 138 "grammar.y"
 	{
                 printf("vardecl\n");
 				yyval.ptr = make_node(NODE_LIST, 1, yystack.l_mark[-2].ptr);
@@ -909,7 +910,7 @@ case 7:
 			}
 break;
 case 8:
-#line 145 "grammar.y"
+#line 146 "grammar.y"
 	{
             printf("type : TOK_INT\n");
 			yyval.ptr = make_node(NODE_TYPE, 2, TYPE_INT);
@@ -917,7 +918,7 @@ case 8:
 		}
 break;
 case 9:
-#line 151 "grammar.y"
+#line 152 "grammar.y"
 	{
             printf("type : TOK_BOOL\n");
 			yyval.ptr = make_node(NODE_TYPE, 2, TYPE_BOOL);
@@ -925,7 +926,7 @@ case 9:
 		}
 break;
 case 10:
-#line 157 "grammar.y"
+#line 158 "grammar.y"
 	{
             printf("type : TOK_VOID\n");
 			yyval.ptr = make_node(NODE_TYPE, 2, TYPE_VOID);
@@ -933,16 +934,16 @@ case 10:
 		}
 break;
 case 11:
-#line 164 "grammar.y"
+#line 165 "grammar.y"
 	{
                     printf("listtypedecl : decl\n");
-					yyval.ptr = yystack.l_mark[0].ptr;/*$$ = make_node(NODE_LIST, 1 ,$1);*/
-					printf("listtypedecl : decl bis\n");
-                	couleur("34"); printf("NODE_LIST\n");couleur("0");/**program_root = $$;*/
+					yyval.ptr = yystack.l_mark[0].ptr;/*make_node(NODE_LIST, 1 ,$1);*/
+					/*printf("listtypedecl : decl bis\n");*/
+                	couleur("34"); printf(" go decl\n");couleur("0");/**program_root = $$;*/
 				}
 break;
 case 12:
-#line 171 "grammar.y"
+#line 172 "grammar.y"
 	{
                     printf("listtypedecl : listtypedecl, decl\n");
 					yyval.ptr = make_node(NODE_LIST, 2 , yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
@@ -950,7 +951,7 @@ case 12:
 				}
 break;
 case 13:
-#line 178 "grammar.y"
+#line 179 "grammar.y"
 	{
             printf("decl : ident\n");
 	   		yyval.ptr = yystack.l_mark[0].ptr;/*$$ = make_node(NODE_DECL, 2, $1, NULL );*/
@@ -959,7 +960,7 @@ case 13:
 		}
 break;
 case 14:
-#line 185 "grammar.y"
+#line 186 "grammar.y"
 	{
 			printf("decl : ident TOK_AFFECT expr\n");
 			yyval.ptr = make_node(NODE_DECL, 2 ,yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
@@ -967,326 +968,326 @@ case 14:
 		}
 break;
 case 15:
-#line 193 "grammar.y"
+#line 194 "grammar.y"
 	{
 				yyval.ptr = make_node(NODE_FUNC, 3, yystack.l_mark[-4].ptr, yystack.l_mark[-3].ptr, yystack.l_mark[0].ptr);
             	couleur("34"); printf("NODE_FUNC\n");couleur("0");/**program_root = $$;*/
 			}
 break;
 case 16:
-#line 199 "grammar.y"
+#line 200 "grammar.y"
 	{
 				yyval.ptr = make_node(NODE_LIST, 1, yystack.l_mark[0].ptr);
             	couleur("34"); printf("NODE_LIST\n");couleur("0");/**program_root = $$;*/
 			}
 break;
 case 17:
-#line 204 "grammar.y"
+#line 205 "grammar.y"
 	{
 				yyval.ptr = NULL;
 			}
 break;
 case 18:
-#line 208 "grammar.y"
+#line 209 "grammar.y"
 	{
 					yyval.ptr = yystack.l_mark[0].ptr;/*$$ = make_node(NODE_LIST, 1, $1);*/
                 	couleur("34"); printf("NODE_LIST\n");couleur("0");/**program_root = $$;*/
 				}
 break;
 case 19:
-#line 213 "grammar.y"
+#line 214 "grammar.y"
 	{
 					yyval.ptr = make_node(NODE_LIST, 2, yystack.l_mark[-1].ptr, yystack.l_mark[0].ptr);
                 	couleur("34"); printf("NODE_LIST\n");couleur("0");/**program_root = $$;*/
 				}
 break;
 case 20:
-#line 219 "grammar.y"
+#line 220 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_BLOCK, 1, yystack.l_mark[-1].ptr); /* NODE_BLOCK ?*/
         	couleur("34"); printf("NODE_BLOCK\n");couleur("0");/**program_root = $$;*/
 		}
 break;
 case 21:
-#line 224 "grammar.y"
+#line 225 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_IF, 3, yystack.l_mark[-4].ptr, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 			couleur("34"); printf("NODE_IF\n");couleur("0");/**program_root = $$;*/
 		}
 break;
 case 22:
-#line 229 "grammar.y"
+#line 230 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_IF, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
         	couleur("34"); printf("NODE_IF\n");couleur("0");/**program_root = $$;*/
 		}
 break;
 case 23:
-#line 234 "grammar.y"
+#line 235 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_WHILE, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
         	couleur("34"); printf("NODE_WHILE\n");couleur("0");/**program_root = $$;*/
 		}
 break;
 case 24:
-#line 239 "grammar.y"
+#line 240 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_FOR, 4, yystack.l_mark[-6].ptr ,yystack.l_mark[-4].ptr, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
         	couleur("34"); printf("NODE_FOR\n");couleur("0");/**program_root = $$;*/
 		}
 break;
 case 25:
-#line 244 "grammar.y"
+#line 245 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_DOWHILE, 2, yystack.l_mark[-5].ptr, yystack.l_mark[-2].ptr);
         	couleur("34"); printf("NODE_DOWHILE\n");couleur("0");/**program_root = $$;*/
 		}
 break;
 case 26:
-#line 249 "grammar.y"
+#line 250 "grammar.y"
 	{
 			yyval.ptr = yystack.l_mark[0].ptr;
         	/**program_root = $$;*/
 		}
 break;
 case 27:
-#line 254 "grammar.y"
+#line 255 "grammar.y"
 	{
 			yyval.ptr = NULL;
 		}
 break;
 case 28:
-#line 258 "grammar.y"
+#line 259 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_PRINT, 1, yystack.l_mark[-2].ptr);
         	couleur("34"); printf("NODE_PRINT\n");couleur("0");/**program_root = $$;*/
 		}
 break;
 case 29:
-#line 264 "grammar.y"
+#line 265 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_BLOCK, 2, yystack.l_mark[-2].ptr, yystack.l_mark[-1].ptr);
         	couleur("34"); printf("NODE_BLOCK\n");couleur("0");/**program_root = $$;*/
 		}
 break;
 case 30:
-#line 270 "grammar.y"
+#line 271 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_MUL, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
         	couleur("34"); printf("NODE_MUL\n");couleur("0");/**program_root = $$;*/
 		}
 break;
 case 31:
-#line 275 "grammar.y"
+#line 276 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_DIV, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
         	couleur("34"); printf("NODE_DIV\n");couleur("0");/**program_root = $$;*/
 		}
 break;
 case 32:
-#line 280 "grammar.y"
+#line 281 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_PLUS, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
         	couleur("34"); printf("NODE_PLUS\n");couleur("0");/**program_root = $$;*/
 		}
 break;
 case 33:
-#line 285 "grammar.y"
+#line 286 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_MINUS, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
         	couleur("34"); printf("NODE_MINUS\n");couleur("0");/**program_root = $$;*/
 		}
 break;
 case 34:
-#line 290 "grammar.y"
+#line 291 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_MOD, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
         	couleur("34"); printf("NODE_MOD\n");couleur("0");/**program_root = $$;*/
 		}
 break;
 case 35:
-#line 295 "grammar.y"
+#line 296 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_LT, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
         	couleur("34"); printf("NODE_LT\n");couleur("0");/**program_root = $$;*/
 		}
 break;
 case 36:
-#line 300 "grammar.y"
+#line 301 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_GT, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
         	couleur("34"); printf("NODE_GT\n");couleur("0");/**program_root = $$;*/
 		}
 break;
 case 37:
-#line 305 "grammar.y"
+#line 306 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_UMINUS, 1, yystack.l_mark[0].ptr);
         	couleur("34"); printf("NODE_UMINUS\n");couleur("0");/**program_root = $$;*/
 		}
 break;
 case 38:
-#line 310 "grammar.y"
+#line 311 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_GE, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
         	couleur("34"); printf("NODE_GE\n");couleur("0");/**program_root = $$;*/
 		}
 break;
 case 39:
-#line 315 "grammar.y"
+#line 316 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_LE, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 40:
-#line 319 "grammar.y"
+#line 320 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_EQ, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 41:
-#line 323 "grammar.y"
+#line 324 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_NE, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 42:
-#line 327 "grammar.y"
+#line 328 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_AND, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 43:
-#line 331 "grammar.y"
+#line 332 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_OR, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 44:
-#line 335 "grammar.y"
+#line 336 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_BAND, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 45:
-#line 339 "grammar.y"
+#line 340 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_BOR, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 46:
-#line 343 "grammar.y"
+#line 344 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_BXOR, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 47:
-#line 347 "grammar.y"
+#line 348 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_SRL, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 48:
-#line 351 "grammar.y"
+#line 352 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_SRA, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 49:
-#line 355 "grammar.y"
+#line 356 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_SLL, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 50:
-#line 359 "grammar.y"
+#line 360 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_NOT, 1, yystack.l_mark[0].ptr);
 		}
 break;
 case 51:
-#line 363 "grammar.y"
+#line 364 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_BNOT, 1, yystack.l_mark[0].ptr);
 		}
 break;
 case 52:
-#line 367 "grammar.y"
+#line 368 "grammar.y"
 	{
 			printf("expr : TOK_LPAR expr TOK_RPAR\n");
 			/*$$ = make_node(NODE_, 2, $1, $3)*/
 		}
 break;
 case 53:
-#line 372 "grammar.y"
+#line 373 "grammar.y"
 	{
 			printf("expr : ident TOK_AFFECT expr\n");
 			yyval.ptr = make_node(NODE_AFFECT, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 54:
-#line 377 "grammar.y"
+#line 378 "grammar.y"
 	{
 			printf("expr : TOK_INTVAL\n");
 			yyval.ptr = NULL;
 		}
 break;
 case 55:
-#line 382 "grammar.y"
+#line 383 "grammar.y"
 	{
 			printf("expr : TOK_TRUE\n");
 			yyval.ptr = NULL;
 		}
 break;
 case 56:
-#line 387 "grammar.y"
+#line 388 "grammar.y"
 	{
 			printf("expr : TOK_FALSE\n");
 			yyval.ptr = NULL;
 		}
 break;
 case 57:
-#line 392 "grammar.y"
+#line 393 "grammar.y"
 	{
 			printf("expr : ident\n");
 			yyval.ptr = yystack.l_mark[0].ptr;
 		}
 break;
 case 58:
-#line 399 "grammar.y"
+#line 400 "grammar.y"
 	{
 					yyval.ptr = make_node(NODE_PRINT, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr); /* a verifier*/
 					couleur("34"); printf("NODE_PRINT\n");couleur("0");/**program_root = $$;*/
 				}
 break;
 case 59:
-#line 404 "grammar.y"
+#line 405 "grammar.y"
 	{
 					yyval.ptr = yystack.l_mark[0].ptr;
 				}
 break;
 case 60:
-#line 410 "grammar.y"
+#line 411 "grammar.y"
 	{
 				yyval.ptr = yystack.l_mark[0].ptr;
 			}
 break;
 case 61:
-#line 414 "grammar.y"
+#line 415 "grammar.y"
 	{
 				yyval.ptr = make_node(NODE_PRINT, 1, yystack.l_mark[0].strval);
 				couleur("34"); printf("NODE_PRINT\n");couleur("0");/**program_root = $$;*/
 			}
 break;
 case 62:
-#line 421 "grammar.y"
+#line 422 "grammar.y"
 	{
 			printf("ident : TOK_IDENT\n");
 			yyval.ptr = make_node(NODE_IDENT, 1, yystack.l_mark[0].strval);
 			couleur("34"); printf("NODE_IDENT\n");couleur("0");/**program_root = $$;*/
 		}
 break;
-#line 1290 "y.tab.c"
+#line 1291 "y.tab.c"
     }
     yystack.s_mark -= yym;
     yystate = *yystack.s_mark;

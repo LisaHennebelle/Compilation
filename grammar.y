@@ -94,7 +94,7 @@ program:
         listdeclnonnull maindecl /* presence de variables globales*/
         {
             printf("program : liste non nulle et main\n");
-            $$ = make_node(NODE_PROGRAM, 2, $1, $2); // Erreur : $$ is untyped
+            $$ = make_node(NODE_PROGRAM, 2, $1, $2);
 			couleur("34"); printf("NODE_PROGRAM\n");couleur("0");
             *program_root = $$;
 
@@ -121,13 +121,14 @@ listdecl: listdeclnonnull
 
 listdeclnonnull: vardecl
             {
-                printf("listdecl non nulle\n");
+                printf("listdecl non nulle : vardecl\n");
 				$$ = make_node(NODE_LIST, 1, $1);
                 couleur("34"); printf("NODE_LIST\n");couleur("0");
             	//*program_root = $$;
 			}
             | listdeclnonnull vardecl
             {
+                printf("listdecl non nulle : list + vardecl\n");
 				$$ = make_node(NODE_LIST, 2, $1, $2);
                 couleur("34"); printf("NODE_LIST\n");couleur("0");
             	//*program_root = $$;
@@ -163,9 +164,9 @@ type : TOK_INT
 listtypedecl : decl
                 {
                     printf("listtypedecl : decl\n");
-					$$ = $1;//$$ = make_node(NODE_LIST, 1 ,$1);
-					printf("listtypedecl : decl bis\n");
-                	couleur("34"); printf("NODE_LIST\n");couleur("0");//*program_root = $$;
+					$$ = $1;//make_node(NODE_LIST, 1 ,$1);
+					//printf("listtypedecl : decl bis\n");
+                	couleur("34"); printf(" go decl\n");couleur("0");//*program_root = $$;
 				}
                 | listtypedecl TOK_COMMA decl
                 {
@@ -467,7 +468,7 @@ node_t make_node(node_nature nature, int nops, ...) {
 				//printf("make_node for 3\n");
         retour->opr[i] = va_arg(ap,node_t);
 				//printf("make_node for 4\n");
-			//printf("hop affecté!, hop =%d et contient %d\n", hop , hop[i]);
+			printf("hop affecté! contient %d\n" , retour->opr[i]);
     }
 				//printf("make_node 7\n");
     //retour->opr = hop;

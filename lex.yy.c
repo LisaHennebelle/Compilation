@@ -2171,12 +2171,9 @@ int main(int argc, char ** argv) {
 
     yyin = fopen(infile, "r");
 	printf("main2\n");
-	while(yylex());
+	//while(yylex());
+	printf("lex fin\n");
 	yyparse(&program_root);
-	/*yylex();
-	yylex();
-	yylex();
-	yylex();*/
 	printf("main3\n");
     fclose(yyin);
 	printf("main4\n");
