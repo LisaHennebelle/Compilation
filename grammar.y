@@ -111,7 +111,7 @@ program:
 listdecl: listdeclnonnull
         {
             printf("listdecl : listdeclnonnull\n");
-            $$ = make_node(NODE_LIST, 1, $1 );
+            $$ = $1//make_node(NODE_LIST, 1, $1 );
 			couleur("34"); printf("NODE_LIST\n");couleur("0");
             //*program_root = $$;
 
@@ -129,7 +129,7 @@ listdeclnonnull: vardecl
             | listdeclnonnull vardecl
             {
                 printf("listdecl non nulle : list + vardecl\n");
-				$$ = make_node(NODE_LIST, 2, $1, $2);
+				make_node(NODE_LIST, 2, $1, $2);
                 couleur("34"); printf("NODE_LIST\n");couleur("0");
             	//*program_root = $$;
 			}
@@ -137,7 +137,7 @@ listdeclnonnull: vardecl
 vardecl : type listtypedecl TOK_SEMICOL
             {
                 printf("vardecl\n");
-				$$ = make_node(NODE_LIST, 1, $1);
+				$$ = make_node(NODE_DECLS, 2, $1, $2);
                 couleur("34"); printf("NODE_LIST\n");couleur("0");
             	//*program_root = $$;
 			}
@@ -145,19 +145,19 @@ vardecl : type listtypedecl TOK_SEMICOL
 type : TOK_INT
         {
             printf("type : TOK_INT\n");
-			$$ = make_node(NODE_TYPE, 2, TYPE_INT);
+			$$ = make_node(NODE_TYPE, 0, TYPE_INT);
         	couleur("34"); printf("NODE_TYPE\n");couleur("0");//*program_root = $$;
 		}
         | TOK_BOOL
         {
             printf("type : TOK_BOOL\n");
-			$$ = make_node(NODE_TYPE, 2, TYPE_BOOL);
+			$$ = make_node(NODE_TYPE, 0, TYPE_BOOL);
 			couleur("34"); printf("NODE_TYPE\n");couleur("0");//*program_root = $$;
 		}
         | TOK_VOID
         {
             printf("type : TOK_VOID\n");
-			$$ = make_node(NODE_TYPE, 2, TYPE_VOID);
+			$$ = make_node(NODE_TYPE, 0, TYPE_VOID);
 			couleur("34"); printf("NODE_TYPE\n");couleur("0");//*program_root = $$;
 		}
         ;
@@ -178,7 +178,7 @@ listtypedecl : decl
 decl : ident
        	{
             printf("decl : ident\n");
-	   		$$ = $1;//$$ = make_node(NODE_DECL, 2, $1, NULL );
+	   		$$ = make_node(NODE_DECL, 2, $1, NULL );
        		couleur("34"); printf("NODE_DECL\n");couleur("0");//*program_root = $$;
 			printf("decl : ident bis\n");
 		}
@@ -198,7 +198,7 @@ maindecl: type ident TOK_LPAR TOK_RPAR block
         ;
 listinst : listinstnonnull
             {
-				$$ = make_node(NODE_LIST, 1, $1);
+				$$ = $1;//make_node(NODE_LIST, 1, $1);
             	couleur("34"); printf("NODE_LIST\n");couleur("0");//*program_root = $$;
 			}
             |
@@ -218,7 +218,7 @@ listinstnonnull : inst
                 ;
 inst: expr TOK_SEMICOL
         {
-			$$ = make_node(NODE_BLOCK, 1, $1); // NODE_BLOCK ?
+			$$ = $1//make_node(NODE_BLOCK, 1, $1); // NODE_BLOCK ?
         	couleur("34"); printf("NODE_BLOCK\n");couleur("0");//*program_root = $$;
 		}
         | TOK_IF TOK_LPAR expr TOK_RPAR inst TOK_ELSE inst
@@ -352,7 +352,7 @@ expr : expr TOK_MUL expr
 		{
 			$$ = make_node(NODE_SRA, 2, $1, $3);
 		}
-		| expr TOK_SLL expr
+		| expr TOK_SLL expr /*pas trouve*/
 		{
 			$$ = make_node(NODE_SLL, 2, $1, $3);
 		}
@@ -364,7 +364,7 @@ expr : expr TOK_MUL expr
 		{
 			$$ = make_node(NODE_BNOT, 1, $2);
 		}
-		| TOK_LPAR expr TOK_RPAR
+		| TOK_LPAR expr TOK_RPAR /*pas trouve*/
 		{
 			printf("expr : TOK_LPAR expr TOK_RPAR\n");
 			//$$ = make_node(NODE_, 2, $1, $3)
@@ -377,14 +377,14 @@ expr : expr TOK_MUL expr
 		| TOK_INTVAL
 		{
 			printf("expr : TOK_INTVAL\n");
-			$$ = NULL;
+			$$ = make_node(NODE_AFFECT, 0);
 		}
-		| TOK_TRUE
+		| TOK_TRUE /*pas trouve*/
 		{
 			printf("expr : TOK_TRUE\n");
 			$$ = NULL;
 		}
-		| TOK_FALSE
+		| TOK_FALSE /*pas trouve*/
 		{
 			printf("expr : TOK_FALSE\n");
 			$$ = NULL;
@@ -398,7 +398,7 @@ expr : expr TOK_MUL expr
 
 listparamprint : listparamprint TOK_COMMA paramprint
 				{
-					$$ = make_node(NODE_PRINT, 2, $1, $3); // a verifier
+					$$ = make_node(NODE_LIST, 2, $1, $3); // a verifier
 					couleur("34"); printf("NODE_PRINT\n");couleur("0");//*program_root = $$;
 				}
 				| paramprint
@@ -407,7 +407,7 @@ listparamprint : listparamprint TOK_COMMA paramprint
 				}
 				;
 
-paramprint : ident
+paramprint : ident /*probleme*/
 			{
 				$$ = $1;
 			}
@@ -421,7 +421,7 @@ paramprint : ident
 ident : TOK_IDENT
 		{
 			printf("ident : TOK_IDENT\n");
-			$$ = make_node(NODE_IDENT, 1, $1);
+			$$ = make_node(NODE_IDENT, 0);
 			couleur("34"); printf("NODE_IDENT\n");couleur("0");//*program_root = $$;
 		}
 		;
