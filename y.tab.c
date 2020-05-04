@@ -543,7 +543,7 @@ node_t make_node(node_nature nature, int nops, ...) {
     retour->nops = nops;
 				//printf("make_node 5\n");
     node_s **hop;
-	hop = (node_s**)malloc(sizeof(node_s*)*nops);
+	retour->opr= (node_s**)malloc(sizeof(node_s*)*nops);
 	/*for(int i = 0; i < nops; i++)
 	{
 		hop[i] = (node_s*)malloc(sizeof(node_s));
@@ -562,12 +562,12 @@ node_t make_node(node_nature nature, int nops, ...) {
 				//printf("make_node for 2\n");
 			//printf("arg supp n°%d = %d\n ", i+1 , va_arg(ap, node_t));
 				//printf("make_node for 3\n");
-        hop[i] = va_arg(ap,node_t);
+        retour->opr[i] = va_arg(ap,node_t);
 				//printf("make_node for 4\n");
 			//printf("hop affecté!, hop =%d et contient %d\n", hop , hop[i]);
     }
 				//printf("make_node 7\n");
-    retour->opr = hop;
+    //retour->opr = hop;
 				//printf("make_node 8\n");
     // recherche des arguments supplementaires en fonction de la nature du noeud
     switch(nature)
@@ -621,16 +621,6 @@ node_t make_node(node_nature nature, int nops, ...) {
     return retour;
 }
 
-void free_node(node_t noeud)
-    {
-
-    noeud->opr = NULL; // tableau de pointeurs vers noeuds enfants
-
-    noeud->decl_node = NULL;
-    free(noeud);
-
-    }
-
 
 
 /* A completer */
@@ -656,7 +646,7 @@ void yyerror(node_t * program_root, char * s) {
     fprintf(stderr, "Error line %d: %s\n", yylineno, s);
     exit(1);
 }
-#line 660 "y.tab.c"
+#line 650 "y.tab.c"
 
 #if YYDEBUG
 #include <stdio.h>		/* needed for printf */
@@ -884,7 +874,7 @@ case 3:
             printf("listdecl : listdeclnonnull\n");
             yyval.ptr = make_node(NODE_LIST, 1, yystack.l_mark[0].ptr );
 			couleur("34"); printf("NODE_LIST\n");couleur("0");
-            *program_root = yyval.ptr;
+            /**program_root = $$;*/
 
         }
 break;
@@ -898,7 +888,7 @@ case 5:
                 printf("listdecl non nulle\n");
 				yyval.ptr = make_node(NODE_LIST, 1, yystack.l_mark[0].ptr);
                 couleur("34"); printf("NODE_LIST\n");couleur("0");
-            	*program_root = yyval.ptr;
+            	/**program_root = $$;*/
 			}
 break;
 case 6:
@@ -906,7 +896,7 @@ case 6:
 	{
 				yyval.ptr = make_node(NODE_LIST, 2, yystack.l_mark[-1].ptr, yystack.l_mark[0].ptr);
                 couleur("34"); printf("NODE_LIST\n");couleur("0");
-            	*program_root = yyval.ptr;
+            	/**program_root = $$;*/
 			}
 break;
 case 7:
@@ -915,7 +905,7 @@ case 7:
                 printf("vardecl\n");
 				yyval.ptr = make_node(NODE_LIST, 1, yystack.l_mark[-2].ptr);
                 couleur("34"); printf("NODE_LIST\n");couleur("0");
-            	*program_root = yyval.ptr;
+            	/**program_root = $$;*/
 			}
 break;
 case 8:
@@ -1296,7 +1286,7 @@ case 62:
 			couleur("34"); printf("NODE_IDENT\n");couleur("0");/**program_root = $$;*/
 		}
 break;
-#line 1300 "y.tab.c"
+#line 1290 "y.tab.c"
     }
     yystack.s_mark -= yym;
     yystate = *yystack.s_mark;

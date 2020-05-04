@@ -2171,8 +2171,8 @@ int main(int argc, char ** argv) {
 
     yyin = fopen(infile, "r");
 	printf("main2\n");
-    yyparse(&program_root);
 	while(yylex());
+	yyparse(&program_root);
 	/*yylex();
 	yylex();
 	yylex();
@@ -2180,7 +2180,7 @@ int main(int argc, char ** argv) {
 	printf("main3\n");
     fclose(yyin);
 	printf("main4\n");
-    analyse_tree(program_root);
+    //analyse_tree(program_root);
 	printf("main5\n");
     yylex_destroy();
 	//printf("main6\n");
