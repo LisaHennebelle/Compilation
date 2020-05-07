@@ -1,8 +1,8 @@
 void main() {
-	int var1 = 0 ;
+	int carotte = 0 ;
 	bool var2 = true;
 	if (var2 == true) {
-	  var1 = 1;
+	  carotte = 1;
 	}
-	print(var1)
+	print(carotte)
 }

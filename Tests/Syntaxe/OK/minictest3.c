@@ -1,7 +1,7 @@
 void main() {
 	int var1 = 0 ;
-	bool var2 = true;
-	if (var2 == true) {
+	bool var2 = false;
+	if (var2 == false) {
 	  var1 = 1;
 	}
 	print(var1)

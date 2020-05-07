@@ -6,26 +6,38 @@
 #done
 
 cd Tests/Syntaxe/OK
-touch minictestVerif.c
+
 #if [[ -e "$PWD/Tests/Gencode/KO/minicctest_gencodeko.mc" ]]; then
 #  echo "file exists"
 #fi
-
+declare -a tableau_indi=("minictest0.c" "minictest1.c" "minictest2.c" "minictest3.c")
+declare -a tab_carac=("s/==/!=/g" "s/var1/carotte/g" "s/if/while/g" "s/true/false/g")
+#fichier de reference : minictestVerif.c
 echo "void main() {" > minictestVerif.c
-echo "int a = 0 ;" >> minictestVerif.c
+echo "	int var1 = 0 ;" >> minictestVerif.c
+echo "	bool var2 = true;" >> minictestVerif.c
+echo "	if (var2 == true) {" >> minictestVerif.c
+echo "	  var1 = 1;" >> minictestVerif.c
+echo "	}" >> minictestVerif.c
+echo "	print(var1)">> minictestVerif.c
 echo "}" >> minictestVerif.c
 more minictestVerif.c
-
-# acceder à la deuxieme ligne du fichier et l'afficher
-#sed -n 2p minictestVerif.c > minictest.c
-#more minictest.c
-echo "minic test "
-#sed -i 's/main/fefefe/g' minictestVerif.c
+declare -i i=0
+#sed -i '1 i\texte' minictestVerif.c #ajouter texte au dessus de ligne 1
 more minictestVerif.c
-echo "minic test verif "
-# int  i
+while [ $i -lt 4 ]
+do
+    	# step 0
+		cp --copy-contents minictestVerif.c ${tableau_indi[$i]}
+        #sed -n 2p minictestVerif.c > minictest0.c
+        #more minictest0.c
+        echo "minic test 0"
+        echo ${tableau_indi[$i]}
+        sed -i ${tab_carac[$i]} ${tableau_indi[$i]}
+        more ${tableau_indi[$i]}
 
-# int  i = 0; void main () {} # K= 0; void main () {} # KO => "void" <= "voi"
+		i=$[$i+1]
+done
 cd ../KO
 
 # Tests de verification
@@ -38,10 +50,15 @@ cd ../KO
 # Test de Gencode
 cd ../../Gencode/KO
 
-
-
-
-
 cd ../OK
 cd ../../..
-./minicc Tests/Syntaxe/OK/minictestVerif.c
+declare -i i=0
+echo "Compilation des fichiers de verification OK"
+while [ $i -lt 4 ]
+do
+        echo "**********************************************************"
+		echo ${tableau_indi[$i]}
+        ./minicc Tests/Syntaxe/OK/${tableau_indi[$i]}
+
+		i=$[$i+1]
+done
