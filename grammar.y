@@ -6,10 +6,10 @@
 #include <stdarg.h>
 #include <string.h>
 #include <assert.h>
-
 #include "defs.h"
 #include "common.h"
 #include "mips_inst.h"
+#define couleur(param) printf("\033[%sm",param)
 
 
 /* Global variables */
@@ -24,7 +24,7 @@ extern int sflag;
 extern int vflag;
 extern int cptnodes;
 
-#define couleur(param) printf("\033[%sm",param)
+
 /* prototypes */
 int yylex(void);
 extern int yylineno;
@@ -96,7 +96,7 @@ program:
             printf("program : liste non nulle et main\n");
             $$ = make_node(NODE_PROGRAM, 2, $1, $2);
 			couleur("34"); printf("NODE_PROGRAM\n");couleur("0");
-            *program_root = $$;
+            //*program_root = $$;
 
         }
         | maindecl // presence de variables locales seulement
@@ -104,15 +104,15 @@ program:
             printf("program : main\n");
             $$ = make_node(NODE_PROGRAM, 2, NULL, $1);
 			couleur("34"); printf("NODE_PROGRAM\n");couleur("0");
-            *program_root = $$;
+            //*program_root = $$;
 
         }
         ;
 listdecl: listdeclnonnull
         {
             printf("listdecl : listdeclnonnull\n");
-            $$ = $1//make_node(NODE_LIST, 1, $1 );
-			couleur("34"); printf("NODE_LIST\n");couleur("0");
+            $$ = $1;//make_node(NODE_LIST, 1, $1 );
+			couleur("34"); printf("NODE_LIST\n");("0");
             //*program_root = $$;
 
         }
@@ -192,8 +192,9 @@ decl : ident
 
 maindecl: type ident TOK_LPAR TOK_RPAR block
             {
-				$$ = make_node(NODE_FUNC, 3, $1, $2, $5);
-            	couleur("34"); printf("NODE_FUNC\n");couleur("0");//*program_root = $$;
+                couleur("34"); printf("NODE_FUNC\n");couleur("0");//*program_root = $$;
+				$$ = make_node(NODE_FUNC, 3, $1, $2, $5, 35, 4);
+
 			}
         ;
 listinst : listinstnonnull
@@ -218,8 +219,8 @@ listinstnonnull : inst
                 ;
 inst: expr TOK_SEMICOL
         {
-			$$ = $1//make_node(NODE_BLOCK, 1, $1); // NODE_BLOCK ?
-        	couleur("34"); printf("NODE_BLOCK\n");couleur("0");//*program_root = $$;
+			$$ = $1;
+        	couleur("34"); printf("semicol\n");couleur("0");//*program_root = $$;
 		}
         | TOK_IF TOK_LPAR expr TOK_RPAR inst TOK_ELSE inst
         {
@@ -421,7 +422,17 @@ paramprint : ident /*probleme*/
 ident : TOK_IDENT
 		{
 			printf("ident : TOK_IDENT\n");
-			$$ = make_node(NODE_IDENT, 0);
+			$$ = make_node(NODE_IDENT, 0);/* //   type =  TYPE_NONE,TYPE_INT,TYPE_BOOL,TYPE_STRING,TYPE_VOID
+
+    				printf("make_node node_ident 1\n");
+                retour->type      =va_arg(ap,node_type); // argument supp à la position nops + 1 = type de noeud
+    				printf("make_node node_ident 2\n");
+                retour->decl_node =va_arg(ap,node_t); // argument supp à la position nops + 2 = declaration de noeud
+    				printf("make_node node_ident 3\n");
+                retour->offset    =va_arg(ap,int32_t ); // argument supp à la position nops + 3 = declaration de l'emplacement mémoire de la variable int32_t
+    				printf("make_node node_ident 4\n");
+                retour->global_decl=va_arg(ap,int); // argument supp à la position nops + 4 = declaration globale?
+    				printf("make_node node_ident 5\n");*/
 			couleur("34"); printf("NODE_IDENT\n");couleur("0");//*program_root = $$;
 		}
 		;
@@ -432,73 +443,75 @@ ident : TOK_IDENT
 
 node_t make_node(node_nature nature, int nops, ...) {
 	couleur("30"); printf("NODE CREE\n");
-
+    couleur("0"); printf("make_node 1");
     //cptnodes ++;
     //printf("on make le node n°%d\n", cptnodes);
     va_list ap; /*liste des arguments supplémentaires*/
-				//printf("make_node 1\n");
+				printf("make_node 1\n");
     va_start(ap,nops);
-				//printf("make_node 2\n");
+                printf("make_node 2\n");
+
     node_t retour = malloc (sizeof(node_t));
-				//printf("make_node 3\n");
+				printf("make_node 3\n");
     //retour->node_num = cptnodes;
 	retour->nature = nature;
-				//printf("make_node 4\n");
+				printf("make_node 4\n");
     retour->nops = nops;
-				//printf("make_node 5\n");
-    node_s **hop;
-	retour->opr= (node_s**)malloc(sizeof(node_s*)*nops);
+				printf("make_node 5\n");
+    retour->opr= (node_s**)malloc(sizeof(node_s*)*nops);
 	/*for(int i = 0; i < nops; i++)
 	{
 		hop[i] = (node_s*)malloc(sizeof(node_s));
 	}*/
-				//printf("make_node 6\n");
+				printf("make_node 6\n");
 				//printf("nops=%d\n",nops);
 
     for (int i = 0; i < nops; i++)
     {
-				//printf("make_node for 1\n");
+				printf("make_node for 1\n");
         if(va_arg(ap, node_t) == NULL)
         {
-				//printf("make_node for if\n");
+				printf("make_node for if\n");
             continue;
         }
-				//printf("make_node for 2\n");
+				printf("make_node for 2\n");
 			//printf("arg supp n°%d = %d\n ", i+1 , va_arg(ap, node_t));
-				//printf("make_node for 3\n");
+				printf("make_node for 3\n");
+                printf("enfant n° %d est %s\n" ,i,va_arg(ap,node_t) );
         retour->opr[i] = va_arg(ap,node_t);
-				//printf("make_node for 4\n");
-			printf("hop affecté! contient %d\n" , retour->opr[i]);
     }
-				//printf("make_node 7\n");
+				printf("make_node for 4\n");
+			//printf("hop affecté! contient %d\n" , retour->opr[i]);
+
+				printf("make_node 7\n");
     //retour->opr = hop;
-				//printf("make_node 8\n");
+				printf("make_node 8\n");
     // recherche des arguments supplementaires en fonction de la nature du noeud
     switch(nature)
     {
         case NODE_IDENT ://   type =  TYPE_NONE,TYPE_INT,TYPE_BOOL,TYPE_STRING,TYPE_VOID
 
-				//printf("make_node node_ident 1\n");
+				printf("make_node node_ident 1\n");
             retour->type      =va_arg(ap,node_type); // argument supp à la position nops + 1 = type de noeud
-				//printf("make_node node_ident 2\n");
+				printf("make_node node_ident 2\n");
             retour->decl_node =va_arg(ap,node_t); // argument supp à la position nops + 2 = declaration de noeud
-				//printf("make_node node_ident 3\n");
+				printf("make_node node_ident 3\n");
             retour->offset    =va_arg(ap,int32_t ); // argument supp à la position nops + 3 = declaration de l'emplacement mémoire de la variable int32_t
-				//printf("make_node node_ident 4\n");
+				printf("make_node node_ident 4\n");
             retour->global_decl=va_arg(ap,int); // argument supp à la position nops + 4 = declaration globale?
-				//printf("make_node node_ident 5\n");
+				printf("make_node node_ident 5\n");
             break;
         case NODE_AFFECT :
             retour->type      =va_arg(ap,node_type); // argument supp à la position nops + 1 = type de noeud
             break;
         case NODE_FUNC :
-            retour->offset    =va_arg(ap,int32_t); // argument supp à la position nops + 1 = declaration de l'emplacement mémoire de la variable int32_t
+            retour->offset    =va_arg(ap,int32_t); // argument supp à la position nops + 1 = declaration de l'emplacement mémoire de la variable
             retour->stack_size=va_arg(ap,int32_t); // argument supp à la position nops + 2 = declaration de
             break;
         case NODE_TYPE:
-				//printf("make_node node_type 1\n");
+				printf("make_node node_type 1\n");
             retour->type = va_arg(ap,node_type);
-				//printf("make_node node_type 2\n");
+				printf("make_node node_type 2\n");
         case NODE_INTVAL:
             retour->value = va_arg(ap,int64_t);
 		case NODE_BOOLVAL:
@@ -518,9 +531,9 @@ node_t make_node(node_nature nature, int nops, ...) {
 	}*/
     //free(hop);
 
-				//printf("make_node 20\n");
+				printf("make_node 20\n");
     va_end(ap);
-				//printf("make_node 21\n");
+				printf("make_node 21\n");
     couleur("0");
     return retour;
 }
