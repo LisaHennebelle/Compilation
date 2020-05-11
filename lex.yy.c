@@ -2160,7 +2160,7 @@ int yywrap(void) {
 
 int main(int argc, char ** argv) {
     /* A completer */
-    node_t program_root;
+
 
 	printf("-----parse args-----\n");
     parse_args(argc, argv);
@@ -2168,14 +2168,17 @@ int main(int argc, char ** argv) {
     yydebug = 1;
     #endif
 
-
+	node_t program_root;
     yyin = fopen(infile, "r");
 	printf("main2\n");
 	//while(yylex());
 	printf("lex fin\n");
 	printf("program root : %s\n" ,*program_root);
 	yyparse(&program_root);
-	printf("program root : %s\n" ,*program_root);
+	printf("yyparse FINI\n");
+	printf("node nature : %s \n",node_nature2string(program_root->nature));
+	dump_tree(program_root, "tree.txt"); // afficher le tree
+	printf("program root : %s\n" ,program_root);
 	printf("main3\n");
     fclose(yyin);
 	printf("main4\n");

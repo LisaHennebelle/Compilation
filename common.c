@@ -116,7 +116,7 @@ char * strdup(char * s) {
 
 
 static int32_t dump_tree2dot_rec(FILE * f, node_t n, int32_t node_num) {
-
+        printf("DEBUT dump_tree2dot_rec\n");
     if (n == NULL) {
         fprintf(f, "    N%d [shape=record, label=\"{{NULL}}\"];\n", node_num);
         return node_num;
@@ -201,16 +201,19 @@ static int32_t dump_tree2dot_rec(FILE * f, node_t n, int32_t node_num) {
             printf("*** Error in %s: unknow nature : %s\n", __func__, node_nature2string(n->nature));
             assert(false);
     }
-
+        printf("n->node_num\n");
     n->node_num = node_num;
-
+        printf("n->node_num reussi %d\n", node_num);
     int32_t curr_node_num = node_num + 1;
-    for (int32_t i = 0; i < n->nops; i += 1) {
-        int32_t new_node_num = dump_tree2dot_rec(f, n->opr[i], curr_node_num);
+    printf("nops =%d\n", n->nops);
+    if(n->nops<5) {
+        for (int32_t i = 0; i < n->nops; i += 1) {
+            int32_t new_node_num = dump_tree2dot_rec(f, n->opr[i], curr_node_num);
 
-        fprintf(f, "    edge[tailclip=true];\n");
-        fprintf(f, "    N%d -> N%d\n", node_num, curr_node_num);
-        curr_node_num = new_node_num + 1;
+            fprintf(f, "    edge[tailclip=true];\n");
+            fprintf(f, "    N%d -> N%d\n", node_num, curr_node_num);
+            curr_node_num = new_node_num + 1;
+        }
     }
 
     return curr_node_num - 1;
@@ -220,7 +223,7 @@ static int32_t dump_tree2dot_rec(FILE * f, node_t n, int32_t node_num) {
 
 static void dump_tree2dot(FILE * f, node_t root) {
     assert(root->nature == NODE_PROGRAM);
-
+    printf("nature program ok\n");
     int32_t curr_node_num = 1;
     dump_tree2dot_rec(f, root, curr_node_num);
 }
@@ -229,7 +232,7 @@ static void dump_tree2dot(FILE * f, node_t root) {
 void dump_tree(node_t prog_root, const char * dotname) {
 
     FILE * f;
-
+    printf("function dump tree\n");
     f = fopen(dotname, "w");
     fprintf(f, "digraph global_vars {\n");
     dump_tree2dot(f, prog_root);
