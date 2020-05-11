@@ -145,7 +145,7 @@ vardecl : type listtypedecl TOK_SEMICOL
 type : TOK_INT
         {
             printf("type : TOK_INT\n");
-			$$ = make_node(NODE_TYPE, 0, TYPE_INT);
+			$$ = make_node(NODE_TYPE, 0, TYPE_INT, yylval.intval);
         	couleur("34"); printf("NODE_TYPE\n");couleur("0");//*program_root = $$;
 		}
         | TOK_BOOL
@@ -378,23 +378,23 @@ expr : expr TOK_MUL expr
 		| TOK_INTVAL
 		{
 			printf("expr : TOK_INTVAL\n");
-			$$ = make_node(NODE_AFFECT, 0);
-		}
-		| TOK_TRUE /*pas trouve*/
-		{
-			printf("expr : TOK_TRUE\n");
-			$$ = NULL;
-		}
-		| TOK_FALSE /*pas trouve*/
-		{
-			printf("expr : TOK_FALSE\n");
-			$$ = NULL;
+			$$ = make_node(NODE_AFFECT, 0, yylval.intval );
 		}
 		| ident
 		{
 			printf("expr : ident\n");
 			$$ = $1;
 		}
+        | TOK_BOOLVAL
+        {
+            printf("expr: BOOLVAL \n");
+            make_node(NODE_BOOLVAL, 0,yylval.strval );
+        }
+        | TOK_STRINGVAL
+        {
+            $$ = make_node(NODE_STRINGVAL, 0, yylval.strval, sizeof(yylval.strval) );
+            couleur("34"); printf("expr : NODE_STRINGVAL\n");couleur("0");//*program_root = $$;
+        }
         ;
 
 listparamprint : listparamprint TOK_COMMA paramprint
@@ -412,10 +412,10 @@ paramprint : ident /*probleme*/
 			{
 				$$ = $1;
 			}
-			| TOK_STRING
-			{
-				$$ = make_node(NODE_PRINT, 1, $1);
-				couleur("34"); printf("NODE_PRINT\n");couleur("0");//*program_root = $$;
+			| TOK_STRINGVAL
+			{ // make node (node print, )
+				$$ = make_node(NODE_STRINGVAL, 0, yylval.strval, sizeof(yylval.strval) );
+				couleur("34"); printf("paramprint : NODE_STRINGVAL\n");couleur("0");//*program_root = $$;
 			}
 			;
 
@@ -507,18 +507,30 @@ node_t make_node(node_nature nature, int nops, ...) {
         case NODE_FUNC :
             retour->offset    =va_arg(ap,int32_t); // argument supp à la position nops + 1 = declaration de l'emplacement mémoire de la variable
             retour->stack_size=va_arg(ap,int32_t); // argument supp à la position nops + 2 = declaration de
+            printf("offset: %d\nstack_size: %d\n",retour->offset,retour->stack_size);
             break;
         case NODE_TYPE:
 				printf("make_node node_type 1\n");
             retour->type = va_arg(ap,node_type);
-				printf("make_node node_type 2\n");
+				printf("make_node node_type réussi\n");
+            break;
         case NODE_INTVAL:
+                printf("make_node intval affectation: %d\n", va_arg(ap,int64_t));
             retour->value = va_arg(ap,int64_t);
+            break;
 		case NODE_BOOLVAL:
-			retour->value = va_arg(ap,int64_t);
+                printf("make_node boolval affectation \n");
+			if ( strcmp(va_arg(ap,char*), "true"))
+                {retour->value = true;}
+            else if(strcmp(va_arg(ap,char*),"false"))
+                {retour->value = false;}
+            break;
         case NODE_STRINGVAL :
+                printf("make_node stringval affectation\n");
             retour->str = va_arg(ap,char*);
 			retour->offset = va_arg(ap,int32_t);
+                printf("stringval affecté: %s\noffset: %d\n",retour->str, retour->offset);
+            break;
 		default:
             break;
     }

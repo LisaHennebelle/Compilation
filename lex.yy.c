@@ -900,12 +900,12 @@ YY_RULE_SETUP
 case 4:
 YY_RULE_SETUP
 #line 65 "lexico.l"
-{printf("Detecté 'true' TOK_TRUE genere\n");return TOK_TRUE;}
+{printf("Detecté 'true' TOK_TRUE genere\n");yylval.strval = 'true';return TOK_BOOLVAL;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
 #line 66 "lexico.l"
-{printf("Detecté 'false' TOK_FALSE genere\n");return TOK_FALSE;}
+{printf("Detecté 'false' TOK_FALSE genere\n");yylval.strval = 'false';return TOK_BOOLVAL;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP

@@ -42,6 +42,8 @@
 #define TOK_SLL 298
 #define TOK_NOT 299
 #define TOK_BNOT 300
+#define TOK_BOOLVAL 301
+#define TOK_STRINGVAL 302
 #ifdef YYSTYPE
 #undef  YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1

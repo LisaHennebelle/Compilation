@@ -62,8 +62,8 @@ COMMENTAIRE     "//"({ASCII})*[\n]
 "void"          {printf("Detecté 'void' TOK_VOID genere\n");return TOK_VOID;}
 "if"            {printf("Detecté 'if' TOK_IF genere\n");return TOK_IF;}
 "bool"          {printf("Detecté 'bool' TOK_BOOL genere\n");return TOK_BOOL;}
-"true"          {printf("Detecté 'true' TOK_TRUE genere\n");return TOK_TRUE;}
-"false"         {printf("Detecté 'false' TOK_FALSE genere\n");return TOK_FALSE;}
+"true"          {printf("Detecté 'true' TOK_TRUE genere\n");yylval.strval = 'true';return TOK_BOOLVAL;}
+"false"         {printf("Detecté 'false' TOK_FALSE genere\n");yylval.strval = 'false';return TOK_BOOLVAL;}
 "else"          {printf("Detecté 'else' TOK_ELSE genere\n");return TOK_ELSE;}
 "while"         {printf("Detecté 'while' TOK_WHILE genere\n");return TOK_WHILE;}
 "for"           {printf("Detecté 'for' TOK_FOR genere\n");return TOK_FOR;}
