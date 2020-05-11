@@ -96,7 +96,7 @@ program:
             printf("program : liste non nulle et main\n");
             $$ = make_node(NODE_PROGRAM, 2, $1, $2);
 			couleur("34"); printf("NODE_PROGRAM\n");couleur("0");
-            //*program_root = $$;
+            *program_root = $$;
 
         }
         | maindecl // presence de variables locales seulement
@@ -104,7 +104,7 @@ program:
             printf("program : main\n");
             $$ = make_node(NODE_PROGRAM, 2, NULL, $1);
 			couleur("34"); printf("NODE_PROGRAM\n");couleur("0");
-            //*program_root = $$;
+            *program_root = $$;
 
         }
         ;
@@ -192,8 +192,8 @@ decl : ident
 
 maindecl: type ident TOK_LPAR TOK_RPAR block
             {
-                couleur("34"); printf("NODE_FUNC\n");couleur("0");//*program_root = $$;
-				$$ = make_node(NODE_FUNC, 3, $1, $2, $5, 35, 4);
+                couleur("34"); printf("NODE_FUNC %s %s %s\n", $1, $2, $5);couleur("0");//*program_root = $$;
+				$$ = make_node(NODE_FUNC, 3, $1, $2, $5, 8, 8);
 
 			}
         ;
@@ -378,17 +378,22 @@ expr : expr TOK_MUL expr
 		| TOK_INTVAL
 		{
 			printf("expr : TOK_INTVAL\n");
-			$$ = make_node(NODE_AFFECT, 0, yylval.intval );
+			$$ = make_node(NODE_INTVAL, 0, yylval.intval );
 		}
 		| ident
 		{
 			printf("expr : ident\n");
 			$$ = $1;
 		}
-        | TOK_BOOLVAL
+        | TOK_TRUE
         {
-            printf("expr: BOOLVAL \n");
-            make_node(NODE_BOOLVAL, 0,yylval.strval );
+        printf("expr: BOOLVAL TRUE\n");
+            make_node(NODE_BOOLVAL, 0,1);
+        }
+        | TOK_FALSE
+        {
+            printf("expr:BOOLVAL false");
+            make_node(NODE_BOOLVAL, 0,0 );
         }
         | TOK_STRINGVAL
         {
@@ -443,7 +448,7 @@ ident : TOK_IDENT
 
 node_t make_node(node_nature nature, int nops, ...) {
 	couleur("30"); printf("NODE CREE\n");
-    couleur("0"); printf("make_node 1");
+    couleur("0");
     //cptnodes ++;
     //printf("on make le node n°%d\n", cptnodes);
     va_list ap; /*liste des arguments supplémentaires*/
@@ -458,7 +463,8 @@ node_t make_node(node_nature nature, int nops, ...) {
 				printf("make_node 4\n");
     retour->nops = nops;
 				printf("make_node 5\n");
-    retour->opr= (node_s**)malloc(sizeof(node_s*)*nops);
+    node_t hop[nops];
+    retour->opr= hop; 
 	/*for(int i = 0; i < nops; i++)
 	{
 		hop[i] = (node_s*)malloc(sizeof(node_s));
@@ -477,8 +483,8 @@ node_t make_node(node_nature nature, int nops, ...) {
 				printf("make_node for 2\n");
 			//printf("arg supp n°%d = %d\n ", i+1 , va_arg(ap, node_t));
 				printf("make_node for 3\n");
-                printf("enfant n° %d est %s\n" ,i,va_arg(ap,node_t) );
-        retour->opr[i] = va_arg(ap,node_t);
+            retour->opr[i] = va_arg(ap,node_t);
+                printf("make node for 3 s'est bien passe\n");
     }
 				printf("make_node for 4\n");
 			//printf("hop affecté! contient %d\n" , retour->opr[i]);
@@ -511,6 +517,28 @@ node_t make_node(node_nature nature, int nops, ...) {
             break;
         case NODE_TYPE:
 				printf("make_node node_type 1\n");
+                switch(va_arg(ap,node_type)) // print type associé
+                {
+                    //   type =  TYPE_NONE,TYPE_INT,TYPE_BOOL,TYPE_STRING,TYPE_VOID
+                    case TYPE_NONE:
+                        printf("TYPE_NONE\n");
+                        break;
+                    case TYPE_INT:
+                        printf("TYPE_INT\n");
+                        break;
+                    case TYPE_BOOL:
+                        printf("TYPE_BOOL\n");
+                        break;
+                    case TYPE_STRING:
+                        printf("TYPE_STRING\n");
+                        break;
+                    case TYPE_VOID:
+                        printf("TYPE_VOID\n");
+                        break;
+                    default :
+                        printf("defaut\n");
+                        break;
+                }
             retour->type = va_arg(ap,node_type);
 				printf("make_node node_type réussi\n");
             break;
@@ -520,10 +548,12 @@ node_t make_node(node_nature nature, int nops, ...) {
             break;
 		case NODE_BOOLVAL:
                 printf("make_node boolval affectation \n");
-			if ( strcmp(va_arg(ap,char*), "true"))
-                {retour->value = true;}
-            else if(strcmp(va_arg(ap,char*),"false"))
-                {retour->value = false;}
+			if (va_arg(ap,int)== 1)
+                {   printf("true\n");
+                    retour->value = 1;}
+            else if(va_arg(ap,char*)==0)
+                {   printf("false\n");
+                    retour->value = 0;}
             break;
         case NODE_STRINGVAL :
                 printf("make_node stringval affectation\n");

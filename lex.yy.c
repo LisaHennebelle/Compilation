@@ -900,12 +900,12 @@ YY_RULE_SETUP
 case 4:
 YY_RULE_SETUP
 #line 65 "lexico.l"
-{printf("Detecté 'true' TOK_TRUE genere\n");yylval.strval = 'true';return TOK_BOOLVAL;}
+{printf("Detecté 'true' TOK_TRUE genere\n");return TOK_TRUE;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
 #line 66 "lexico.l"
-{printf("Detecté 'false' TOK_FALSE genere\n");yylval.strval = 'false';return TOK_BOOLVAL;}
+{printf("Detecté 'false' TOK_FALSE genere\n");return TOK_FALSE;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
@@ -2173,11 +2173,13 @@ int main(int argc, char ** argv) {
 	printf("main2\n");
 	//while(yylex());
 	printf("lex fin\n");
+	printf("program root : %s\n" ,*program_root);
 	yyparse(&program_root);
+	printf("program root : %s\n" ,*program_root);
 	printf("main3\n");
     fclose(yyin);
 	printf("main4\n");
-    //analyse_tree(program_root);
+    analyse_tree(program_root);
 	printf("main5\n");
     yylex_destroy();
 	//printf("main6\n");

@@ -4,5 +4,5 @@ void main() {
 	if (var2 == true) {
 	  var1 = 1;
 	}
-	print(var1)
+	print(var1);
 }

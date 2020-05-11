@@ -19,7 +19,7 @@ echo "	bool var2 = true;" >> minictestVerif.c
 echo "	if (var2 == true) {" >> minictestVerif.c
 echo "	  var1 = 1;" >> minictestVerif.c
 echo "	}" >> minictestVerif.c
-echo "	print(var1)">> minictestVerif.c
+echo "	print(var1);">> minictestVerif.c
 echo "}" >> minictestVerif.c
 more minictestVerif.c
 declare -i i=0
