@@ -96,6 +96,7 @@ program:
             printf("program : liste non nulle et main\n");
             $$ = make_node(NODE_PROGRAM, 2, $1, $2);
 			couleur("34"); printf("NODE_PROGRAM %s\n", $$);couleur("0");
+            printf("node nature de $$ : %s\n",node_nature2string($$->nature) );
             *program_root = $$;
 
         }
@@ -104,7 +105,8 @@ program:
             printf("program : main\n");
             $$ = make_node(NODE_PROGRAM, 2, NULL, $1);
 			couleur("34"); printf("NODE_PROGRAM %s\n", $$);couleur("0");
-            //*program_root = $$;
+            printf("node nature de $$ : %s\n",node_nature2string($$->nature) );
+            *program_root = $$;
 
         }
         ;
@@ -146,7 +148,7 @@ vardecl : type listtypedecl TOK_SEMICOL
         ;
 type : TOK_INT
         {
-            printf("type : TOK_INT\n");
+            printf("type : TOK_INT\nsizeof(0): %d\n", sizeof(0));
 			$$ = make_node(NODE_TYPE, 0, TYPE_INT);
         	couleur("34"); printf("NODE_TYPE $$ = %s\n", $$);couleur("0");//*program_root = $$;
 		}
@@ -477,17 +479,20 @@ node_t make_node(node_nature nature, int32_t nops, ...) {
     va_start(ap,nops);
                 //printf("make_node 2\n");
 
-    node_s* retour = malloc(sizeof(node_s*));
+    node_t retour = malloc(sizeof(node_t));
 				//printf("make_node 3\n");
     //retour->node_num = cptnodes;
 	retour->nature = nature;
     printf("node nature : %s \n",node_nature2string(retour->nature));
 				//printf("make_node 4\n");
-    retour->nops = nops;
+	retour->nops = nops;
     printf("nops vaut %d \n", nops);
+	printf("sizeof(retour->nops): %d %d (int32_t)\n", sizeof(retour->nops), sizeof(nops));
 				//printf("make_node 5\n");
-    node_t hop[nops];
-    retour->opr= hop;
+    //node_t *hop;
+    //retour->opr= hop;
+	//printf("sizeof(retour->opr): %d %d\n", sizeof(retour->opr), sizeof(hop));
+			// !! sizeof(hop) > sizeof(retour->opr)
 	/*for(int i = 0; i < nops; i++)
 	{
 		hop[i] = (node_s*)malloc(sizeof(node_s));
@@ -498,12 +503,7 @@ node_t make_node(node_nature nature, int32_t nops, ...) {
     for (int i = 0; i < nops; i++)
     {
 				//printf("make_node for 1\n");
-        if(va_arg(ap, node_t) == NULL)
-        {
-				//printf("make_node for if\n");
-            continue;
-        }
-				//printf("make_node for 2\n");
+        				//printf("make_node for 2\n");
 			//printf("arg supp n°%d = %d\n ", i+1 , va_arg(ap, node_t));
 				//printf("make_node for 3\n");
             retour->opr[i] = va_arg(ap,node_t);

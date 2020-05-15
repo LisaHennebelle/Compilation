@@ -154,11 +154,13 @@ int main(int argc, char ** argv) {
 	printf("main2\n");
 	//while(yylex());
 	printf("lex fin\n");
-	printf("program root : %s\n" ,*program_root);
+	//printf("program root : %s\n" ,*program_root);
 	yyparse(&program_root);
 	printf("yyparse FINI\n");
-	printf("node nature : %s \n",node_nature2string(program_root->nature));
-	dump_tree(program_root, "tree.txt"); // afficher le tree
+	printf("nature du noeud dans lex : %s\n",node_nature2string(program_root->nature));
+	const char* txtname = "tree.dot";
+	dump_tree(program_root,txtname ); // afficher le tree
+
 	printf("program root : %s\n" ,program_root);
 	printf("main3\n");
     fclose(yyin);

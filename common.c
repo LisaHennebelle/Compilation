@@ -205,9 +205,11 @@ static int32_t dump_tree2dot_rec(FILE * f, node_t n, int32_t node_num) {
     n->node_num = node_num;
         printf("n->node_num reussi %d\n", node_num);
     int32_t curr_node_num = node_num + 1;
+    printf("cureent node_num = %d\n", curr_node_num);
     printf("nops =%d\n", n->nops);
     if(n->nops<5) {
         for (int32_t i = 0; i < n->nops; i += 1) {
+            printf("boucle enfants\n");
             int32_t new_node_num = dump_tree2dot_rec(f, n->opr[i], curr_node_num);
 
             fprintf(f, "    edge[tailclip=true];\n");
@@ -215,7 +217,7 @@ static int32_t dump_tree2dot_rec(FILE * f, node_t n, int32_t node_num) {
             curr_node_num = new_node_num + 1;
         }
     }
-
+    printf("je suis passe par la\n");
     return curr_node_num - 1;
 }
 
@@ -235,9 +237,15 @@ void dump_tree(node_t prog_root, const char * dotname) {
     printf("function dump tree\n");
     f = fopen(dotname, "w");
     fprintf(f, "digraph global_vars {\n");
+    int32_t check =  prog_root->nops;
+	printf("node type avant l'appel à dump tree: %s\n", node_type2string(prog_root->type));
+	printf("node nature avant l'appel à dump tree: %s \n",node_nature2string(prog_root->nature));
+    printf("nops vautavant l'appel à dump tree %d \n",check);
     dump_tree2dot(f, prog_root);
+    printf("fin dump tree\n");
     fprintf(f, "}");
     fclose(f);
+	printf("file closed\n");
 }
 
 
