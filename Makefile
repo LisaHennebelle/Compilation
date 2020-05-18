@@ -2,6 +2,7 @@
 EXE=minicc
 UTILS=utils
 LIBUTILS=$(UTILS)/libminiccutils.a
+LIB2 = $(UTILS)/lib.a
 
 DEBUG=0
 
@@ -16,7 +17,7 @@ INCLUDE = -I$(UTILS)
 
 all: minicc
 
-minicc: y.tab.o lex.yy.o common.o
+minicc: y.tab.o lex.yy.o common.o context.o
 	gcc $(CFLAGS) $(INCLUDE) -L$(UTILS) y.tab.o lex.yy.o common.o -o $@ -lminiccutils
 
 y.tab.c: grammar.y Makefile
@@ -33,6 +34,9 @@ y.tab.o: y.tab.c
 
 common.o: common.c common.h defs.h Makefile
 	gcc $(CFLAGS) $(INCLUDE) -o $@ -c $<
+
+context.o: utils/context.h utils/context.c
+	    gcc $(CFLAGS) $(INCLUDE) -o $@ -c $<
 
 clean:
 	rm -f *.o

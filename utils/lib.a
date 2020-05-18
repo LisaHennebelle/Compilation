@@ -1,0 +1,108 @@
+!<arch>
+context.c/      0           0     0     644     3385      `
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include "context.h"
+
+context_t create_context() // cree un contexte et lui alloue de la mémoire
+{
+    context_t cont = malloc(sizeof(context_t));
+    if (cont == NULL)
+    {
+        printf("il y a eu un problème dans la création d'un contexte\n");
+    }
+    (cont->root)->idf_existant == false;
+    //(cont->root)->suite_idf = NULL;
+    for(int i = 0; i < NB_ELEM_ALPHABET; i++)
+    {
+        (cont->root)->suite_idf[i] = malloc(sizeof(noeud_s));
+        if(i >= 0 && i < 26)
+        {
+            (cont->root)->suite_idf[i]->lettre = i + 'a';
+            (cont->root)->suite_idf[i]->idf_existant == false;
+            printf("suivant = %c\n", (cont->root)->suite_idf[i]->lettre);
+        }
+        else if(i >=26 && i < 52){
+            (cont->root)->suite_idf[i]->lettre = (i-26) + 'A';
+            (cont->root)->suite_idf[i]->idf_existant == false;
+            printf("suivant = %c\n", (cont->root)->suite_idf[i]->lettre);
+        }
+        else if(i >=52 && i < 62){
+            (cont->root)->suite_idf[i]->lettre = (i-52) + '0';
+            (cont->root)->suite_idf[i]->idf_existant == false;
+            printf("suivant = %c\n", (cont->root)->suite_idf[i]->lettre);
+        }
+        else // i = 63
+        {
+            (cont->root)->suite_idf[i]->lettre = '_';
+            (cont->root)->suite_idf[i]->idf_existant == false;
+        }
+
+    }
+    (cont->root)->lettre = NULL;
+    (cont->root)->data = NULL;
+    return cont;
+}
+
+void free_context(context_t context) // liberer la memoire allouée pour le contexte
+{
+    // parcourir le contexte pour tout liberer
+    (context->root)->idf_existant == false;
+    for(int i = 0; i < NB_ELEM_ALPHABET; i++)
+    {
+
+        if(i >= 0 && i < 26)
+        {
+            (context->root)->suite_idf[i]->lettre = NULL;
+            (context->root)->suite_idf[i]->idf_existant == false;
+        }
+        else if(i >=26 && i < 52){
+            (context->root)->suite_idf[i]->lettre = NULL;
+            (context->root)->suite_idf[i]->idf_existant == false;
+        }
+        else if(i >=52 && i < 62){
+            (context->root)->suite_idf[i]->lettre = NULL;
+            (context->root)->suite_idf[i]->idf_existant == false;
+        }
+        else // i = 63
+        {
+            (context->root)->suite_idf[i]->lettre = '_';
+            (context->root)->suite_idf[i]->idf_existant == false;
+        }
+        free((context->root)->suite_idf[i] );
+    }
+    (context->root)->data = NULL;
+    (context->root)->lettre = NULL;
+    free(context);
+}
+
+bool context_add_element(context_t context, char * idf, void * data)// ajoute l’as-
+//sociation entre le nom idf et le noeud data dans le contexte context. Si le nom idf est
+//déjà présent, l’ajout échoue et la fonction retourne false. Sinon, la fonction retourne true.
+{
+    //parcours des contextes à la chaine?
+    if ((context->root)->idf_existant == true){
+        return NULL;
+    }
+    else
+    {
+        //(context->root)->idf = idf;
+        (context->root)->data = data;
+    }
+
+}
+
+void * get_data(context_t context, char * idf)//retourne le noeud précédemment
+//associé à idf dans context, ou null si idf n’existe pas dans context.
+{
+    // parcours de contextesà la chaine?
+    if ((context->root)->idf_existant == true)
+    {
+        return (context->root)->data;
+    }
+    return NULL;
+
+}
+
