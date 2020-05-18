@@ -6,7 +6,7 @@
 #define couleur(param) printf("\033[%sm",param)
 #include "defs.h"
 #include "common.h"
-
+#include "context.h"
 #include "y.tab.h"
 
 void yyerror(char *);
@@ -156,10 +156,13 @@ int main(int argc, char ** argv) {
 	printf("lex fin\n");
 	//printf("program root : %s\n" ,*program_root);
 	yyparse(&program_root);
+	context_t cont_test= create_context();
 	printf("yyparse FINI\n");
+	printf("nops du noeud dans lex: %d\n", program_root->nops);
 	printf("nature du noeud dans lex : %s\n",node_nature2string(program_root->nature));
 	const char* txtname = "tree.dot";
-	dump_tree(program_root,txtname ); // afficher le tree
+	//dump_tree(program_root,txtname ); // afficher le tree
+
 
 	printf("program root : %s\n" ,program_root);
 	printf("main3\n");
