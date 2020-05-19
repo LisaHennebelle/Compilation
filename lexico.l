@@ -153,9 +153,10 @@ int main(int argc, char ** argv) {
     yyin = fopen(infile, "r");
 	printf("main2\n");
 	//while(yylex());
-	printf("lex fin\n");
+	//printf("lex fin\n");
 	//printf("program root : %s\n" ,*program_root);
 	yyparse(&program_root);
+	printf("yacc fin\n");
 	//creation de contexte pour le test
 	context_t cont_test= create_context();
 	free_context(cont_test);
