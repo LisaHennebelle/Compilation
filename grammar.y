@@ -150,7 +150,10 @@ type : TOK_INT
         {
             printf("type : TOK_INT\n");
 			$$ = make_node(NODE_TYPE, 0, TYPE_INT);
-        	couleur("34"); printf("NODE_TYPE $$ = %s\n", node_nature2string($$->type));couleur("0");//*program_root = $$;
+            if ( $$ == NULL ){printf("$$ est null\n");}
+            printf("sortie de make_node\n");
+        	couleur("34");  //printf("valeur de $$ :%s\n", $$);
+            printf("NODE_TYPE $$ = %s\n", node_nature2string($$->type));couleur("0");//*program_root = $$;
 		}
         | TOK_BOOL
         {
@@ -217,12 +220,12 @@ listinst : listinstnonnull
 listinstnonnull : inst
                 {
 					$$ = $1;//$$ = make_node(NODE_LIST, 1, $1);
-                	couleur("34"); printf("NODE_LIST $$ = %s\n", node_nature2string($$->nature));couleur("0");//*program_root = $$;
+                	//couleur("34"); printf("NODE_LIST $$ = %s\n", node_nature2string($$->nature));couleur("0");//*program_root = $$;
 				}
                 | listinstnonnull inst
                 {
 					$$ = make_node(NODE_LIST, 2, $1, $2);
-                	couleur("34"); printf("NODE_LIST $$ = %s\n", node_nature2string($$->nature));couleur("0");//*program_root = $$;
+                	//couleur("34"); printf("NODE_LIST $$ = %s\n", node_nature2string($$->nature));couleur("0");//*program_root = $$;
 				}
                 ;
 inst: expr TOK_SEMICOL
@@ -479,11 +482,11 @@ node_t make_node(node_nature nature, int32_t nops, ...) {
     va_start(ap,nops);
                 //printf("make_node 2\n");
 
-    node_t retour = malloc(sizeof(node_s));
+    node_t retour = (node_s *) malloc(sizeof(node_s));
 				//printf("make_node 3\n");
     //retour->node_num = cptnodes;
 	retour->nature = nature;
-    printf("node nature : %s \n",node_nature2string(retour->nature));
+    printf("node nature make_node : %s \n",node_nature2string(retour->nature));
 				//printf("make_node 4\n");
 	retour->nops = nops;
     printf("nops vaut %d \n", nops);
