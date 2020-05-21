@@ -128,7 +128,6 @@ listdeclnonnull: vardecl
                 couleur("34"); printf("NODE_LIST $$ = %s\n", node_nature2string($$->nature));couleur("0");
             	//*program_root = $$;
 			}
-            | listdeclnonnull vardecl
             {
                 printf("listdecl non nulle : list + vardecl\n");
                 printf("$1 = %s\n$2 = %s", node_nature2string($1->nature), node_nature2string($2->nature));
@@ -136,6 +135,7 @@ listdeclnonnull: vardecl
                 couleur("34"); printf("NODE_LIST $$ = %s\n", node_nature2string($$->nature));couleur("0");
             	//*program_root = $$;
 			}
+            | listdeclnonnull vardecl
         ;
 vardecl : type listtypedecl TOK_SEMICOL
             {
@@ -486,7 +486,7 @@ node_t make_node(node_nature nature, int32_t nops, ...) {
 				//printf("make_node 3\n");
     //retour->node_num = cptnodes;
 	retour->nature = nature;
-    printf("node nature make_node : %s \n",node_nature2string(retour->nature));
+    //printf("node nature make_node : %s \n",node_nature2string(retour->nature));
 				//printf("make_node 4\n");
 	retour->nops = nops;
     printf("nops vaut %d \n", nops);
