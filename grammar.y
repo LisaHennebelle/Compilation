@@ -93,54 +93,54 @@ node_t make_node(node_nature nature, int nops, ...);
 program:
         listdeclnonnull maindecl /* presence de variables globales*/
         {
-            printf("program : liste non nulle et main\n");
+            printf("REGLE program : liste non nulle et main\n");
             $$ = make_node(NODE_PROGRAM, 2, $1, $2);
 			couleur("34"); printf("NODE_PROGRAM %s\n", node_nature2string($$->nature));couleur("0");
-            printf("node nature de $$ : %s\n",node_nature2string($$->nature) );
+            //printf("node nature de $$ : %s\n",node_nature2string($$->nature) );
             *program_root = $$;
 
         }
         | maindecl // presence de variables locales seulement
         {
-            printf("program : main\n");
+            printf("REGLE program : main\n");
             $$ = make_node(NODE_PROGRAM, 2, NULL, $1);
 			couleur("34"); printf("NODE_PROGRAM %s\n", node_nature2string($$->nature));couleur("0");
-            printf("node nature de $$ : %s\n",node_nature2string($$->nature) );
+            //printf("node nature de $$ : %s\n",node_nature2string($$->nature) );
             *program_root = $$;
 
         }
         ;
 listdecl: listdeclnonnull
         {
-            printf("listdecl : listdeclnonnull\n");
+            printf("REGLE listdecl : listdeclnonnull\n");
             $$ = $1;//make_node(NODE_LIST, 1, $1 );
 			couleur("34"); printf("NODE_LIST $$ = %s\n", node_nature2string($$->nature));("0");
             //*program_root = $$;
 
         }
         |
-        { printf("listdecl : epsilon");$$ = NULL; }
+        { printf("REGLE listdecl : epsilon");$$ = NULL; }
 
 listdeclnonnull: vardecl
             {
-                printf("listdecl non nulle : vardecl $$ = %s\n", node_nature2string($$->nature));
+                printf("REGLE listdecl non nulle : vardecl $$ = %s\n", node_nature2string($$->nature));
 				$$ = make_node(NODE_LIST, 1, $1);
                 couleur("34"); printf("NODE_LIST $$ = %s\n", node_nature2string($$->nature));couleur("0");
             	//*program_root = $$;
 			}
+            | listdeclnonnull vardecl
             {
-                printf("listdecl non nulle : list + vardecl\n");
-                printf("$1 = %s\n$2 = %s", node_nature2string($1->nature), node_nature2string($2->nature));
+                printf("REGLE listdeclnonnulle : list vardecl\n");
+                printf("$1 = %s\n$2 = %s\n", node_nature2string($1->nature), node_nature2string($2->nature));
 				make_node(NODE_LIST, 2, $1, $2);
                 couleur("34"); printf("NODE_LIST $$ = %s\n", node_nature2string($$->nature));couleur("0");
             	//*program_root = $$;
 			}
-            | listdeclnonnull vardecl
         ;
 vardecl : type listtypedecl TOK_SEMICOL
             {
-                printf("vardecl\n");
-                printf("$1 = %s\n$2 = %s", node_nature2string($1->nature), node_nature2string($2->nature));
+                printf("REGLE vardecl : type listtypedecl;\n");
+                printf("$1 = %s\n$2 = %s\n", node_nature2string($1->nature), node_nature2string($2->nature));
 				$$ = make_node(NODE_DECLS, 2, $1, $2);
                 couleur("34"); printf("NODE_LIST $$ = %s\n", node_nature2string($$->nature));couleur("0");
             	//*program_root = $$;
@@ -148,53 +148,52 @@ vardecl : type listtypedecl TOK_SEMICOL
         ;
 type : TOK_INT
         {
-            printf("type : TOK_INT\n");
+            printf("REGLE type : TOK_INT\n");
 			$$ = make_node(NODE_TYPE, 0, TYPE_INT);
-            if ( $$ == NULL ){printf("$$ est null\n");}
-            printf("sortie de make_node\n");
-        	couleur("34");  //printf("valeur de $$ :%s\n", $$);
-            printf("NODE_TYPE $$ = %s\n", node_nature2string($$->type));couleur("0");//*program_root = $$;
+            //if ( $$ == NULL ){printf("$$ est null\n");}
+            //printf("sortie de make_node\n");
+        	couleur("34"); printf("NODE_TYPE $$ = %s\n", node_type2string($$->type));couleur("0");//*program_root = $$;
 		}
         | TOK_BOOL
         {
-            printf("type : TOK_BOOL\n");
+            printf("REGLE type : TOK_BOOL\n");
 			$$ = make_node(NODE_TYPE, 0, TYPE_BOOL);
-			couleur("34"); printf("NODE_TYPE $$ = %s\n", node_nature2string($$->type));couleur("0");//*program_root = $$;
+			couleur("34"); printf("NODE_TYPE $$ = %s\n", node_type2string($$->type));couleur("0");//*program_root = $$;
 		}
         | TOK_VOID
         {
-            printf("type : TOK_VOID\n");
+            printf("REGLE type : TOK_VOID\n");
 			$$ = make_node(NODE_TYPE, 0, TYPE_VOID);
-			couleur("34"); printf("NODE_TYPE $$ = %s\n", node_nature2string($$->type));couleur("0");//*program_root = $$;
+			couleur("34"); printf("NODE_TYPE $$ = %s\n", node_type2string($$->type));couleur("0");//*program_root = $$;
 		}
         ;
 listtypedecl : decl
                 {
-                    printf("listtypedecl : decl\n");
+                    printf("REGLE listtypedecl : decl\n");
 					$$ = $1;//make_node(NODE_LIST, 1 ,$1);
 					//printf("listtypedecl : decl bis\n");
                 	couleur("34"); printf(" go decl $$ = %s\n" ,node_nature2string($$->nature));couleur("0");//*program_root = $$;
 				}
                 | listtypedecl TOK_COMMA decl
                 {
-                    printf("$1 = %s\n$3 = %s", node_nature2string($1->nature), node_nature2string($3->nature));
-                    printf("listtypedecl : listtypedecl, decl\n");
+                    printf("REGLE listtypedecl : listtypedecl, decl\n");
+                    printf("$1 = %s\n$3 = %s\n", node_nature2string($1->nature), node_nature2string($3->nature));
 					$$ = make_node(NODE_LIST, 2 , $1, $3);
                 	couleur("34"); printf("NODE_LIST $$ = %s\n", node_nature2string($$->nature));couleur("0");//*program_root = $$;
 				}
                 ;
 decl : ident
        	{
-            printf("decl : ident\n");
+            printf("REGLE decl : ident\n");
             printf("$1 = %s\n", node_nature2string($1->nature));
 	   		$$ = make_node(NODE_DECL, 2, $1, NULL );
        		couleur("34"); printf("NODE_DECL $$ = %s\n", node_nature2string($$->nature));couleur("0");//*program_root = $$;
-			printf("decl : ident bis\n");
+			//printf("decl : ident bis\n");
 		}
        	| ident TOK_AFFECT expr
        	{
-			printf("decl : ident TOK_AFFECT expr\n");
-            printf("$1 = %s\n$3 = %s", node_nature2string($1->nature), node_nature2string($3->nature));
+			printf("REGLE decl : ident = expr\n");
+            printf("$1 = %s\n$3 = %s\n", node_nature2string($1->nature), node_nature2string($3->nature));
 			$$ = make_node(NODE_DECL, 2 ,$1, $3);
        		couleur("34"); printf("NODE_DECL $$ = %s\n", node_nature2string($$->nature));couleur("0");//*program_root = $$;
 		}
@@ -202,10 +201,12 @@ decl : ident
 
 maindecl: type ident TOK_LPAR TOK_RPAR block
             {
+    			printf("REGLE maindecl: type ident ( ) block\n");
+                printf("$1 = %s\n$2 = %s\n$5 = %s\n", node_nature2string($1->nature), node_nature2string($2->nature), node_nature2string($5->nature));
                 //printf("$1 = %s\n$2 = %s\n$$5 = %s\n", node_nature2string($1->nature), node_nature2string($2->nature), node_nature2string($5->nature));
-                couleur("34"); printf("NODE_FUNC %s %s %s\n", node_nature2string($1->nature), node_nature2string($2->nature), node_nature2string($5->nature));couleur("0");//*program_root = $$;
 				$$ = make_node(NODE_FUNC, 3, $1, $2, $5, 8, 8);
-                printf("$$ = %s\n", node_nature2string($$->nature));
+                couleur("34"); printf("NODE_FUNC %s\n", node_nature2string($$->nature));couleur("0");//*program_root = $$;
+                //printf("$$ = %s\n", node_nature2string($$->nature));
 			}
         ;
 listinst : listinstnonnull
@@ -326,57 +327,57 @@ expr : expr TOK_MUL expr
 		}
 		| expr TOK_LE expr
 		{
-            printf("$1 = %s\n$3 = %s", node_nature2string($1->nature), node_nature2string($3->nature));
+            printf("$1 = %s\n$3 = %s\n", node_nature2string($1->nature), node_nature2string($3->nature));
 			$$ = make_node(NODE_LE, 2, $1, $3);
 		}
 		| expr TOK_EQ expr
 		{
-            printf("$1 = %s\n$3 = %s", node_nature2string($1->nature), node_nature2string($3->nature));
+            printf("$1 = %s\n$3 = %s\n", node_nature2string($1->nature), node_nature2string($3->nature));
 			$$ = make_node(NODE_EQ, 2, $1, $3);
 		}
 		| expr TOK_NE expr
 		{
-            printf("$1 = %s\n$3 = %s", node_nature2string($1->nature), node_nature2string($3->nature));
+            printf("$1 = %s\n$3 = %s\n", node_nature2string($1->nature), node_nature2string($3->nature));
 			$$ = make_node(NODE_NE, 2, $1, $3);
 		}
 		| expr TOK_AND expr
 		{
-            printf("$1 = %s\n$3 = %s", node_nature2string($1->nature), node_nature2string($3->nature));
+            printf("$1 = %s\n$3 = %s\n", node_nature2string($1->nature), node_nature2string($3->nature));
 			$$ = make_node(NODE_AND, 2, $1, $3);
 		}
 		| expr TOK_OR expr
 		{
-            printf("$1 = %s\n$3 = %s", node_nature2string($1->nature), node_nature2string($3->nature));
+            printf("$1 = %s\n$3 = %s\n", node_nature2string($1->nature), node_nature2string($3->nature));
 			$$ = make_node(NODE_OR, 2, $1, $3);
 		}
 		| expr TOK_BAND expr
 		{
-            printf("$1 = %s\n$3 = %s", node_nature2string($1->nature), node_nature2string($3->nature));
+            printf("$1 = %s\n$3 = %s\n", node_nature2string($1->nature), node_nature2string($3->nature));
 			$$ = make_node(NODE_BAND, 2, $1, $3);
 		}
 		| expr TOK_BOR expr
 		{
-            printf("$1 = %s\n$3 = %s", node_nature2string($1->nature), node_nature2string($3->nature));
+            printf("$1 = %s\n$3 = %s\n", node_nature2string($1->nature), node_nature2string($3->nature));
 			$$ = make_node(NODE_BOR, 2, $1, $3);
 		}
 		| expr TOK_BXOR expr
 		{
-            printf("$1 = %s\n$3 = %s", node_nature2string($1->nature), node_nature2string($3->nature));
+            printf("$1 = %s\n$3 = %s\n", node_nature2string($1->nature), node_nature2string($3->nature));
 			$$ = make_node(NODE_BXOR, 2, $1, $3);
 		}
 		| expr TOK_SRL expr
 		{
-            printf("$1 = %s\n$3 = %s", node_nature2string($1->nature), node_nature2string($3->nature));
+            printf("$1 = %s\n$3 = %s\n", node_nature2string($1->nature), node_nature2string($3->nature));
 			$$ = make_node(NODE_SRL, 2, $1, $3);
 		}
 		| expr TOK_SRA expr
 		{
-            printf("$1 = %s\n$3 = %s", node_nature2string($1->nature), node_nature2string($3->nature));
+            printf("$1 = %s\n$3 = %s\n", node_nature2string($1->nature), node_nature2string($3->nature));
 			$$ = make_node(NODE_SRA, 2, $1, $3);
 		}
 		| expr TOK_SLL expr /*pas trouve*/
 		{
-            printf("$1 = %s\n$3 = %s", node_nature2string($1->nature), node_nature2string($3->nature));
+            printf("$1 = %s\n$3 = %s\n", node_nature2string($1->nature), node_nature2string($3->nature));
 			$$ = make_node(NODE_SLL, 2, $1, $3);
 		}
 		| TOK_NOT expr
@@ -500,7 +501,7 @@ node_t make_node(node_nature nature, int32_t nops, ...) {
 	{
 		hop[i] = (node_s*)malloc(sizeof(node_s));
 	}*/
-				printf("make_node 6\n");
+				//printf("make_node 6\n");
 				//printf("nops=%d\n",nops);
 
     for (int i = 0; i < nops; i++)
@@ -548,25 +549,30 @@ node_t make_node(node_nature nature, int32_t nops, ...) {
                     //   type =  TYPE_NONE,TYPE_INT,TYPE_BOOL,TYPE_STRING,TYPE_VOID
                     case TYPE_NONE:
                         printf("TYPE_NONE\n");
+                        retour->type = TYPE_NONE;
                         break;
                     case TYPE_INT:
                         printf("TYPE_INT\n");
+                        retour->type = TYPE_INT;
                         break;
                     case TYPE_BOOL:
                         printf("TYPE_BOOL\n");
+                        retour->type = TYPE_BOOL;
                         break;
                     case TYPE_STRING:
                         printf("TYPE_STRING\n");
+                        retour->type = TYPE_STRING;
                         break;
                     case TYPE_VOID:
                         printf("TYPE_VOID\n");
+                        retour->type = TYPE_VOID;
                         break;
                     default :
-                        printf("defaut\n");
+                        printf("default\n");
                         break;
                 }
-            retour->type = va_arg(ap,node_type);
-				printf("make_node node_type réussi\n");
+                //retour->type = va_arg(ap,node_type);
+				printf("make_node node_type réussi %s\n", node_type2string(retour->type));
             break;
         case NODE_INTVAL:
                 printf("make_node intval affectation: %ld\n", va_arg(ap,int64_t));

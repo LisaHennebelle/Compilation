@@ -60,8 +60,9 @@ COMMENTAIRE     "//"({ASCII})*[\n]
 
 
 "void"          {printf("Detecté 'void' TOK_VOID genere\n");return TOK_VOID;}
-"if"            {printf("Detecté 'if' TOK_IF genere\n");return TOK_IF;}
+"int"           {printf("Detecté 'int' TOK_INT généré\n");return TOK_INT;}
 "bool"          {printf("Detecté 'bool' TOK_BOOL genere\n");return TOK_BOOL;}
+"if"            {printf("Detecté 'if' TOK_IF genere\n");return TOK_IF;}
 "true"          {printf("Detecté 'true' TOK_TRUE genere\n");return TOK_TRUE;}
 "false"         {printf("Detecté 'false' TOK_FALSE genere\n");return TOK_FALSE;}
 "else"          {printf("Detecté 'else' TOK_ELSE genere\n");return TOK_ELSE;}
@@ -69,12 +70,11 @@ COMMENTAIRE     "//"({ASCII})*[\n]
 "for"           {printf("Detecté 'for' TOK_FOR genere\n");return TOK_FOR;}
 "do"            {printf("Detecté 'do' TOK_DO genere\n");return TOK_DO;}
 "print"         {printf("Detecté 'print' TOK_PRINT genere\n");return TOK_PRINT;}
-"int"           {printf("Detecté 'int' TOK_INT généré\n");return TOK_INT;}
 "+" 			{printf("Detecté '+' TOK_PLUS généré\n");return TOK_PLUS;}
 "-"				{printf("Detecté '-' TOK_MINUS généré\n");return TOK_MINUS;}
 "*"				{printf("Detecté '*' TOK_MUL généré\n");return TOK_MUL;}
 "/"				{printf("Detecté '/' TOK_DIV généré\n");return TOK_DIV;}
-"%"				{printf("Detecté '%' TOK_MOD généré\n");return TOK_MOD;}
+"%"				{printf("Detecté '%%' TOK_MOD généré\n");return TOK_MOD;}
 ">"				{printf("Detecté '>' TOK_GT généré\n");return TOK_GT;}
 "<"				{printf("Detecté '<' TOK_LT généré\n");return TOK_LT;}
 "!"				{printf("Detecté '!' TOK_NOT généré\n");return TOK_NOT;} /*c'est la negation boolenne*/
@@ -83,7 +83,7 @@ COMMENTAIRE     "//"({ASCII})*[\n]
 "|"				{printf("Detecté '|' TOK_BOR généré\n");return TOK_BOR;}
 "^"				{printf("Detecté '^' TOK_BXOR généré\n");return TOK_BXOR;}
 "="				{printf("Detecté '=' TOK_AFFECT généré\n");return TOK_AFFECT;}
-";"				{printf("Detecté ';' ROK_SEMICOL généré\n");return TOK_SEMICOL;}
+";"				{printf("Detecté ';' TOK_SEMICOL généré\n");return TOK_SEMICOL;}
 ","				{printf("Detecté ',' TOK_COMMA généré\n");return TOK_COMMA;}
 "("				{printf("Detecté '(' TOK_LPAR généré\n");return TOK_LPAR;}
 ")"				{printf("Detecté ')' TOK_RPAR généré\n");return TOK_RPAR;}
@@ -167,7 +167,7 @@ int main(int argc, char ** argv) {
 	//dump_tree(program_root,txtname ); // afficher le tree
 
 
-	printf("program root : %s\n" ,program_root);
+	printf("program root : %s\n" ,node_nature2string(program_root->nature));
 	printf("main3\n");
     fclose(yyin);
 	printf("main4\n");

@@ -206,7 +206,7 @@ static int32_t dump_tree2dot_rec(FILE * f, node_t n, int32_t node_num) {
     n->node_num = node_num;
         printf("n->node_num reussi %d\n", node_num);
     int32_t curr_node_num = node_num + 1;
-    printf("cureent node_num = %d\n", curr_node_num);
+    printf("current node_num = %d\n", curr_node_num);
     printf("nops =%d\n", n->nops);
     if(n->nops<5) {
         for (int32_t i = 0; i < n->nops; i += 1) {
