@@ -502,13 +502,8 @@ ident : TOK_IDENT
 /* A completer et/ou remplacer avec d'autres fonctions */
 
 node_t make_node(node_nature nature, int32_t nops, ...) {
-	//couleur("30"); printf("NODE CREE\n");couleur("0");
-    //cptnodes ++;
-    //printf("on make le node n°%d\n", cptnodes);
-    va_list ap; /*liste des arguments supplémentaires*/
-				//printf("make_node 1\n");
+	va_list ap; /*liste des arguments supplémentaires*/
     va_start(ap,nops);
-                //printf("make_node 2\n");
     node_t retour;
     if(nature == NODE_LIST && nops == 0) // mise à jour d'une liste
     {
@@ -522,39 +517,12 @@ node_t make_node(node_nature nature, int32_t nops, ...) {
         return retour;
     }
     retour = (node_s *) malloc(sizeof(node_s));
-				//printf("make_node 3\n");
-    //retour->node_num = cptnodes;
 	retour->nature = nature;
-    //printf("node nature make_node : %s \n",node_nature2string(retour->nature));
-				//printf("make_node 4\n");
 	retour->nops = nops;
-    printf("nops vaut %d \n", nops);
-	//printf("sizeof(retour->nops): %ld %ld (int32_t)\n", sizeof(retour->nops), sizeof(nops));
-				//printf("make_node 5\n");
-    //node_t *hop;
-    //retour->opr= hop;
-	//printf("sizeof(retour->opr): %d %d\n", sizeof(retour->opr), sizeof(hop));
-			// !! sizeof(hop) > sizeof(retour->opr)
-	/*for(int i = 0; i < nops; i++)
-	{
-		hop[i] = (node_s*)malloc(sizeof(node_s));
-	}*/
-				//printf("make_node 6\n");
-				//printf("nops=%d\n",nops);
-
     for (int i = 0; i < nops; i++)
     {
-
             retour->opr[i] = va_arg(ap,node_t);
-                //printf("make node for 3 s'est bien passe\n");
     }
-				//printf("make_node for 4\n");
-			//printf("hop affecté! contient %d\n" , retour->opr[i]);
-
-				//printf("make_node 7\n");
-    //retour->opr = hop;
-				//printf("make_node 8\n");
-    // recherche des arguments supplementaires en fonction de la nature du noeud
     switch(nature)
     {
         case NODE_IDENT ://   type =  TYPE_NONE,TYPE_INT,TYPE_BOOL,TYPE_STRING,TYPE_VOID
@@ -625,6 +593,30 @@ node_t make_node(node_nature nature, int32_t nops, ...) {
             retour->str = va_arg(ap,char*);
 			retour->offset = va_arg(ap,int32_t);
                 printf("stringval affecté: %s\noffset: %d\n",retour->str, retour->offset);
+            break;
+            case NODE_PLUS:
+            case NODE_MINUS:
+            case NODE_MUL:
+            case NODE_DIV:
+            case NODE_MOD:
+            case NODE_LT:
+            case NODE_GT:
+            case NODE_LE:
+            case NODE_GE:
+            case NODE_EQ:
+            case NODE_NE:
+            case NODE_AND:
+            case NODE_OR:
+            case NODE_BAND:
+            case NODE_BOR:
+            case NODE_BXOR:
+            case NODE_SRA:
+            case NODE_SRL:
+            case NODE_SLL:
+            case NODE_NOT:
+            case NODE_BNOT:
+            case NODE_UMINUS:
+            retour->type = TYPE_NONE;
             break;
         default:
             printf("nature default\n");

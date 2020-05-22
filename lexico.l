@@ -34,25 +34,13 @@ extern int yydebug;
 
 %option yylineno
 
-
-/*je pose là les carcacteres speciaux et les token correspondant, je sais pas encore comment faire le lien*/
-/* "+" : TOK_PLUS "-": TOK_MINUS "*" : TOK_MUL  "/" :TOK_DIV "%" : TOK_MOD    ">":TOK_GT      "<": TOK_LT     "!": TOK_? : c'est la negation boolenne*/
-/* "~" : TOK_BNOT "&": TOK_BAND  "|" : TOK_BOR  "^" :TOK_BXOR "=": TOK_AFFECT ";":TOK_SEMICOL ",": TOK_COMMA  "(": TOK_LPAR */
-/* ")" : TOK_RPAR "{" : TOK_LACC "}" : TOK_RACC ">>":TOK_SRL ">>>": TOK_SRA   "<<":TOK_SLL    ">=":TOK_GE     "<=":TOK_LE*/
-/* "==": TOK_EQ   "!=": TOK_NE   "&&": TOK_AND  "||": TOK_OR*/
-
-
-
-
 CARACSPECIAUX	[\040-\057\072-\100\133-\140\173-\176]
 LETTRE          [a-zA-Z]
 CHIFFRE         [0-9]
 ENTIER          ("-")?[0-9]{CHIFFRE}*
 IDF             {LETTRE}({LETTRE}|{CHIFFRE}|'_')*
 ASCII           [\040-\176]
-/* cf sujet : CHAINE_CAR est l’ensemble de tous les caractères imprimables, à l’exception des caractères ’"’ et ’\’.*/
 CHAINE_CAR      ({ASCII})+
-/*({LETTRE}|{CHIFFRE}|{CARACSPECIAUX})+*/
 CHAINE          '"'({CHAINE_CAR}|'\"'|'\n')*'"'
 COMMENTAIRE     "//"({ASCII})*[\n]
 
@@ -156,18 +144,7 @@ int main(int argc, char ** argv) {
 
 	node_t program_root;
     yyin = fopen(infile, "r");
-	printf("main2\n");
-	//while(yylex());
-	//printf("lex fin\n");
-	//printf("program root : %s\n" ,*program_root);
 	yyparse(&program_root);
-	printf("yacc fin\n");
-	//creation de contexte pour le test
-	context_t cont_test= create_context();
-	free_context(cont_test);
-	printf("yyparse FINI\n");
-	printf("nops du noeud dans lex: %d\n", program_root->nops);
-	printf("nature du noeud dans lex : %s\n",node_nature2string(program_root->nature));
 	const char* txtname = "tree.dot";
 	dump_tree(program_root,txtname ); // afficher le tree
 

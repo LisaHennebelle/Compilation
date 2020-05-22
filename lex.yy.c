@@ -587,14 +587,7 @@ extern int yydebug;
 #endif
 
 #line 590 "lex.yy.c"
-/*je pose là les carcacteres speciaux et les token correspondant, je sais pas encore comment faire le lien*/
-/* "+" : TOK_PLUS "-": TOK_MINUS "*" : TOK_MUL  "/" :TOK_DIV "%" : TOK_MOD    ">":TOK_GT      "<": TOK_LT     "!": TOK_? : c'est la negation boolenne*/
-/* "~" : TOK_BNOT "&": TOK_BAND  "|" : TOK_BOR  "^" :TOK_BXOR "=": TOK_AFFECT ";":TOK_SEMICOL ",": TOK_COMMA  "(": TOK_LPAR */
-/* ")" : TOK_RPAR "{" : TOK_LACC "}" : TOK_RACC ">>":TOK_SRL ">>>": TOK_SRA   "<<":TOK_SLL    ">=":TOK_GE     "<=":TOK_LE*/
-/* "==": TOK_EQ   "!=": TOK_NE   "&&": TOK_AND  "||": TOK_OR*/
-/* cf sujet : CHAINE_CAR est l’ensemble de tous les caractères imprimables, à l’exception des caractères ’"’ et ’\’.*/
-/*({LETTRE}|{CHIFFRE}|{CARACSPECIAUX})+*/
-#line 598 "lex.yy.c"
+#line 591 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -811,11 +804,11 @@ YY_DECL
 		}
 
 	{
-#line 59 "lexico.l"
+#line 47 "lexico.l"
 
 
 
-#line 819 "lex.yy.c"
+#line 812 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -884,202 +877,202 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 62 "lexico.l"
+#line 50 "lexico.l"
 {printf("Detecté 'void' TOK_VOID genere\n");return TOK_VOID;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 63 "lexico.l"
+#line 51 "lexico.l"
 {printf("Detecté 'int' TOK_INT généré\n");return TOK_INT;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 64 "lexico.l"
+#line 52 "lexico.l"
 {printf("Detecté 'bool' TOK_BOOL genere\n");return TOK_BOOL;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 65 "lexico.l"
+#line 53 "lexico.l"
 {printf("Detecté 'if' TOK_IF genere\n");return TOK_IF;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 66 "lexico.l"
+#line 54 "lexico.l"
 {printf("Detecté 'true' TOK_TRUE genere\n");return TOK_TRUE;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 67 "lexico.l"
+#line 55 "lexico.l"
 {printf("Detecté 'false' TOK_FALSE genere\n");return TOK_FALSE;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 68 "lexico.l"
+#line 56 "lexico.l"
 {printf("Detecté 'else' TOK_ELSE genere\n");return TOK_ELSE;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 69 "lexico.l"
+#line 57 "lexico.l"
 {printf("Detecté 'while' TOK_WHILE genere\n");return TOK_WHILE;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 70 "lexico.l"
+#line 58 "lexico.l"
 {printf("Detecté 'for' TOK_FOR genere\n");return TOK_FOR;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 71 "lexico.l"
+#line 59 "lexico.l"
 {printf("Detecté 'do' TOK_DO genere\n");return TOK_DO;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 72 "lexico.l"
+#line 60 "lexico.l"
 {printf("Detecté 'print' TOK_PRINT genere\n");return TOK_PRINT;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 73 "lexico.l"
+#line 61 "lexico.l"
 {printf("Detecté '+' TOK_PLUS généré\n");return TOK_PLUS;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 74 "lexico.l"
+#line 62 "lexico.l"
 {printf("Detecté '-' TOK_MINUS généré\n");return TOK_MINUS;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 75 "lexico.l"
+#line 63 "lexico.l"
 {printf("Detecté '*' TOK_MUL généré\n");return TOK_MUL;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 76 "lexico.l"
+#line 64 "lexico.l"
 {printf("Detecté '/' TOK_DIV généré\n");return TOK_DIV;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 77 "lexico.l"
+#line 65 "lexico.l"
 {printf("Detecté '%%' TOK_MOD généré\n");return TOK_MOD;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 78 "lexico.l"
+#line 66 "lexico.l"
 {printf("Detecté '>' TOK_GT généré\n");return TOK_GT;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 79 "lexico.l"
+#line 67 "lexico.l"
 {printf("Detecté '<' TOK_LT généré\n");return TOK_LT;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 80 "lexico.l"
+#line 68 "lexico.l"
 {printf("Detecté '!' TOK_NOT généré\n");return TOK_NOT;} /*c'est la negation boolenne*/
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 81 "lexico.l"
+#line 69 "lexico.l"
 {printf("Detecté '~' TOK_BNOT généré\n");return TOK_BNOT;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 82 "lexico.l"
+#line 70 "lexico.l"
 {printf("Detecté '&' TOK_BAND généré\n");return TOK_BAND;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 83 "lexico.l"
+#line 71 "lexico.l"
 {printf("Detecté '|' TOK_BOR généré\n");return TOK_BOR;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 84 "lexico.l"
+#line 72 "lexico.l"
 {printf("Detecté '^' TOK_BXOR généré\n");return TOK_BXOR;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 85 "lexico.l"
+#line 73 "lexico.l"
 {printf("Detecté '=' TOK_AFFECT généré\n");return TOK_AFFECT;}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 86 "lexico.l"
+#line 74 "lexico.l"
 {printf("Detecté ';' TOK_SEMICOL généré\n");return TOK_SEMICOL;}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 87 "lexico.l"
+#line 75 "lexico.l"
 {printf("Detecté ',' TOK_COMMA généré\n");return TOK_COMMA;}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 88 "lexico.l"
+#line 76 "lexico.l"
 {printf("Detecté '(' TOK_LPAR généré\n");return TOK_LPAR;}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 89 "lexico.l"
+#line 77 "lexico.l"
 {printf("Detecté ')' TOK_RPAR généré\n");return TOK_RPAR;}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 90 "lexico.l"
+#line 78 "lexico.l"
 {printf("Detecté '{' TOK_LACC généré\n");return TOK_LACC;}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 91 "lexico.l"
+#line 79 "lexico.l"
 {printf("Detecté '}' TOK_RACC généré\n");return TOK_RACC;}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 92 "lexico.l"
+#line 80 "lexico.l"
 {printf("Detecté '>>' TOK_SRL généré\n");return TOK_SRL;}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 93 "lexico.l"
+#line 81 "lexico.l"
 {printf("Detecté '>>>' TOK_SRA généré\n");return TOK_SRA;}
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 94 "lexico.l"
+#line 82 "lexico.l"
 {printf("Detecté '<<' TOK_SLL généré\n");return TOK_SLL;}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 95 "lexico.l"
+#line 83 "lexico.l"
 {printf("Detecté '>=' TOK_GE généré\n");return TOK_GE;}
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 96 "lexico.l"
+#line 84 "lexico.l"
 {printf("Detecté '<=' TOK_LE généré\n");return TOK_LE;}
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 97 "lexico.l"
+#line 85 "lexico.l"
 {printf("Detecté '==' TOK_EQ généré\n");return TOK_EQ;}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 98 "lexico.l"
+#line 86 "lexico.l"
 {printf("Detecté '!=' TOK_NE généré\n");return TOK_NE;}
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 99 "lexico.l"
+#line 87 "lexico.l"
 {printf("Detecté '&&' TOK_AND généré\n");return TOK_AND;}
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 100 "lexico.l"
+#line 88 "lexico.l"
 {printf("Detecté '||' TOK_OR généré\n");return TOK_OR;}
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 104 "lexico.l"
+#line 92 "lexico.l"
 {
 				yylval.strval = strdup(yytext);
 				if (strcmp (strdup(yytext), "main") == 0 )
@@ -1093,7 +1086,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 115 "lexico.l"
+#line 103 "lexico.l"
 {
                 yylval.intval = atoi(yytext);
                 printf("Detecté entier %s, TOK_INTVAL généré\n",yytext );
@@ -1103,7 +1096,7 @@ YY_RULE_SETUP
 case 42:
 /* rule 42 can match eol */
 YY_RULE_SETUP
-#line 121 "lexico.l"
+#line 109 "lexico.l"
 {
                 yylval.strval = strdup(yytext);
                 printf("Detecté chaine %c TOK_STRING généré",*yytext);
@@ -1115,19 +1108,19 @@ YY_RULE_SETUP
 case 43:
 /* rule 43 can match eol */
 YY_RULE_SETUP
-#line 129 "lexico.l"
+#line 117 "lexico.l"
 {
 }
 	YY_BREAK
 case 44:
 /* rule 44 can match eol */
 YY_RULE_SETUP
-#line 132 "lexico.l"
+#line 120 "lexico.l"
 
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 134 "lexico.l"
+#line 122 "lexico.l"
 {
                 fprintf(stderr, "Error line %d: Lexical error\n", yylineno);
                 exit(1);
@@ -1135,10 +1128,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 140 "lexico.l"
+#line 128 "lexico.l"
 ECHO;
 	YY_BREAK
-#line 1142 "lex.yy.c"
+#line 1135 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2155,7 +2148,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 140 "lexico.l"
+#line 128 "lexico.l"
 
 
 int yywrap(void) {
@@ -2175,18 +2168,7 @@ int main(int argc, char ** argv) {
 
 	node_t program_root;
     yyin = fopen(infile, "r");
-	printf("main2\n");
-	//while(yylex());
-	//printf("lex fin\n");
-	//printf("program root : %s\n" ,*program_root);
 	yyparse(&program_root);
-	printf("yacc fin\n");
-	//creation de contexte pour le test
-	context_t cont_test= create_context();
-	free_context(cont_test);
-	printf("yyparse FINI\n");
-	printf("nops du noeud dans lex: %d\n", program_root->nops);
-	printf("nature du noeud dans lex : %s\n",node_nature2string(program_root->nature));
 	const char* txtname = "tree.dot";
 	dump_tree(program_root,txtname ); // afficher le tree
 
