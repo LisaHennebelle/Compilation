@@ -24,7 +24,9 @@ extern int sflag;
 extern int vflag;
 extern int cptnodes;
 extern int mainflag;
-
+node_type typetemp;
+int cptenfants = 1;//nombre de vardecl quand il y a plusieurs declaration en liste
+int cptvar = 0;//compteur de declaration de variables ligne apres ligne
 
 /* prototypes */
 int yylex(void);
@@ -124,16 +126,20 @@ listdecl: listdeclnonnull
 
 listdeclnonnull: vardecl
             {
+                cptvar ++;
+                printf ("nombre d'enfants de la liste : %d\n", cptvar);
                 printf("REGLE listdecl non nulle : vardecl $$ = %s\n", node_nature2string($$->nature));
-				$$ = make_node(NODE_LIST, 1, $1);
+				$$ = make_node(NODE_LIST, cptvar, $1);
                 couleur("34"); printf("NODE_LIST $$ = %s\n", node_nature2string($$->nature));couleur("0");
             	//*program_root = $$;
 			}
             | listdeclnonnull vardecl
             {
-                printf("REGLE listdeclnonnulle : list vardecl\n");
+                printf("REGLE listdeclnonnulle : listdeclnonnull vardecl\n");
                 printf("$1 = %s\n$2 = %s\n", node_nature2string($1->nature), node_nature2string($2->nature));
-				make_node(NODE_LIST, 2, $1, $2);
+                cptenfants++;
+                printf("nombre d'enfant de la liste : %d\n", cptenfants);
+                $$ = make_node(NODE_LIST, 0, $1, $2);
                 couleur("34"); printf("NODE_LIST $$ = %s\n", node_nature2string($$->nature));couleur("0");
             	//*program_root = $$;
 			}
@@ -151,6 +157,7 @@ type : TOK_INT
         {
             printf("REGLE type : TOK_INT\n");
 			$$ = make_node(NODE_TYPE, 0, TYPE_INT);
+            typetemp = TYPE_INT;
             //if ( $$ == NULL ){printf("$$ est null\n");}
             //printf("sortie de make_node\n");
         	couleur("34"); printf("NODE_TYPE $$ = %s\n", node_type2string($$->type));couleur("0");//*program_root = $$;
@@ -159,12 +166,14 @@ type : TOK_INT
         {
             printf("REGLE type : TOK_BOOL\n");
 			$$ = make_node(NODE_TYPE, 0, TYPE_BOOL);
+            typetemp = TYPE_BOOL;
 			couleur("34"); printf("NODE_TYPE $$ = %s\n", node_type2string($$->type));couleur("0");//*program_root = $$;
 		}
         | TOK_VOID
         {
             printf("REGLE type : TOK_VOID\n");
 			$$ = make_node(NODE_TYPE, 0, TYPE_VOID);
+            typetemp = TYPE_VOID;
 			couleur("34"); printf("NODE_TYPE $$ = %s\n", node_type2string($$->type));couleur("0");//*program_root = $$;
 		}
         ;
@@ -205,7 +214,9 @@ maindecl: type ident TOK_LPAR TOK_RPAR block
     			printf("REGLE maindecl: type ident ( ) block\n");
                 printf("$1 = %s\n$2 = %s\n$5 = %s\n", node_nature2string($1->nature), node_nature2string($2->nature), node_nature2string($5->nature));
                 //printf("$1 = %s\n$2 = %s\n$$5 = %s\n", node_nature2string($1->nature), node_nature2string($2->nature), node_nature2string($5->nature));
-				$$ = make_node(NODE_FUNC, 3, $1, $2, $5, 8, 8);
+                cptenfants = 1;
+                cptvar = 0;
+                $$ = make_node(NODE_FUNC, 3, $1, $2, $5, 8, 8);
                 couleur("34"); printf("NODE_FUNC %s\n", node_nature2string($$->nature));couleur("0");//*program_root = $$;
                 //printf("$$ = %s\n", node_nature2string($$->nature));
 			}
@@ -465,19 +476,19 @@ ident : TOK_IDENT
             if (mainflag != 1)
             {
                 printf("global idf %s\n", yylval.strval);
-                $$ = make_node(NODE_IDENT, 0, TYPE_NONE,nident , 1, 1, yylval.strval); //   type =  TYPE_NONE,TYPE_INT,TYPE_BOOL,TYPE_STRING,TYPE_VOID
+                $$ = make_node(NODE_IDENT, 0, typetemp,nident , -1, 1, yylval.strval); //   type =  TYPE_NONE,TYPE_INT,TYPE_BOOL,TYPE_STRING,TYPE_VOID
             }
             else
             {
                 if (strcmp (yylval.strval, "main") == 0)
                 {
                     printf("main idf %s\n", yylval.strval);
-                    $$ = make_node(NODE_IDENT, 0, TYPE_NONE,nident , 1, 1, yylval.strval);        
+                    $$ = make_node(NODE_IDENT, 0, typetemp,nident ,-1, 1, yylval.strval);
                 }
                 else
                 {
                     printf("local idf %s\n", yylval.strval);
-                    $$ = make_node(NODE_IDENT, 0, TYPE_NONE,nident , 1, 0, yylval.strval);
+                    $$ = make_node(NODE_IDENT, 0, typetemp,nident , -1, 0, yylval.strval);
                 }
             }
 
@@ -491,16 +502,26 @@ ident : TOK_IDENT
 /* A completer et/ou remplacer avec d'autres fonctions */
 
 node_t make_node(node_nature nature, int32_t nops, ...) {
-	couleur("30"); printf("NODE CREE\n");
-    couleur("0");
+	//couleur("30"); printf("NODE CREE\n");couleur("0");
     //cptnodes ++;
     //printf("on make le node n°%d\n", cptnodes);
     va_list ap; /*liste des arguments supplémentaires*/
 				//printf("make_node 1\n");
     va_start(ap,nops);
                 //printf("make_node 2\n");
-
-    node_t retour = (node_s *) malloc(sizeof(node_s));
+    node_t retour;
+    if(nature == NODE_LIST && nops == 0) // mise à jour d'une liste
+    {
+        retour = va_arg(ap, node_t);
+        printf("nops actuel: %d\n", retour->nops);
+        retour->nops++;// augmentation du nombre d'enfants
+        printf("nops modifié: %d\n", retour->nops);
+        retour->opr[nops-1] = va_arg(ap, node_t);
+        printf("Ajout de %s dans %s\n", node_nature2string((retour->opr[nops-1])->nature),
+                                        node_nature2string(retour->nature));
+        return retour;
+    }
+    retour = (node_s *) malloc(sizeof(node_s));
 				//printf("make_node 3\n");
     //retour->node_num = cptnodes;
 	retour->nature = nature;
@@ -523,10 +544,7 @@ node_t make_node(node_nature nature, int32_t nops, ...) {
 
     for (int i = 0; i < nops; i++)
     {
-				//printf("make_node for 1\n");
-        				//printf("make_node for 2\n");
-			//printf("arg supp n°%d = %d\n ", i+1 , va_arg(ap, node_t));
-				//printf("make_node for 3\n");
+
             retour->opr[i] = va_arg(ap,node_t);
                 //printf("make node for 3 s'est bien passe\n");
     }
@@ -555,7 +573,7 @@ node_t make_node(node_nature nature, int32_t nops, ...) {
             printf("offset: %d\nstack_size: %d\n",retour->offset,retour->stack_size);
             break;
         case NODE_TYPE:
-				printf("make_node node_type 1\n");
+				//printf("make_node node_type 1\n");
                 switch(va_arg(ap,node_type)) // print type associé
                 {
                     //   type =  TYPE_NONE,TYPE_INT,TYPE_BOOL,TYPE_STRING,TYPE_VOID
@@ -584,14 +602,16 @@ node_t make_node(node_nature nature, int32_t nops, ...) {
                         break;
                 }
                 //retour->type = va_arg(ap,node_type);
-				printf("make_node node_type réussi %s\n", node_type2string(retour->type));
+				//printf("make_node node_type réussi %s\n", node_type2string(retour->type));
             break;
         case NODE_INTVAL:
                 printf("make_node intval affectation: %ld\n", va_arg(ap,int64_t));
+            retour->type = TYPE_INT;
             retour->value = va_arg(ap,int64_t);
             break;
 		case NODE_BOOLVAL:
-                printf("make_node boolval affectation \n");
+                //printf("make_node boolval affectation \n");
+            retour->type = TYPE_BOOL;
 			if (va_arg(ap,int)== 1)
                 {   printf("true\n");
                     retour->value = 1;}
@@ -600,12 +620,13 @@ node_t make_node(node_nature nature, int32_t nops, ...) {
                     retour->value = 0;}
             break;
         case NODE_STRINGVAL :
+            retour->type = TYPE_STRING;
                 printf("make_node stringval affectation\n");
             retour->str = va_arg(ap,char*);
 			retour->offset = va_arg(ap,int32_t);
                 printf("stringval affecté: %s\noffset: %d\n",retour->str, retour->offset);
             break;
-		default:
+        default:
             printf("nature default\n");
             break;
     }

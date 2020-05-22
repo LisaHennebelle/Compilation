@@ -47,7 +47,7 @@ void parse_args(int argc, char ** argv) {
         {
 
             case 'h':
-            printf("Appels a ./minicc avec des options :\n"
+           printf("Appels a ./minicc avec des options :\n"
             "• -b : Affiche une bannière indiquant le nom du compilateur et des membres du binôme\n"
             "• -o <filename> : Définit le nom du fichier assembleur produit (défaut : out.s).\n"
             "• -t <int> : Définit le niveau de trace à utiliser entre 0 et 5 (0 = pas de trace ; 5 = toutes les traces; defaut = 0).\n"
@@ -58,17 +58,17 @@ void parse_args(int argc, char ** argv) {
             exit(0);
 
             case 'b':
-	            printf("##################COMPILATEUR##################\n Binome: Lisa HENNEBELLE & Diego MORENO VILLANUEVA\n");
+	           printf("##################COMPILATEUR##################\n Binome: Lisa HENNEBELLE & Diego MORENO VILLANUEVA\n");
 	            exit(0);
             case 'o':
                 filename = optarg;
-                printf("nom du fichier : %s\n", filename);
+               printf("nom du fichier : %s\n", filename);
                 break;
             case 't':
                 nbtraces = atoi(optarg);
                 if (nbtraces > 5)
                 {
-                    printf("Le nombre que vous avez indiqué est trop grand, remettez en un inférieur ou égal à 5\n");
+                   printf("Le nombre que vous avez indiqué est trop grand, remettez en un inférieur ou égal à 5\n");
 					exit(EXIT_FAILURE);
                 }
                 break;
@@ -76,7 +76,7 @@ void parse_args(int argc, char ** argv) {
                 nbregistres = atoi(optarg);
                 if (nbregistres < 4 || nbregistres > 8)
                 {
-                    printf("Le nombre que vous avez indiqué est incorrect, remettez en un entre 4 et 8\n");
+                   printf("Le nombre que vous avez indiqué est incorrect, remettez en un entre 4 et 8\n");
 					exit(EXIT_FAILURE);
                 }
                 break;
@@ -85,7 +85,7 @@ void parse_args(int argc, char ** argv) {
                 /*stop_after_syntax = true;*/
                 if (vflag == 1)
                 {
-                    printf("l'option -s n'est pas compatible avec l'option -v\n");
+                   printf("l'option -s n'est pas compatible avec l'option -v\n");
                     exit(EXIT_FAILURE);
                 }
                 break;
@@ -94,7 +94,7 @@ void parse_args(int argc, char ** argv) {
                 /*stop_after_verif = true;*/
                 if (sflag == 1)
                 {
-                    printf("l'option -v n'est pas compatible avec l'option -s\n");
+                   printf("l'option -v n'est pas compatible avec l'option -s\n");
                     exit(EXIT_FAILURE);
                 }
                 break;
@@ -105,7 +105,7 @@ void parse_args(int argc, char ** argv) {
         }
     }
     infile = argv[optind];
-    printf("Le fichier .c s'appelle %s\n", infile);
+
 }
 
 
@@ -117,10 +117,7 @@ char * strdup(char * s) {
 
 
 static int32_t dump_tree2dot_rec(FILE * f, node_t n, int32_t node_num) {
-        printf("DEBUT dump_tree2dot_rec\n");
-        //printf("node type : %s\n", node_type2string(n->type));
-    	//printf("node nature : %s \n",node_nature2string(n->nature));
-    if (n == NULL) {
+        if (n == NULL) {
         fprintf(f, "    N%d [shape=record, label=\"{{NULL}}\"];\n", node_num);
         return node_num;
     }
@@ -159,7 +156,7 @@ static int32_t dump_tree2dot_rec(FILE * f, node_t n, int32_t node_num) {
             fprintf(f, "    N%d [shape=record, label=\"{{NODE %s|Type: %s}}\"];\n", node_num, node_nature2string(n->nature), node_type2string(n->type));
             break;
         case NODE_LIST:
-            fprintf(f, "    N%d [shape=record, label=\"{{NODE LIST}}\"];\n", node_num);
+            fprintf(f, "    N%d [shape=record, label=\"{{NODE LIST|Nb. ops: %d}}\"];\n", node_num, n->nops);
             break;
         case NODE_PROGRAM:
         case NODE_BLOCK:
@@ -201,18 +198,18 @@ static int32_t dump_tree2dot_rec(FILE * f, node_t n, int32_t node_num) {
             fprintf(f, "    N%d [shape=record, label=\"{{NODE %s|Type: %s|Nb. ops: %d}}\"];\n", node_num, node_nature2string(n->nature), node_type2string(n->type), n->nops);
             break;
         default:
-            printf("*** Error in %s: unknow nature : %s\n", __func__, node_nature2string(n->nature));
+           //printf("*** Error in %s: unknow nature : %s\n", __func__, node_nature2string(n->nature));
             assert(false);
     }
-        printf("n->node_num\n");
+       //printf("n->node_num\n");
     n->node_num = node_num;
-        printf("n->node_num reussi %d\n", node_num);
+       //printf("n->node_num reussi %d\n", node_num);
     int32_t curr_node_num = node_num + 1;
-    printf("current node_num = %d\n", curr_node_num);
-    printf("nops =%d\n", n->nops);
+   //printf("current node_num = %d\n", curr_node_num);
+   //printf("nops =%d\n", n->nops);
 
         for (int32_t i = 0; i < n->nops; i += 1) {
-            printf("boucle enfants\n");
+           //printf("boucle enfants\n");
             int32_t new_node_num = dump_tree2dot_rec(f, n->opr[i], curr_node_num);
 
             fprintf(f, "    edge[tailclip=true];\n");
@@ -220,7 +217,7 @@ static int32_t dump_tree2dot_rec(FILE * f, node_t n, int32_t node_num) {
             curr_node_num = new_node_num + 1;
         }
 
-    printf("je suis passe par la\n");
+   //printf("je suis passe par la\n");
     return curr_node_num - 1;
 }
 
@@ -228,7 +225,7 @@ static int32_t dump_tree2dot_rec(FILE * f, node_t n, int32_t node_num) {
 
 static void dump_tree2dot(FILE * f, node_t root) {
     assert(root->nature == NODE_PROGRAM);
-    printf("nature program ok\n");
+   //printf("nature program ok\n");
     int32_t curr_node_num = 1;
     dump_tree2dot_rec(f, root, curr_node_num);
 }
@@ -237,14 +234,14 @@ static void dump_tree2dot(FILE * f, node_t root) {
 void dump_tree(node_t prog_root, const char * dotname) {
 
     FILE * f;
-    printf("function dump tree\n");
+   //printf("function dump tree\n");
     f = fopen(dotname, "w");
     if (f == NULL) {printf("il y a eu un pb d'ouverture du fichier\n");}
     fprintf(f, "digraph global_vars {\n");
     int32_t check =  prog_root->nops;
-    printf("nops vautavant l'appel à dump tree %d \n",check);
+   //printf("nops vautavant l'appel à dump tree %d \n",check);
     dump_tree2dot(f, prog_root);
-    printf("fin dump tree\n");
+   //printf("fin dump tree\n");
     fprintf(f, "}");
     fclose(f);
 	printf("file closed\n");
