@@ -9,6 +9,7 @@
 #include "context.h"
 #include "y.tab.h"
 
+void print_token(char*);
 void yyerror(char *);
 int yyparse(node_t * program_root);
 int fileno(FILE * stream);
@@ -17,7 +18,7 @@ void analyse_tree(node_t root);
 
 char * infile = NULL;
 char * outfile = NULL;
-int nbtraces;
+int nbtraces = 0;
 int nbregistres;
 int vflag;
 int sflag;
@@ -34,12 +35,21 @@ extern int yydebug;
 
 %option yylineno
 
-CARACSPECIAUX	[\040-\057\072-\100\133-\140\173-\176]
+
+/*je pose là les carcacteres speciaux et les token correspondant, je sais pas encore comment faire le lien*/
+/* "+" : TOK_PLUS "-": TOK_MINUS "*" : TOK_MUL  "/" :TOK_DIV "%" : TOK_MOD    ">":TOK_GT      "<": TOK_LT     "!": TOK_? : c'est la negation boolenne*/
+/* "~" : TOK_BNOT "&": TOK_BAND  "|" : TOK_BOR  "^" :TOK_BXOR "=": TOK_AFFECT ";":TOK_SEMICOL ",": TOK_COMMA  "(": TOK_LPAR */
+/* ")" : TOK_RPAR "{" : TOK_LACC "}" : TOK_RACC ">>":TOK_SRL ">>>": TOK_SRA   "<<":TOK_SLL    ">=":TOK_GE     "<=":TOK_LE*/
+/* "==": TOK_EQ   "!=": TOK_NE   "&&": TOK_AND  "||": TOK_OR*/
+
+
+
+
 LETTRE          [a-zA-Z]
 CHIFFRE         [0-9]
+ASCII           [\040-\176]
 ENTIER          ("-")?[0-9]{CHIFFRE}*
 IDF             {LETTRE}({LETTRE}|{CHIFFRE}|'_')*
-ASCII           [\040-\176]
 CHAINE_CAR      ({ASCII})+
 CHAINE          '"'({CHAINE_CAR}|'\"'|'\n')*'"'
 COMMENTAIRE     "//"({ASCII})*[\n]
@@ -47,45 +57,163 @@ COMMENTAIRE     "//"({ASCII})*[\n]
 %%
 
 
-"void"          {printf("Detecté 'void' TOK_VOID genere\n");return TOK_VOID;}
-"int"           {printf("Detecté 'int' TOK_INT généré\n");return TOK_INT;}
-"bool"          {printf("Detecté 'bool' TOK_BOOL genere\n");return TOK_BOOL;}
-"if"            {printf("Detecté 'if' TOK_IF genere\n");return TOK_IF;}
-"true"          {printf("Detecté 'true' TOK_TRUE genere\n");return TOK_TRUE;}
-"false"         {printf("Detecté 'false' TOK_FALSE genere\n");return TOK_FALSE;}
-"else"          {printf("Detecté 'else' TOK_ELSE genere\n");return TOK_ELSE;}
-"while"         {printf("Detecté 'while' TOK_WHILE genere\n");return TOK_WHILE;}
-"for"           {printf("Detecté 'for' TOK_FOR genere\n");return TOK_FOR;}
-"do"            {printf("Detecté 'do' TOK_DO genere\n");return TOK_DO;}
-"print"         {printf("Detecté 'print' TOK_PRINT genere\n");return TOK_PRINT;}
-"+" 			{printf("Detecté '+' TOK_PLUS généré\n");return TOK_PLUS;}
-"-"				{printf("Detecté '-' TOK_MINUS généré\n");return TOK_MINUS;}
-"*"				{printf("Detecté '*' TOK_MUL généré\n");return TOK_MUL;}
-"/"				{printf("Detecté '/' TOK_DIV généré\n");return TOK_DIV;}
-"%"				{printf("Detecté '%%' TOK_MOD généré\n");return TOK_MOD;}
-">"				{printf("Detecté '>' TOK_GT généré\n");return TOK_GT;}
-"<"				{printf("Detecté '<' TOK_LT généré\n");return TOK_LT;}
-"!"				{printf("Detecté '!' TOK_NOT généré\n");return TOK_NOT;} /*c'est la negation boolenne*/
-"~"				{printf("Detecté '~' TOK_BNOT généré\n");return TOK_BNOT;}
-"&"				{printf("Detecté '&' TOK_BAND généré\n");return TOK_BAND;}
-"|"				{printf("Detecté '|' TOK_BOR généré\n");return TOK_BOR;}
-"^"				{printf("Detecté '^' TOK_BXOR généré\n");return TOK_BXOR;}
-"="				{printf("Detecté '=' TOK_AFFECT généré\n");return TOK_AFFECT;}
-";"				{printf("Detecté ';' TOK_SEMICOL généré\n");return TOK_SEMICOL;}
-","				{printf("Detecté ',' TOK_COMMA généré\n");return TOK_COMMA;}
-"("				{printf("Detecté '(' TOK_LPAR généré\n");return TOK_LPAR;}
-")"				{printf("Detecté ')' TOK_RPAR généré\n");return TOK_RPAR;}
-"{"				{printf("Detecté '{' TOK_LACC généré\n");return TOK_LACC;}
-"}"				{printf("Detecté '}' TOK_RACC généré\n");return TOK_RACC;}
-">>"			{printf("Detecté '>>' TOK_SRL généré\n");return TOK_SRL;}
-">>>"			{printf("Detecté '>>>' TOK_SRA généré\n");return TOK_SRA;}
-"<<"			{printf("Detecté '<<' TOK_SLL généré\n");return TOK_SLL;}
-">="			{printf("Detecté '>=' TOK_GE généré\n");return TOK_GE;}
-"<="			{printf("Detecté '<=' TOK_LE généré\n");return TOK_LE;}
-"=="			{printf("Detecté '==' TOK_EQ généré\n");return TOK_EQ;}
-"!="			{printf("Detecté '!=' TOK_NE généré\n");return TOK_NE;}
-"&&"			{printf("Detecté '&&' TOK_AND généré\n");return TOK_AND;}
-"||"			{printf("Detecté '||' TOK_OR généré\n");return TOK_OR;}
+"void"		{	//printf("Detecté 'void' TOK_VOID genere\n");
+				print_token("TOK VOID");
+				return TOK_VOID;
+			}
+"int"		{	//printf("Detecté 'int' TOK_INT généré\n");
+				print_token("TOK INT");
+				return TOK_INT;
+			}
+"bool"		{	//printf("Detecté 'bool' TOK_BOOL généré\n");
+				print_token("TOK BOOL");
+				return TOK_BOOL;
+			}
+"if"		{	//printf("Detecté 'if' TOK_IF genere\n");
+				print_token("TOK IF");
+				return TOK_IF;
+			}
+"true"		{	//printf("Detecté 'true' TOK_TRUE genere\n");
+				print_token("TOK TRUE");
+				return TOK_TRUE;
+			}
+"false"		{	//printf("Detecté 'false' TOK_FALSE genere\n");
+				print_token("TOK FALSE");
+				return TOK_FALSE;
+			}
+"else"		{	//printf("Detecté 'else' TOK_ELSE genere\n");
+				print_token("TOK ELSE");
+				return TOK_ELSE;
+			}
+"while"		{	//printf("Detecté 'while' TOK_WHILE genere\n");
+				print_token("TOK WHILE");
+				return TOK_WHILE;
+			}
+"for"		{	//printf("Detecté 'for' TOK_FOR genere\n");
+				print_token("TOK FOR");
+				return TOK_FOR;
+			}
+"do"		{	//printf("Detecté 'do' TOK_DO genere\n");
+				print_token("TOK DO");
+				return TOK_DO;
+			}
+"print"		{	//printf("Detecté 'print' TOK_PRINT genere\n");
+				print_token("TOK PRINT");
+				return TOK_PRINT;
+			}
+"+" 		{	//printf("Detecté '+' TOK_PLUS généré\n");
+				print_token("TOK PLUS");
+				return TOK_PLUS;
+			}
+"-"			{	//printf("Detecté '-' TOK_MINUS généré\n");
+				print_token("TOK MINUS");
+				return TOK_MINUS;
+			}
+"*"			{	//printf("Detecté '*' TOK_MUL généré\n");
+				print_token("TOK MUL");
+				return TOK_MUL;
+			}
+"/"			{	//printf("Detecté '/' TOK_DIV généré\n");
+				print_token("TOK DIV");
+				return TOK_DIV;
+			}
+"%"			{	//printf("Detecté '%%' TOK_MOD généré\n");
+				print_token("TOK MOD");
+				return TOK_MOD;
+			}
+">"			{	//printf("Detecté '>' TOK_GT généré\n");
+				print_token("TOK GT");
+				return TOK_GT;
+			}
+"<"			{	//printf("Detecté '<' TOK_LT généré\n");
+				print_token("TOK LT");
+				return TOK_LT;
+			}
+"!"			{ /*c'est la negation boolenne*/
+				//printf("Detecté '!' TOK_NOT généré\n");
+				print_token("TOK NOT");
+				return TOK_NOT;
+			}
+"~"			{	//printf("Detecté '~' TOK_BNOT généré\n");
+				print_token("TOK BNOT");
+				return TOK_BNOT;
+			}
+"&"			{	//printf("Detecté '&' TOK_BAND généré\n");
+				print_token("TOK BAND");
+				return TOK_BAND;
+			}
+"|"			{	//printf("Detecté '|' TOK_BOR généré\n");
+				print_token("TOK BOR");
+				return TOK_BOR;
+			}
+"^"			{	//printf("Detecté '^' TOK_BXOR généré\n");
+				print_token("TOK BXOR");
+				return TOK_BXOR;
+			}
+"="			{	//printf("Detecté '=' TOK_AFFECT généré\n");
+				print_token("TOK AFFECT");
+				return TOK_AFFECT;
+			}
+";"			{	//printf("Detecté ';' TOK_SEMICOL généré\n");
+				print_token("TOK SEMICOL");
+				return TOK_SEMICOL;
+			}
+","			{	//printf("Detecté ',' TOK_COMMA généré\n");
+				print_token("TOK COMMA");
+				return TOK_COMMA;
+			}
+"("			{	//printf("Detecté '(' TOK_LPAR généré\n");
+				print_token("TOK LPAR");
+				return TOK_LPAR;
+			}
+")"			{	//printf("Detecté ')' TOK_RPAR généré\n");
+				print_token("TOK RPAR");
+				return TOK_RPAR;
+			}
+"{"			{	//printf("Detecté '{' TOK_LACC généré\n");
+				print_token("TOK LACC");
+				return TOK_LACC;
+			}
+"}"			{	//printf("Detecté '}' TOK_RACC généré\n");
+				print_token("TOK RACC");
+				return TOK_RACC;
+			}
+">>"		{	//printf("Detecté '>>' TOK_SRL généré\n");
+				print_token("TOK SRL");
+				return TOK_SRL;
+			}
+">>>"		{	//printf("Detecté '>>>' TOK_SRA généré\n");
+				print_token("TOK SRA");
+				return TOK_SRA;
+			}
+"<<"		{	//printf("Detecté '<<' TOK_SLL généré\n");
+				print_token("TOK SLL");
+				return TOK_SLL;
+			}
+">="		{	//printf("Detecté '>=' TOK_GE généré\n");
+				print_token("TOK GE");
+				return TOK_GE;
+			}
+"<="		{	//printf("Detecté '<=' TOK_LE généré\n");
+				print_token("TOK LE");
+				return TOK_LE;
+			}
+"=="		{	//printf("Detecté '==' TOK_EQ généré\n");
+				print_token("TOK EQ");
+				return TOK_EQ;
+			}
+"!="		{	//printf("Detecté '!=' TOK_NE généré\n");
+				print_token("TOK NE");
+				return TOK_NE;
+			}
+"&&"		{	//printf("Detecté '&&' TOK_AND généré\n");
+				print_token("TOK AND");
+				return TOK_AND;
+			}
+"||"		{	//printf("Detecté '||' TOK_OR généré\n");
+				print_token("TOK OR");
+				return TOK_OR;
+			}
 
 
 
@@ -95,21 +223,22 @@ COMMENTAIRE     "//"({ASCII})*[\n]
 				{
 					 mainflag = 1 ;
 				 }
-
-                printf("Detecté idf '%s' TOK_IDENT généré\n",yytext);
+                //printf("Detecté idf '%s' TOK_IDENT généré\n",yytext);
+				print_token("TOK IDENT");
                 return TOK_IDENT;
 }
 
 {ENTIER} {
                 yylval.intval = atoi(yytext);
-                printf("Detecté entier %s, TOK_INTVAL généré\n",yytext );
+                //printf("Detecté entier %s, TOK_INTVAL généré\n",yytext );
+				print_token("TOK INTVAL");
                 return TOK_INTVAL;
 }
 
 {CHAINE} {
                 yylval.strval = strdup(yytext);
-                printf("Detecté chaine %c TOK_STRING généré",*yytext);
-
+                //printf("Detecté chaine %c TOK_STRING généré",*yytext);
+				print_token("TOK STRING");
                 return TOK_STRING;
 
 }
@@ -131,12 +260,17 @@ int yywrap(void) {
     return 1;
 }
 
+void print_token(char* tok)
+{
+	if(nbtraces)
+		printf("%s\n", tok);
+}
 
 int main(int argc, char ** argv) {
     /* A completer */
+	const char* txtname;
 
-
-	printf("-----parse args-----\n");
+	//printf("-----parse args-----\n");
     parse_args(argc, argv);
     #if YYDEBUG
     yydebug = 1;
@@ -144,17 +278,26 @@ int main(int argc, char ** argv) {
 
 	node_t program_root;
     yyin = fopen(infile, "r");
+	//while(yylex());
+	//printf("lex fin\n");
+	//printf("program root : %s\n" ,*program_root);
 	yyparse(&program_root);
-	const char* txtname = "tree.dot";
-	dump_tree(program_root,txtname ); // afficher le tree
-
+	printf("yacc fin\n");
+	//creation de contexte pour le test
+	context_t cont_test= create_context();
+	free_context(cont_test);
+	printf("yyparse FINI\n");
+	printf("nops du noeud dans lex: %d\n", program_root->nops);
+	printf("nature du noeud dans lex : %s\n",node_nature2string(program_root->nature));
+	if(nbtraces >= 3)
+	{
+		txtname = "tree.dot";
+		dump_tree(program_root,txtname); // afficher le tree
+	}
 
 	printf("program root : %s\n" ,node_nature2string(program_root->nature));
-	printf("main3\n");
     fclose(yyin);
-	printf("main4\n");
     analyse_tree(program_root);
-	printf("main5\n");
     yylex_destroy();
 	//printf("main6\n");
     return 0;
