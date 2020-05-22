@@ -10,7 +10,7 @@ digraph global_vars {
     N7 [shape=record, label="{{NODE DECL|Nb. ops: 2}}"];
     N8 [shape=record, label="{{NODE IDENT|Type: TYPE INT}|{<decl>Decl      |Ident: a|Offset: -1}}"];
     edge[tailclip=false];
-    "N8":decl:c -> "N1812614808" [style=dashed]
+    "N8":decl:c -> "N2065225745" [style=dashed]
     edge[tailclip=true];
     N7 -> N8
     N9 [shape=record, label="{{NULL}}"];
@@ -21,7 +21,7 @@ digraph global_vars {
     N10 [shape=record, label="{{NODE DECL|Nb. ops: 2}}"];
     N11 [shape=record, label="{{NODE IDENT|Type: TYPE INT}|{<decl>Decl      |Ident: b|Offset: -1}}"];
     edge[tailclip=false];
-    "N11":decl:c -> "N1812614808" [style=dashed]
+    "N11":decl:c -> "N2065225745" [style=dashed]
     edge[tailclip=true];
     N10 -> N11
     N12 [shape=record, label="{{NODE INTVAL|Type: TYPE INT}|{Value: 1}}"];
@@ -42,7 +42,7 @@ digraph global_vars {
     N15 [shape=record, label="{{NODE DECL|Nb. ops: 2}}"];
     N16 [shape=record, label="{{NODE IDENT|Type: TYPE BOOL}|{<decl>Decl      |Ident: boo|Offset: -1}}"];
     edge[tailclip=false];
-    "N16":decl:c -> "N1812614808" [style=dashed]
+    "N16":decl:c -> "N2065225745" [style=dashed]
     edge[tailclip=true];
     N15 -> N16
     N17 [shape=record, label="{{NULL}}"];
@@ -60,7 +60,7 @@ digraph global_vars {
     N18 -> N19
     N20 [shape=record, label="{{NODE IDENT|Type: TYPE VOID}|{<decl>Decl      |Ident: main|Offset: -1}}"];
     edge[tailclip=false];
-    "N20":decl:c -> "N1812614808" [style=dashed]
+    "N20":decl:c -> "N2065225745" [style=dashed]
     edge[tailclip=true];
     N18 -> N20
     N21 [shape=record, label="{{NODE BLOCK|Nb. ops: 2}}"];
@@ -72,7 +72,7 @@ digraph global_vars {
     N25 [shape=record, label="{{NODE DECL|Nb. ops: 2}}"];
     N26 [shape=record, label="{{NODE IDENT|Type: TYPE INT}|{<decl>Decl      |Ident: c|Offset: -1}}"];
     edge[tailclip=false];
-    "N26":decl:c -> "N1812614808" [style=dashed]
+    "N26":decl:c -> "N2065225745" [style=dashed]
     edge[tailclip=true];
     N25 -> N26
     N27 [shape=record, label="{{NODE INTVAL|Type: TYPE INT}|{Value: 3}}"];
