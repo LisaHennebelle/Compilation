@@ -21,7 +21,7 @@ int nbtraces;
 int nbregistres;
 int vflag;
 int sflag;
-
+int mainflag = 0 ;
 bool stop_after_syntax = false;
 bool stop_after_verif = false;
 /* A completer */
@@ -103,13 +103,18 @@ COMMENTAIRE     "//"({ASCII})*[\n]
 
 {IDF} {
 				yylval.strval = strdup(yytext);
+				if (strcmp (strdup(yytext), "main") == 0 )
+				{
+					 mainflag = 1 ;
+				 }
+
                 printf("Detecté idf '%s' TOK_IDENT généré\n",yytext);
                 return TOK_IDENT;
 }
 
-{ENTIER} {      /* complété mais pas testé */
+{ENTIER} {
                 yylval.intval = atoi(yytext);
-                printf("Detecté entier %s TOK_INTVAL généré\n",yytext);
+                printf("Detecté entier %s, TOK_INTVAL généré\n",yytext );
                 return TOK_INTVAL;
 }
 
@@ -164,7 +169,7 @@ int main(int argc, char ** argv) {
 	printf("nops du noeud dans lex: %d\n", program_root->nops);
 	printf("nature du noeud dans lex : %s\n",node_nature2string(program_root->nature));
 	const char* txtname = "tree.dot";
-	//dump_tree(program_root,txtname ); // afficher le tree
+	dump_tree(program_root,txtname ); // afficher le tree
 
 
 	printf("program root : %s\n" ,node_nature2string(program_root->nature));

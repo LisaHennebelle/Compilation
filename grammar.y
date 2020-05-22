@@ -23,6 +23,7 @@ extern int nbregistres;
 extern int sflag;
 extern int vflag;
 extern int cptnodes;
+extern int mainflag;
 
 
 /* prototypes */
@@ -454,17 +455,33 @@ paramprint : ident /*probleme*/
 ident : TOK_IDENT
 		{
 			printf("ident : TOK_IDENT\n");
-			$$ = make_node(NODE_IDENT, 0);/* //   type =  TYPE_NONE,TYPE_INT,TYPE_BOOL,TYPE_STRING,TYPE_VOID
+            // argument supp à la position nops:
+            //+ 1 = type de noeud
+            //+ 2 = declaration de noeud
+            //+ 3 = declaration de l'emplacement mémoire de la variable, int32_t
+            //+ 4 = declaration globale? bool = int => recuperer ?
+            //+ 5 =  identifiant
+            node_t nident;
+            if (mainflag != 1)
+            {
+                printf("global idf %s\n", yylval.strval);
+                $$ = make_node(NODE_IDENT, 0, TYPE_NONE,nident , 1, 1, yylval.strval); //   type =  TYPE_NONE,TYPE_INT,TYPE_BOOL,TYPE_STRING,TYPE_VOID
+            }
+            else
+            {
+                if (strcmp (yylval.strval, "main") == 0)
+                {
+                    printf("main idf %s\n", yylval.strval);
+                    $$ = make_node(NODE_IDENT, 0, TYPE_NONE,nident , 1, 1, yylval.strval);        
+                }
+                else
+                {
+                    printf("local idf %s\n", yylval.strval);
+                    $$ = make_node(NODE_IDENT, 0, TYPE_NONE,nident , 1, 0, yylval.strval);
+                }
+            }
 
-    				printf("make_node node_ident 1\n");
-                retour->type      =va_arg(ap,node_type); // argument supp à la position nops + 1 = type de noeud
-    				printf("make_node node_ident 2\n");
-                retour->decl_node =va_arg(ap,node_t); // argument supp à la position nops + 2 = declaration de noeud
-    				printf("make_node node_ident 3\n");
-                retour->offset    =va_arg(ap,int32_t ); // argument supp à la position nops + 3 = declaration de l'emplacement mémoire de la variable int32_t
-    				printf("make_node node_ident 4\n");
-                retour->global_decl=va_arg(ap,int); // argument supp à la position nops + 4 = declaration globale?
-    				printf("make_node node_ident 5\n");*/
+
 			couleur("34"); printf("NODE_IDENT $$ = %s\n", node_nature2string($$->nature));couleur("0");//*program_root = $$;
 		}
 		;
@@ -523,16 +540,11 @@ node_t make_node(node_nature nature, int32_t nops, ...) {
     switch(nature)
     {
         case NODE_IDENT ://   type =  TYPE_NONE,TYPE_INT,TYPE_BOOL,TYPE_STRING,TYPE_VOID
-
-				//printf("make_node node_ident 1\n");
             retour->type      =va_arg(ap,node_type); // argument supp à la position nops + 1 = type de noeud
-				//printf("make_node node_ident 2\n");
             retour->decl_node =va_arg(ap,node_t); // argument supp à la position nops + 2 = declaration de noeud
-				//printf("make_node node_ident 3\n");
-            retour->offset    =va_arg(ap,int32_t ); // argument supp à la position nops + 3 = declaration de l'emplacement mémoire de la variable int32_t
-				//printf("make_node node_ident 4\n");
-            retour->global_decl=va_arg(ap,int); // argument supp à la position nops + 4 = declaration globale?
-				//printf("make_node node_ident 5\n");
+            retour->offset    =va_arg(ap,int32_t ); // argument supp à la position nops + 3 = declaration de l'emplacement mémoire de la variable int32_t + 4 = declaration globale?
+            retour->global_decl=(bool)va_arg(ap,int); // argument supp à la position nops + 4 = declaration globale?
+            retour->ident   = va_arg(ap, char*); // argument supp à la position nops + 5 =  identifiant
             break;
         case NODE_AFFECT :
             retour->type      =va_arg(ap,node_type); // argument supp à la position nops + 1 = type de noeud
