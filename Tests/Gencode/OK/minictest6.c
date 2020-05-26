@@ -1,12 +1,11 @@
 void main() {
 	int var1 = 15, i;
-	bool var2 = true;
-	if (var2 == true) {
+	bool var5 = true;
+	if (var5 == true) {
 	  var1 = 1;
 	}
-if ((var1%2)== 0){ bool var2 = false; }
 	else {
-	  var1 = 2;
+	  var1 = 5;
 	}
 	for (i = 1; i < 5; i = i + 1)
 	{var1 = var1+1;}

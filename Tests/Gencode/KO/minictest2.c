@@ -1,10 +1,10 @@
 void main() {
 	int var1 = 15, i;
 	bool var2 = true;
-	if (var2 == true) {
+	while (var2 == true) {
 	  var1 = 1;
 	}
-if ((var1%2)== 0){ bool var2 = false; }
+while ((var1%2)== 0){ var 1 = 3 % 10; }
 	else {
 	  var1 = 2;
 	}

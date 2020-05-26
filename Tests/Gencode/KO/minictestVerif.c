@@ -4,7 +4,7 @@ void main() {
 	if (var2 == true) {
 	  var1 = 1;
 	}
-if ((var1%2)== 0){ bool var2 = false; }
+if ((var1%2)== 0){ var 1 = 3 % 10; }
 	else {
 	  var1 = 2;
 	}
