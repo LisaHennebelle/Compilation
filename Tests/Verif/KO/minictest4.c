@@ -4,6 +4,7 @@ void main() {
 	if (var2 == true) {
 	  var1 = 1;
 	}
+	var 1 = 3 / 0
 if ((var1%2)== 0){ var 1 = 3 % 0; }
 	print(var1);
 }

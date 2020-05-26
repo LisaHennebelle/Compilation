@@ -4,6 +4,5 @@ void main() {
 	if (var2 == true) {
 	  var1 = 1;
 	}
-		if ((var1%2)== 0){ var2 = false; }
-	print(var1);
+	print(var1)
 }

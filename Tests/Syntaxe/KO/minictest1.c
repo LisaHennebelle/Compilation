@@ -1,8 +1,8 @@
 void main() {
-	int carotte % 0 ;
-	bool var2 % true;
-	if (var2 %% true) {
-	  carotte % 1;
+	int 35 = 0 ;
+	bool var2 = true;
+	if (var2 == true) {
+	  35 = 1;
 	}
-	print(carotte);
+	print(35);
 }

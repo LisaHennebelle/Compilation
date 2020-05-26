@@ -12,8 +12,8 @@
 cd Tests/Syntaxe/OK
 	echo "/*/*/*/*/*/*/*/*/*/*/*/*/*/*/* Verification syntaxes OK /*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
 	#declaration des fichiers de tests et des changements de caractères associes
-	declare -a tableau_indi=("minictest0.c" "minictest1.c" "minictest2.c" "minictest3.c" "minictest4.c")
-	declare -a tab_carac=("s/==/!=/g" "s/var1/carotte/g" "s/if/while/g" "s/true/false/g" "'1i\if ((var1%2)== 0){ var2 = false; }'")
+	declare -a tableau_indi=("minictest0.c" "minictest1.c" "minictest2.c" "minictest3.c" "minictest4.c" "minictest5.c" "minictest6.c" "minictest7.c" "minictest8.c" "minictest9.c" "minictest10.c" "minictest11.c" "minictest12.c" "minictest13.c" "minictest14.c""minictest15.c" "minictest16.c" "minictest17.c" "minictest18.c" "minictest19.c" "minictest20.c" "minictest21.c" "minictest22.c" "minictest23.c" "minictest24.c")
+	declare -a tab_carac=("s/==/!=/g" "s/var1/carotte/g" "s/if/while/g" "s/true/false/g")
 	#declaration et ecriture d'un fichier de reference
 	declare -a fichierref=("minictestSyntaxe.c")
 	echo "void main() {" > ${fichierref[0]}
@@ -43,7 +43,6 @@ cd Tests/Syntaxe/OK
 	        echo ${tableau_indi[$i]}
 			echo "sed -i ${tab_carac[$i]} ${tableau_indi[$i]}"
 	        sed -i ${tab_carac[$i]} ${tableau_indi[$i]}
-	        #more ${tableau_indi[$i]}
 
 			i=$[$i+1]
 		done
@@ -52,15 +51,23 @@ cd Tests/Syntaxe/OK
 	#lancer la fonction sur 5 boucles :
 	bouclewhile 5
 
+	#ajout de lignes
+	cp --copy-contents ${fichierref[0]} ${tableau_indi[$i]}
+	sed -i '7i\		if ((var1%2)== 0){ var2 = false; }' ${tableau_indi[$i]}
+	i=$[$i+1]
+	cp --copy-contents ${fichierref[0]} ${tableau_indi[$i]}
+	sed -i '1i\int var3 = 15; }' ${tableau_indi[$i]}
+	i=$[$i+1]
+
 cd ../KO
 	echo "/*/*/*/*/*/*/*/*/*/*/*/*/*/*/* Verification syntaxes KO /*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
 	#declare -a tableau_indi=("minictest0.c" "minictest1.c" "minictest2.c" "minictest3.c" "minictest4.c")
-	declare -a tab_carac=("s/==/!=/g" "s/var1/carotte/g" "s/if/while/g" "s/true/false/g" "'1i\if ((var1%2)== 0){ var2 = false; }'")
+	declare -a tab_carac=("s/==/%/g" "s/var1/35/g" "s/if/&&/g" "s/true/1/g" "s/15/15.2/g")
 	declare -a fichierref=("minictestSyntaxe.c")
 	declare -a fichiersrc=("../OK/minictestSyntaxe.c")
 	#modification du fichier de reference pour rendre sa syntaxe incorrecte
 	cp --copy-contents ${fichiersrc[0]}  ${fichierref[0]} #copie du fichier de reference de Syntaxe ok à syntaxe ko
-	sed -i "s/=/%/g" ${fichierref[0]} ${fichierref[0]}
+	#sed -i "s/=/%/g" ${fichierref[0]} ${fichierref[0]}
 	#lancer la fonction sur 5 boucles
 	bouclewhile 5
 	# Tests de verification
@@ -72,15 +79,19 @@ cd ../../Verif/OK
 
 cd ../KO
 	echo "/*/*/*/*/*/*/*/*/*/*/*/*/*/*/* Verification verif KO /*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
-	declare -a tab_carac=("s/==/!=/g" "s/var1/carotte/g" "s/if/while/g" "s/true/false/g" "'1i\if ((var1%2)== 0){ var2 = false; }'")
 	declare -a fichierref=("minictestVerif.c")
 	declare -a fichiersrc=("../OK/minictestSyntaxe.c")
 	#modification du fichier de reference pour le rendre incorrect
+	declare -i i=0
+
 	cp --copy-contents ${fichiersrc[0]}  ${fichierref[0]} #copie du fichier de reference de Syntaxe ok à syntaxe ko
-	sed -i '7i\if ((var1%2)== 0){ bool var2 = false; }' ${fichierref[0]}
+	sed -i '7i\if ((var1%2)== 0){ bool var2 = false; }' ${tableau_indi[$i]} #redeclaration de var2
 	more ${fichierref[0]}
-	#lancer la fonction sur 5 boucles
-	bouclewhile 5
+	i=$[$i+1]
+	cp --copy-contents ${fichiersrc[0]}  ${fichierref[0]} #copie du fichier de reference de Syntaxe ok à syntaxe ko
+	sed -i '7i\if ((var1%2)== 0){ var2 = 1; }' ${fichierref[$i]} #redeclaration de var2
+
+
 
 # Test de Gencode
 cd ../../Gencode/OK

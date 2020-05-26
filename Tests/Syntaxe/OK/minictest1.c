@@ -1,8 +1,9 @@
+int var3 = 15; }
 void main() {
-	int carotte = 0 ;
+	int var1 = 0 ;
 	bool var2 = true;
 	if (var2 == true) {
-	  carotte = 1;
+	  var1 = 1;
 	}
-	print(carotte);
+	print(var1);
 }
