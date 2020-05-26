@@ -8,7 +8,7 @@ void main() {
 	else {
 	  var1 = 2;
 	}
-	while(nb<=5){nb=nb+1;}
+	do{nb=nb+1;}while(nb<=5);
 	bin1 = bin1 >> 2;
 	bin3 = bin1 | bin2;
 	bin2 = bin1 ^ bin3;

@@ -9,7 +9,7 @@ void main() {
 	  var1 = 2;
 	}
 	while(nb<=5){nb=nb+1;}
-	bin1 = bin1 >> 2;
+	bin1 = bin1 >>> 2;
 	bin3 = bin1 | bin2;
 	bin2 = bin1 ^ bin3;
 	booleen = !var2;

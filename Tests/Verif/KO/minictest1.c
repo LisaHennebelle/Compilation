@@ -1,8 +1,8 @@
 void main() {
 	int var1 = 15, i, nb = 0;
 	int bin1 = 230, bin2 = 12, bin3;
-	bool var2 = (true && false), booleen;
-	if (var2 == true) {
+	bool var2 = ('true' && false), booleen;
+	if (var2 == 'true') {
 	  var1 = 1;
 	}
 	else {

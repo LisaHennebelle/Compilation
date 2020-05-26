@@ -1,3 +1,4 @@
+int var3 = 15;
 void main() {
 	int var1 = 15, i, nb = 0;
 	int bin1 = 230, bin2 = 12, bin3;

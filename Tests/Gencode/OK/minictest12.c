@@ -4,6 +4,7 @@ void main() {
 	bool var2 = (true && false), booleen;
 	if (var2 == true) {
 	  var1 = 1;
+		if ((var1%2)== 0){ var2 = false; }
 	}
 	else {
 	  var1 = 2;

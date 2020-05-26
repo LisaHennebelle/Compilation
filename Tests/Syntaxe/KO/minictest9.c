@@ -5,7 +5,7 @@ void main() {
 	if (var2 == true) {
 	  var1 = 1;
 	}
-	else {
+	els {
 	  var1 = 2;
 	}
 	while(nb<=5){nb=nb+1;}
