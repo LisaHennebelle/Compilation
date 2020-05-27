@@ -7,6 +7,7 @@
 #include <string.h>
 #include <assert.h>
 #include "defs.h"
+#include "env.h"
 #include "common.h"
 #include "mips_inst.h"
 #define couleur(param) printf("\033[%sm",param)
@@ -99,6 +100,7 @@ program:
             //printf("<REGLE> program : liste non nulle et main\n");
             $$ = make_node(NODE_PROGRAM, 2, $1, $2);
 			*program_root = $$;
+            bool global = true;
 
         }
         | maindecl /* presence de variables locales seulement*/
@@ -106,7 +108,7 @@ program:
             //printf("<REGLE> program : main\n");
             $$ = make_node(NODE_PROGRAM, 2, NULL, $1);
 			*program_root = $$;
-
+            bool global = false;
         }
         ;
 listdecl: listdeclnonnull
@@ -554,32 +556,22 @@ node_t make_node(node_nature nature, int32_t nops, ...) {
 ////////////// Fonctions destinees à la passe 1 ///////////////////
 
 static int32_t parcours_rec(node_t n, int32_t node_num) {
+    int32_t offset;
     if (n == NULL) {
         return node_num;
     }
     char str[32];
-    int32_t i = 1;
     switch (n->nature) {
         case NODE_IDENT:
-            {
-                node_t decl_node = n->decl_node;
-                if (decl_node != NULL && decl_node != n) {
-                }
-                break;
-            }
+            offset =  env_add_element(n->ident, n, 4);// associe ident et noeud node. size = taille a allouer
+            n->offset = offset;
+            break;                                                              // valeur de retour : taille a allouer si positive ou nulle, pb si negative, a associer à l'offset d'un element
         case NODE_INTVAL:
         case NODE_BOOLVAL:
             break;
         case NODE_STRINGVAL:
-                while (true) {
-                    str[i - 1] = n->str[i];
-                    i += 1;
-                    if (n->str[i] == '"') {
-                        str[i - 1] = '\0';
-                        break;
-                    }
-                }
-
+            offset = add_string(n->str);
+            n->offset = offset;
             break;
         case NODE_TYPE:
             break;
@@ -588,7 +580,13 @@ static int32_t parcours_rec(node_t n, int32_t node_num) {
         case NODE_PROGRAM:
         case NODE_BLOCK:
         case NODE_DECLS:
+        if (n-> type == TYPE_VOID)
+        {
+            yyerror(n, "declaration multiple de type void");
+        }
+        break;
         case NODE_DECL:
+        
         case NODE_IF:
         case NODE_WHILE:
         case NODE_FOR:
