@@ -12,16 +12,10 @@ context_t create_context() // cree un contexte et lui alloue de la mémoire
     {
         printf("il y a eu un problème dans la création d'un contexte\n");
     }
-    printf("create_context\n");
     cont->root = malloc(sizeof(noeud_s));
     (cont->root)->idf_existant = false;
-    //cont->root->suite_idf = malloc(sizeof(noeud_s*)*NB_ELEM_ALPHABET);
-    /*if(cont->root) printf("cont->root\n");
-    if(cont->root->suite_idf) printf("cont->root->suite_idf\n");*/
     for(int i = 0; i < NB_ELEM_ALPHABET; i++)
     {
-        /*if(cont->root->suite_idf[i])
-            printf("cont->root->suite_idf[%d]\n", i);*/
         cont->root->suite_idf[i] = NULL;
     }
     (cont->root)->lettre = 0;
@@ -29,7 +23,33 @@ context_t create_context() // cree un contexte et lui alloue de la mémoire
     return cont;
 }
 
-noeud_t init_noeud_context(char lettre)
+int caractere_indice(char lettre)
+{
+    int car;
+    if(lettre >= 'a' && lettre <= 'z')
+    {
+        car = lettre - 'a';
+    }
+    else if(lettre >= 'A' && lettre <= 'Z')
+    {
+        car = lettre - 'A' + 26;
+    }
+    else if(lettre >= '0' && lettre <= '9')
+    {
+        car = lettre - '0' + 52;
+    }
+    else if(lettre == '_')
+    {
+        car = 62;
+    }
+    else
+    {
+        printf("ERROR dans l'evaluation d'un caractere %d\n", lettre);
+    }
+    return car;
+}
+
+noeud_t init_noeud_context(int lettre)
 {
   noeud_t noeud = malloc(sizeof(noeud_s));
   noeud->idf_existant = false;
@@ -37,117 +57,46 @@ noeud_t init_noeud_context(char lettre)
   for(int i = 0; i < NB_ELEM_ALPHABET; i++)
   {
       noeud->suite_idf[i] = NULL;
-
-      /*if(i >= 0 && i < 26)
-      {
-          //printf("hola2\n");
-          noeud->lettre = i + 'a';
-          //printf("hola3\n");
-          //printf("suivant = %c\n", ((cont->root)->suite_idf[i])->lettre);
-      }
-      else if(i >=26 && i < 52){
-          //printf("hola4\n");
-          noeud->lettre = (i-26) + 'A';
-          //printf("hola5\n");
-          //printf("suivant = %c\n", ((cont->root)->suite_idf[i])->lettre);
-      }
-      else if(i >=52 && i < 62){
-          //printf("hola6\n");
-          noeud->lettre = (i-52) + '0';
-          //printf("hola7\n");
-          //printf("suivant = %c\n", (cont->root)->suite_idf[i]->lettre);
-      }
-      else // i = 63
-      {
-          //printf("hola8\n");
-          noeud->lettre = '_';
-          //printf("hola9\n");
-      }*/
-      //(noeud->suite_idf[i])->idf_existant = false;
-      //((cont->root)->suite_idf[i])->suite_idf = NULL;
-      //(noeud->suite_idf[i])->data = NULL;
-      //printf("fin i %d\n", i);
   }
   noeud->lettre = lettre;
   noeud->data = NULL;
   return noeud;
 }
 
-void free_noeud(noeud_t noeud) //free recursif d'un noeud_t
-{
-    for(int i = 0; i < NB_ELEM_ALPHABET; i++)
-    {
-        if(noeud->suite_idf[i])
-        {
-            //printf("noeud->suite_idf[%d]\n", i);
-            free_noeud(noeud->suite_idf[i]);
-        }
-    }
-    noeud->data = NULL;
-    free(noeud);
-}
-
-void free_context(context_t context) // liberer la memoire allouée pour le contexte
-{
-    // parcourir le contexte pour tout liberer
-    //(context->root)->idf_existant = false;
-    //printf("avant for\n");
-    free_noeud(context->root);
-    /*for(int i = 0; i < NB_ELEM_ALPHABET; i++)
-    {
-        free((context->root)->suite_idf[i]);
-    }*/
-    //printf("free(suite_idf[i])");
-    //(context->root)->data = NULL;
-    //free(context->root);
-    free(context);
-}
-
 bool context_add_element(context_t context, char * idf, void * data)// ajoute l’as-
 //sociation entre le nom idf et le noeud data dans le contexte context. Si le nom idf est
 //déjà présent, l’ajout échoue et la fonction retourne false. Sinon, la fonction retourne true.
 {
-
-    //char c = idf[0];
-    noeud_t nac = context->root;
+    noeud_t actuel = context->root;
     int idf_len = strlen(idf);
+    int lettre, let_indice;
     //printf("RECURSIVITE\n");
     for(int i = 0; i < idf_len; i++)
     {
-        printf("suite idf : %c %d\n" , idf[i], idf[i]-'a');
+        lettre = idf[i];
+        let_indice = caractere_indice(lettre);
+        //////// juste verification
+        /*printf("suite idf : %c %d\n" , lettre, let_indice);
         for(int j = 0; j < 63; j++)
         { //VERIFICATION des noeuds déjà créés dans le noeud actuel
-            if(nac->suite_idf[j])
-                printf("nac->suite_idf[%d]\n", j);
-        }
-        if(!(nac->suite_idf[idf[i]-'a']))
+            if(actuel->suite_idf[j])
+                printf("actuel->suite_idf[%d]\n", j);
+        }*/
+        /////// juste verification
+        if(!(actuel->suite_idf[let_indice]))
         {
-            nac->suite_idf[idf[i]-'a'] = init_noeud_context(idf[i]);
-            printf("MALLOOOOOCCC\n");
+            //printf("MALLOOOOOCCC\n");
+            actuel->suite_idf[let_indice] = init_noeud_context(lettre);
         }
-        nac = nac->suite_idf[idf[i]-'a'];
+        actuel = actuel->suite_idf[let_indice];
     }
-    /*i=0;
-    while( c != '\0')
-    {
-        printf("suite idf : %c\n" , c);
-        nac = nac->suite_idf[c - 'a'];
-        if(nac == NULL)
-        {
-            nac = malloc(sizeof(noeud_t));
-            nac->idf_existant = false;
-            printf("MALLOOOOOCCC\n");
-        }
-        c = idf[i];
-        i++;
-    }*/
-    if( nac->idf_existant == true){
+    if( actuel->idf_existant == true){
         return false;
     }
     else
     {
-        nac->data = data;
-        nac->idf_existant = true;
+        actuel->data = data;
+        actuel->idf_existant = true;
         return true;
     }
 
@@ -158,31 +107,51 @@ void * get_data(context_t context, char * idf)//retourne le noeud précédemment
 {
     noeud_t noeud = context->root;
     int i = 0, idf_len = strlen(idf);
-    int car = idf[i] - 'a';
+    int car = caractere_indice(idf[i]);
     // parcours de contextes à la chaine
     while(i < idf_len && noeud->suite_idf[car])
     {
         noeud = noeud->suite_idf[car];
-        //printf("car=%c i=%d\n", car+'a', i);
-        i++;
-        car = idf[i] - 'a';
+        //printf("car=%d\t%c i=%d\n", car, idf[i], i);
+        if(idf[++i])
+            car = caractere_indice(idf[i]);
     }
     if(i < idf_len)
     {
-        printf("idf non trouve\n");
+        printf("IDF non trouve\n");
         return NULL;
     }
-    if (noeud->idf_existant == true)
+    if(noeud->idf_existant == true)
     {
-        printf("idf trouve !\n");
+        printf("IDF trouve !\n");
         return (context->root)->data;
     }
     return NULL;
 
 }
 
+void free_noeud(noeud_t noeud) //free recursif d'un noeud_t
+{
+    for(int i = 0; i < NB_ELEM_ALPHABET; i++)
+    {
+        if(noeud->suite_idf[i])
+        {
+            free_noeud(noeud->suite_idf[i]);
+        }
+    }
+    noeud->data = NULL;
+    free(noeud);
+}
+
+void free_context(context_t context) // liberer la memoire allouée pour le contexte
+{
+    free_noeud(context->root);
+    free(context);
+}
+
 int main(void)
 {
+    ///////////VERIFICATION DE CONTEXT
     //printf("hello context\n");
     context_s *context = create_context();
     printf("MAIN\n");
@@ -194,13 +163,13 @@ int main(void)
       printf("context->root->suite_idf[%d]\n", i++);
     }
     char *data = "patate";
-    char *idf = "girafe";
+    char *idf = "Gira_fe";
     bool test = context_add_element(context, idf, data);
-    if (test){printf("1er test ok\n");}
+    if (test){printf("\t1er test ok\n");}
     bool test2 = context_add_element(context, idf, data);
-    if(!test2){printf("2eme test ok\n");}
-    //if(context_add_element(context, (void*)"girasol", data)) printf("3eme test ok\n");
-    //printf("fini init context\n");
+    if(!test2){printf("\t2eme test ok\n");}
+    if(context_add_element(context, (void*)"Girasol", data)) printf("\t3eme test ok\n");
+    printf("fini init context\n");
     char *test_data = get_data(context, idf);
     free_context(context);
     return 0;}
