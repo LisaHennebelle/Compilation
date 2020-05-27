@@ -1,76 +1,76 @@
 #!/usr/bin/env bash
 # -------------------------Creation des divers fichiers de test--------------------------------- #
+
 declare -a tableau_indi=()
 for i in {0..20}; do
 	tableau_indi+=("minictest$i.c")
 done
 echo $tableau_indi
 
+#declaration et ecriture d'un fichier de reference
+declare -a fichierref=("minictestSyntaxe.c")
+echo "void main() {" 							>  ${fichierref[0]}
+echo "	int var1 = 15, i, nb = 0;" 				>> ${fichierref[0]}
+echo "	int bin1 = 230, bin2 = 12, bin3;" 		>> ${fichierref[0]}
+echo "	bool var2 = (true && false), booleen;" 	>> ${fichierref[0]}
+echo "	if (var2 == true) {" 					>> ${fichierref[0]}
+echo "	  var1 = 1;" 							>> ${fichierref[0]}
+echo "	}" 										>> ${fichierref[0]}
+echo "	else {" 								>> ${fichierref[0]}
+echo "	  var1 = 2;" 							>> ${fichierref[0]}
+echo "	}" 										>> ${fichierref[0]}
+echo "	while(nb<=5){nb=nb+1;}" 				>> ${fichierref[0]}
+echo "	bin1 = bin1 >> 2;" 						>> ${fichierref[0]}
+echo "	bin3 = bin1 | bin2;" 					>> ${fichierref[0]}
+echo "	bin2 = bin1 ^ bin3;" 					>> ${fichierref[0]}
+echo "	booleen = !var2;" 						>> ${fichierref[0]}
+echo "	for (i = 1; i < 5; i = i + 1)" 			>> ${fichierref[0]}
+echo "	{var1 = var1+1;}" 						>> ${fichierref[0]}
+echo "	print(var1);"							>> ${fichierref[0]}
+echo "}" 										>> ${fichierref[0]}
+#visualisation du fichier
+more ${fichierref[0]}
+
+function bouclewhile {
+	declare -i i=0
+	#sed -i '1 i\int i;' ${fichierref[0]} #ajouter texte au dessus de ligne 1
+	#more ${fichierref[0]}
+	while [ $i -lt $1 ]
+	do
+		# step 0
+		cp --copy-contents ${fichierref[0]} ${tableau_indi[$i]}
+
+		#step 1
+	    sed -i ${tab_carac[$i]} ${tableau_indi[$i]} #sed -i "s/var1/tata/g" nom_fichiher
+
+		i=$[$i+1]
+	done
+}
+
 cd Tests/Syntaxe/OK
 	echo "/*/*/*/*/*/*/*/*/*/*/*/*/*/*/* Verification syntaxes OK /*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
 	#declaration des fichiers de tests et des changements de caractères associes
 	declare -a tab_carac=(	"s/==/!=/g"
-							"s/var1/carotte/g"
-							"s/==/||/g"
-							"s/var1+1/var1%1/g"
-							"s/var1+1/var1-1/g"
-							"s/15/-15/g"
-							"s/2/5/g"
-							"s/i;/i=0;/g"
-							"s/+1;/*45;/g"
-							"s/>>/<</g"
-							"s/>>/>>>/g"
-							"s/while(nb<=5){nb=nb+1;}/do{nb=nb+1;}while(nb<=5);/g"
-							"s/|/&/g"
-							"s/nb<=5){nb=nb+1;}/nb>=5){nb=nb-1;}/g"
-							)
-	#declaration et ecriture d'un fichier de reference
-	declare -a fichierref=("minictestSyntaxe.c")
-	echo "void main() {" > ${fichierref[0]}
-	echo "	int var1 = 15, i, nb = 0;" >> ${fichierref[0]}
-	echo "	int bin1 = 230, bin2 = 12, bin3;" >> ${fichierref[0]}
-	echo "	bool var2 = (true && false), booleen;" >> ${fichierref[0]}
-	echo "	if (var2 == true) {" >> ${fichierref[0]}
-	echo "	  var1 = 1;" >> ${fichierref[0]}
-	echo "	}" >> ${fichierref[0]}
-	echo "	else {" >> ${fichierref[0]}
-	echo "	  var1 = 2;" >> ${fichierref[0]}
-	echo "	}" >> ${fichierref[0]}
-	echo "	while(nb<=5){nb=nb+1;}" >> ${fichierref[0]}
-	echo "	bin1 = bin1 >> 2;" >> ${fichierref[0]}
-	echo "	bin3 = bin1 | bin2;" >> ${fichierref[0]}
-	echo "	bin2 = bin1 ^ bin3;" >> ${fichierref[0]}
-	echo "	booleen = !var2;" >> ${fichierref[0]}
-	echo "	for (i = 1; i < 5; i = i + 1)" >> ${fichierref[0]}
-	echo "	{var1 = var1+1;}" >> ${fichierref[0]}
-	echo "	print(var1);">> ${fichierref[0]}
-	echo "}" >> ${fichierref[0]}
-	#visualisation du fichier
-	more ${fichierref[0]}
+	                        "s/var1/carotte/g"
+	                        "s/==/||/g"
+	                        "s/var1+1/var1%1/g"
+	                        "s/var1+1/var1-1/g"
+	                        "s/15/-15/g"
+	                        "s/2/5/g"
+	                        "s/i;/i=0;/g"
+	                        "s/+1;/*45;/g"
+	                        "s/>>/<</g"
+	                        "s/>>/>>>/g"
+	                        "s/while(nb<=5){nb=nb+1;}/do{nb=nb+1;}while(nb<=5);/g"
+	                        "s/|/&/g"
+	                        "s/nb<=5){nb=nb+1;}/nb>=5){nb=nb-1;}/g"
+	                        )
+	declare -i nbboucleSO=${#tab_carac[@]}
 
-
-	function bouclewhile {
-		declare -i i=0
-		#sed -i '1 i\int i;' ${fichierref[0]} #ajouter texte au dessus de ligne 1
-		#more ${fichierref[0]}
-		while [ $i -lt $1 ]
-		do
-	    	# step 0
-			cp --copy-contents ${fichierref[0]} ${tableau_indi[$i]}
-
-			#step 1
-	        sed -i ${tab_carac[$i]} ${tableau_indi[$i]} #sed -i "s/var1/tata/g" nom_fichiher
-
-			i=$[$i+1]
-		done
-	}
-
-	#lancer la fonction sur 12 boucles :
-	declare -i nbboucleSO=12
+	#lancer la fonction pour chaque element de tab_carac:
 	bouclewhile $nbboucleSO
 
 	#ajout de lignes
-
 	cp --copy-contents ${fichierref[0]} ${tableau_indi[$nbboucleSO]}
 	sed -i '7i\		if ((var1%2)== 0){ var2 = false; }' ${tableau_indi[$nbboucleSO]}
 	nbboucleSO=$[$nbboucleSO+1]
@@ -98,7 +98,7 @@ cd ../KO
 	declare -a fichierref=("minictestSyntaxe.c")
 	declare -a fichiersrc=("../OK/minictestSyntaxe.c")
 	cp --copy-contents ${fichiersrc[0]}  ${fichierref[0]} #copie du fichier de reference de Syntaxe ok à syntaxe ko
-	declare -i nbboucleSK=12
+	declare -i nbboucleSK=${#tab_carac[@]}
 	bouclewhile $nbboucleSK
 
 	# Tests de verification
@@ -106,6 +106,7 @@ cd ../../Verif/OK
 	echo "/*/*/*/*/*/*/*/*/*/*/*/*/*/*/* Verification verif OK /*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
 	sudo cp -r ../../Syntaxe/OK/* .
 	declare -i nbbouclesVO=$nbboucleSO
+
 cd ../KO
 	echo "/*/*/*/*/*/*/*/*/*/*/*/*/*/*/* Verification verif KO /*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
 	declare -a fichierref=("minictestVerif.c")
@@ -135,7 +136,7 @@ cd ../KO
 	#remplacage de caractères
 	bouclewhile 3
 
-	declare -i nbboucleVK=$i+3
+	declare -i nbboucleVK=$i+${#tab_carac[@]}
 
 # Test de Gencode
 cd ../../Gencode/OK
@@ -144,6 +145,7 @@ cd ../../Gencode/OK
 	pwd
 	ls
 	declare -i nbboucleGO=$nbboucleSO
+
 cd ../KO
 	echo "/*/*/*/*/*/*/*/*/*/*/*/*/*/*/* Verification Gencode KO /*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
 
@@ -159,7 +161,7 @@ cd ../KO
 	sed -i '7 i\ 		var1 = var1 / 3; int var4 =  var1 % 10;' ${fichierref[0]}
 	more ${fichierref[0]}
 	#lancer la fonction sur 5 boucles
-	declare -i nbboucleGK=5
+	declare -i nbboucleGK=${#tab_carac[@]}
 	bouclewhile $nbboucleGK
 
 cd ../../.. # retour au dossier source de Tests

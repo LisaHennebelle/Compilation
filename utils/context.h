@@ -26,7 +26,7 @@ typedef context_s * context_t;
 
 
 context_t create_context();
-noeud_t init_noeud_context();
+noeud_t init_noeud_context(char lettre);
 void free_noeud(noeud_t noeud);
 void free_context(context_t context);
 bool context_add_element(context_t context, char * idf, void * data);

@@ -29,7 +29,7 @@ context_t create_context() // cree un contexte et lui alloue de la mÃ©moire
     return cont;
 }
 
-noeud_t init_noeud_context()
+noeud_t init_noeud_context(char lettre)
 {
   noeud_t noeud = malloc(sizeof(noeud_s));
   noeud->idf_existant = false;
@@ -38,7 +38,7 @@ noeud_t init_noeud_context()
   {
       noeud->suite_idf[i] = NULL;
 
-      if(i >= 0 && i < 26)
+      /*if(i >= 0 && i < 26)
       {
           //printf("hola2\n");
           noeud->lettre = i + 'a';
@@ -62,12 +62,13 @@ noeud_t init_noeud_context()
           //printf("hola8\n");
           noeud->lettre = '_';
           //printf("hola9\n");
-      }
+      }*/
       //(noeud->suite_idf[i])->idf_existant = false;
       //((cont->root)->suite_idf[i])->suite_idf = NULL;
       //(noeud->suite_idf[i])->data = NULL;
       //printf("fin i %d\n", i);
   }
+  noeud->lettre = lettre;
   noeud->data = NULL;
   return noeud;
 }
@@ -121,7 +122,7 @@ bool context_add_element(context_t context, char * idf, void * data)// ajoute lâ
         }
         if(!(nac->suite_idf[idf[i]-'a']))
         {
-            nac->suite_idf[idf[i]-'a'] = init_noeud_context();
+            nac->suite_idf[idf[i]-'a'] = init_noeud_context(idf[i]);
             printf("MALLOOOOOCCC\n");
         }
         nac = nac->suite_idf[idf[i]-'a'];

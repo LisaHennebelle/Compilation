@@ -552,6 +552,8 @@ node_t make_node(node_nature nature, int32_t nops, ...) {
 		printf("NODE %s\n", node_nature2string(retour->nature));
 		couleur("0");
 	}
+    retour->lineno = yylineno;
+    
     return retour;
 }
 
