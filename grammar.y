@@ -392,6 +392,7 @@ expr : expr TOK_MUL expr
         | TOK_STRINGVAL
         {
             $$ = make_node(NODE_STRINGVAL, 0, yylval.strval, sizeof(yylval.strval) );
+            free(yylval.strval);
         }
         ;
 
@@ -412,6 +413,7 @@ paramprint : ident /*probleme*/
 			| TOK_STRINGVAL
 			{ // make node (node print, )
 				$$ = make_node(NODE_STRINGVAL, 0, yylval.strval, sizeof(yylval.strval) );
+                free(yylval.strval);
 			}
 			;
 
@@ -429,6 +431,7 @@ ident : TOK_IDENT
             {
                 //printf("global idf %s\n", yylval.strval);
                 $$ = make_node(NODE_IDENT, 0, typetemp,nident , -1, 1, yylval.strval);
+                free(yylval.strval);
             } //   type =  TYPE_NONE,TYPE_INT,TYPE_BOOL,TYPE_STRING,TYPE_VOID
             else
             {
@@ -436,11 +439,13 @@ ident : TOK_IDENT
                 {
                     //printf("main idf %s\n", yylval.strval);
                     $$ = make_node(NODE_IDENT, 0, typetemp,nident ,-1, 1, yylval.strval);
+                    free(yylval.strval);
                 }
                 else
                 {
                     //printf("local idf %s\n", yylval.strval);
                     $$ = make_node(NODE_IDENT, 0, typetemp,nident , -1, 0, yylval.strval);
+                    free(yylval.strval);
                 }
             }
 		}
@@ -454,17 +459,6 @@ node_t make_node(node_nature nature, int32_t nops, ...) {
 	va_list ap; /*liste des arguments supplémentaires*/
     va_start(ap,nops);
     node_t retour;
-    /*if(nature == NODE_LIST && nops == 0) // mise à jour d'une liste
-    {
-        retour = va_arg(ap, node_t);
-        printf("nops actuel: %d\n", retour->nops);
-        retour->nops++;// augmentation du nombre d'enfants
-        printf("nops modifié: %d\n", retour->nops);
-        retour->opr[nops-1] = va_arg(ap, node_t);
-        printf("Ajout de %s dans %s\n", node_nature2string((retour->opr[nops-1])->nature),
-                                        node_nature2string(retour->nature));
-        return retour;
-    }*/
     retour = (node_s *) malloc(sizeof(node_s));
 	retour->nature = nature;
 	retour->nops = nops;
@@ -553,13 +547,121 @@ node_t make_node(node_nature nature, int32_t nops, ...) {
 		couleur("0");
 	}
     retour->lineno = yylineno;
-    
+
     return retour;
+}
+
+////////////// Fonctions destinees à la passe 1 ///////////////////
+
+static int32_t parcours_rec(node_t n, int32_t node_num) {
+    if (n == NULL) {
+        return node_num;
+    }
+    char str[32];
+    int32_t i = 1;
+    switch (n->nature) {
+        case NODE_IDENT:
+            {
+                node_t decl_node = n->decl_node;
+                if (decl_node != NULL && decl_node != n) {
+                }
+                break;
+            }
+        case NODE_INTVAL:
+        case NODE_BOOLVAL:
+            break;
+        case NODE_STRINGVAL:
+                while (true) {
+                    str[i - 1] = n->str[i];
+                    i += 1;
+                    if (n->str[i] == '"') {
+                        str[i - 1] = '\0';
+                        break;
+                    }
+                }
+
+            break;
+        case NODE_TYPE:
+            break;
+        case NODE_LIST:
+            break;
+        case NODE_PROGRAM:
+        case NODE_BLOCK:
+        case NODE_DECLS:
+        case NODE_DECL:
+        case NODE_IF:
+        case NODE_WHILE:
+        case NODE_FOR:
+        case NODE_DOWHILE:
+        case NODE_PRINT:
+            break;
+        case NODE_FUNC:
+            break;
+        case NODE_PLUS:
+        case NODE_MINUS:
+        case NODE_MUL:
+        case NODE_DIV:
+        case NODE_MOD:
+        case NODE_LT:
+        case NODE_GT:
+        case NODE_LE:
+        case NODE_GE:
+        case NODE_EQ:
+        case NODE_NE:
+        case NODE_AND:
+        case NODE_OR:
+        case NODE_BAND:
+        case NODE_BOR:
+        case NODE_BXOR:
+        case NODE_SRA:
+        case NODE_SRL:
+        case NODE_SLL:
+        case NODE_NOT:
+        case NODE_BNOT:
+        case NODE_UMINUS:
+        case NODE_AFFECT:
+                break;
+        default:
+                break;
+    }
+
+    n->node_num = node_num;
+
+    int32_t curr_node_num = node_num + 1;
+       for (int32_t i = 0; i < n->nops; i += 1) {
+
+           int32_t new_node_num = parcours_rec( n->opr[i], curr_node_num);
+           curr_node_num = new_node_num + 1;
+        }
+    return curr_node_num - 1;
 }
 
 
 
-/* A completer */
+static void lancer_parcours(node_t root) {
+    assert(root->nature == NODE_PROGRAM);
+    int32_t curr_node_num = 1;
+    parcours_rec(root, curr_node_num);
+}
+//////////////////////////////////////////////////////////////////
+void free_tree(node_t node)
+{
+
+    if (node == NULL) {
+        return;
+    }
+    printf("freeing node %s\n", node_nature2string(node->nature));
+    printf("nops = %d\n:", node->nops);
+    for (int32_t i = 0; i < node->nops; i += 1) {
+            printf("attempt to free %s\n",node_nature2string((node->opr[i])->nature));
+            free_tree(node->opr[i]);
+    }
+
+    free(node);
+}
+
+
+
 void analyse_tree(node_t root) {
 
         if (!stop_after_syntax) {

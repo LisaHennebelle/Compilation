@@ -570,7 +570,7 @@ void yyerror(char *);
 int yyparse(node_t * program_root);
 int fileno(FILE * stream);
 void analyse_tree(node_t root);
-
+void free_tree(node_t root);
 
 char * infile = NULL;
 char * outfile = NULL;
@@ -2298,17 +2298,11 @@ int main(int argc, char ** argv) {
 
 	node_t program_root;
     yyin = fopen(infile, "r");
-	//while(yylex());
-	//printf("lex fin\n");
-	//printf("program root : %s\n" ,*program_root);
 	yyparse(&program_root);
 	printf("yacc fin\n");
 	//creation de contexte pour le test
 	context_t cont_test= create_context();
 	free_context(cont_test);
-	/*printf("yyparse FINI\n");
-	printf("nops du noeud dans lex: %d\n", program_root->nops);
-	printf("nature du noeud dans lex : %s\n",node_nature2string(program_root->nature));*/
 	if(nbtraces >= 3)
 	{
 		txtname = "tree.dot";
@@ -2319,7 +2313,7 @@ int main(int argc, char ** argv) {
     fclose(yyin);
     analyse_tree(program_root);
     yylex_destroy();
-	//printf("main6\n");
+	free_tree(program_root);
     return 0;
 }
 

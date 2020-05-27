@@ -6,7 +6,7 @@ for i in {0..20}; do
 	tableau_indi+=("minictest$i.c")
 done
 echo $tableau_indi
-
+cd Tests/Syntaxe/OK
 #declaration et ecriture d'un fichier de reference
 declare -a fichierref=("minictestSyntaxe.c")
 echo "void main() {" 							>  ${fichierref[0]}
@@ -47,7 +47,7 @@ function bouclewhile {
 	done
 }
 
-cd Tests/Syntaxe/OK
+
 	echo "/*/*/*/*/*/*/*/*/*/*/*/*/*/*/* Verification syntaxes OK /*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
 	#declaration des fichiers de tests et des changements de caractères associes
 	declare -a tab_carac=(	"s/==/!=/g"

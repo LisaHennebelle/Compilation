@@ -233,14 +233,6 @@ node_t make_node(node_nature nature, int32_t nops, ...) {
             printf("nature default\n");
             break;
     }
-/*
-	for(int i = 0; i < nops; i++)
-	{
-		printf("free%d\n",i+1);
-		free(hop[i]);
-		printf("free%d\n",i+1);
-	}*/
-    //free(hop);
 
 				//printf("make_node 20\n");
     va_end(ap);
