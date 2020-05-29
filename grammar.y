@@ -124,18 +124,18 @@ listdecl: listdeclnonnull
 
 listdeclnonnull: vardecl
             {
-                cptvar ++;
+                //cptvar ++;
                 //printf ("nombre d'enfants de la liste : %d\n", cptvar);
                 //printf("<REGLE> listdecl non nulle : vardecl $$ = %s\n", node_nature2string($$->nature));
-				$$ = make_node(NODE_LIST, cptvar, $1);
+				$$ = make_node(NODE_LIST, 2, $1);
 			}
             | listdeclnonnull vardecl
             {
                 //printf("<REGLE> listdeclnonnulle : listdeclnonnull vardecl\n");
                 //printf("$1 = %s\n$2 = %s\n", node_nature2string($1->nature), node_nature2string($2->nature));
-                cptenfants++;
+                //cptenfants++;
                 //printf("nombre d'enfant de la liste : %d\n", cptenfants);
-                $$ = make_node(NODE_LIST, cptenfants, $1, $2);
+                $$ = make_node(NODE_LIST, 2, $1, $2);
 			}
         ;
 vardecl : type listtypedecl TOK_SEMICOL
@@ -359,11 +359,11 @@ expr : expr TOK_MUL expr
             //printf("$2 = %s\n",node_nature2string($2->nature));
 			$$ = make_node(NODE_BNOT, 1, $2);
 		}
-		| TOK_LPAR expr TOK_RPAR /*pas trouve*/
+		| TOK_LPAR expr TOK_RPAR
 		{
 			//printf("<REGLE> expr : TOK_LPAR expr TOK_RPAR\n");
             //printf("$2 = %s\n",node_nature2string($2->nature));
-			//$$ = make_node(NODE_, 2, $1, $3)
+			$$ = $2;
 		}
 		| ident TOK_AFFECT expr
 		{
@@ -580,13 +580,13 @@ static int32_t parcours_rec(node_t n, int32_t node_num) {
         case NODE_PROGRAM:
         case NODE_BLOCK:
         case NODE_DECLS:
-        if (n-> type == TYPE_VOID)
-        {
-            yyerror(n, "declaration multiple de type void");
-        }
-        break;
+	        if (n-> type == TYPE_VOID)
+	        {
+	            yyerror(n, "declaration multiple de type void");
+	        }
+	        break;
         case NODE_DECL:
-        
+
         case NODE_IF:
         case NODE_WHILE:
         case NODE_FOR:
@@ -626,11 +626,24 @@ static int32_t parcours_rec(node_t n, int32_t node_num) {
     n->node_num = node_num;
 
     int32_t curr_node_num = node_num + 1;
-       for (int32_t i = 0; i < n->nops; i += 1) {
+   for (int32_t i = 0; i < n->nops; i += 1) {
 
-           int32_t new_node_num = parcours_rec( n->opr[i], curr_node_num);
-           curr_node_num = new_node_num + 1;
-        }
+       int32_t new_node_num = parcours_rec( n->opr[i], curr_node_num);
+       curr_node_num = new_node_num + 1;
+    }
+
+	switch(n->nature)
+	{
+		case NODE_IF:
+			if(n->nops[0]->type != TYPE_BOOL)
+			{
+				printf(stderr, "Expression dans if n'est pas booleen\n");
+			}
+			break;
+		default:
+			break;
+	}
+
     return curr_node_num - 1;
 }
 
@@ -649,7 +662,7 @@ void free_tree(node_t node)
         return;
     }
     printf("freeing node %s\n", node_nature2string(node->nature));
-    printf("nops = %d\n:", node->nops);
+    printf("nops = %d\n", node->nops);
     for (int32_t i = 0; i < node->nops; i += 1) {
             printf("attempt to free %s\n",node_nature2string((node->opr[i])->nature));
             free_tree(node->opr[i]);
