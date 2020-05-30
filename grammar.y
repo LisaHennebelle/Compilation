@@ -34,6 +34,7 @@ int yylex(void);
 extern int yylineno;
 
 void yyerror(node_t * program_root, char * s);
+void yyerror_passe1(node_t * noeud, char * s);
 void analyse_tree(node_t root);
 node_t make_node(node_nature nature, int nops, ...);
 /* A completer */
@@ -432,7 +433,7 @@ ident : TOK_IDENT
             if (mainflag != 1)
             {
                 //printf("global idf %s\n", yylval.strval);
-                $$ = make_node(NODE_IDENT, 0, typetemp,nident , -1, 1, yylval.strval);
+                $$ = make_node(NODE_IDENT, 0, typetemp,nident, -1, 1, yylval.strval);
                 free(yylval.strval);
             } //   type =  TYPE_NONE,TYPE_INT,TYPE_BOOL,TYPE_STRING,TYPE_VOID
             else
@@ -440,13 +441,13 @@ ident : TOK_IDENT
                 if (strcmp (yylval.strval, "main") == 0)
                 {
                     //printf("main idf %s\n", yylval.strval);
-                    $$ = make_node(NODE_IDENT, 0, typetemp,nident ,-1, 1, yylval.strval);
+                    $$ = make_node(NODE_IDENT, 0, typetemp,nident,-1, 1, yylval.strval);
                     free(yylval.strval);
                 }
                 else
                 {
                     //printf("local idf %s\n", yylval.strval);
-                    $$ = make_node(NODE_IDENT, 0, typetemp,nident , -1, 0, yylval.strval);
+                    $$ = make_node(NODE_IDENT, 0, typetemp,nident, -1, 0, yylval.strval);
                     free(yylval.strval);
                 }
             }
@@ -555,16 +556,16 @@ node_t make_node(node_nature nature, int32_t nops, ...) {
 
 ////////////// Fonctions destinees à la passe 1 ///////////////////
 
-static int32_t parcours_rec(node_t n, int32_t node_num) {
+void parcours_rec(node_t n) {
     int32_t offset;
     if (n == NULL) {
-        return node_num;
+        return ;
     }
     char str[32];
     switch (n->nature) {
         case NODE_IDENT:
-            offset =  env_add_element(n->ident, n, 4);// associe ident et noeud node. size = taille a allouer
-            n->offset = offset;
+            //offset =  env_add_element(n->ident, n, 4);// associe ident et noeud node. size = taille a allouer
+            //n->offset = offset;
             break;                                                              // valeur de retour : taille a allouer si positive ou nulle, pb si negative, a associer à l'offset d'un element
         case NODE_INTVAL:
         case NODE_BOOLVAL:
@@ -580,20 +581,42 @@ static int32_t parcours_rec(node_t n, int32_t node_num) {
         case NODE_PROGRAM:
         case NODE_BLOCK:
         case NODE_DECLS:
-	        if (n-> type == TYPE_VOID)
+	        if ((n->opr[0])->type == TYPE_VOID)
 	        {
-	            yyerror(n, "declaration multiple de type void");
+	            yyerror_passe1(&n, "declaration multiple de type void");
 	        }
 	        break;
         case NODE_DECL:
+            if ((n->opr[0])->type == TYPE_VOID)
+            {
+                yyerror_passe1(&n, "declaration de type void");
+            }
+            break;
 
         case NODE_IF:
         case NODE_WHILE:
         case NODE_FOR:
+
+            if((n->opr[0])->type != TYPE_BOOL)
+            {
+                yyerror_passe1(&n, "Expression dans une boucle n'est pas booleenne\n");
+            }
+            break;
+
         case NODE_DOWHILE:
         case NODE_PRINT:
             break;
         case NODE_FUNC:
+            if ((n->opr[1])->type != TYPE_VOID)
+            {
+                yyerror_passe1(&(n->opr[1]), "le main n'a pas le bon type, type void attendu \n");
+            }
+            if (strcmp( ((n->opr[1])->ident), "main") != 0)
+            {
+                printf("nature du noeud: %s\n", node_nature2string((n->opr[1])->nature));
+                printf("nom du main: %s\n", (n->opr[1])->ident);
+                yyerror_passe1(&(n->opr[1]), "la fonction principale ne s'appelle pas main \n");
+            }
             break;
         case NODE_PLUS:
         case NODE_MINUS:
@@ -602,10 +625,23 @@ static int32_t parcours_rec(node_t n, int32_t node_num) {
         case NODE_MOD:
         case NODE_LT:
         case NODE_GT:
-        case NODE_LE:
-        case NODE_GE:
         case NODE_EQ:
         case NODE_NE:
+            printf("types de op1  : %s et op2 : %s \n", node_type2string((n->opr[0])->type) , node_type2string((n->opr[1])->type));
+            if (((n->opr[0])->type) != ((n->opr[1])->type))
+            {
+
+                yyerror_passe1(&n, "Expression entre deux opérandes de type différents\n");
+            }
+            break;
+        case NODE_AFFECT:
+        if (((n->opr[0])->type) != ((n->opr[1])->type))
+        {
+            yyerror_passe1(&n, "Affectation entre deux opérandes de type différents\n");
+        }
+        break;
+        case NODE_LE:
+        case NODE_GE:
         case NODE_AND:
         case NODE_OR:
         case NODE_BAND:
@@ -617,42 +653,26 @@ static int32_t parcours_rec(node_t n, int32_t node_num) {
         case NODE_NOT:
         case NODE_BNOT:
         case NODE_UMINUS:
-        case NODE_AFFECT:
+
                 break;
         default:
                 break;
     }
 
-    n->node_num = node_num;
 
-    int32_t curr_node_num = node_num + 1;
    for (int32_t i = 0; i < n->nops; i += 1) {
 
-       int32_t new_node_num = parcours_rec( n->opr[i], curr_node_num);
-       curr_node_num = new_node_num + 1;
+        parcours_rec(n->opr[i]);
     }
 
-	switch(n->nature)
-	{
-		case NODE_IF:
-			if(n->nops[0]->type != TYPE_BOOL)
-			{
-				printf(stderr, "Expression dans if n'est pas booleen\n");
-			}
-			break;
-		default:
-			break;
-	}
 
-    return curr_node_num - 1;
 }
 
 
 
 static void lancer_parcours(node_t root) {
     assert(root->nature == NODE_PROGRAM);
-    int32_t curr_node_num = 1;
-    parcours_rec(root, curr_node_num);
+    parcours_rec(root);
 }
 //////////////////////////////////////////////////////////////////
 void free_tree(node_t node)
@@ -677,21 +697,28 @@ void analyse_tree(node_t root) {
 
         if (!stop_after_syntax) {
         // Appeler la passe 1
+            lancer_parcours(root);
+            if (!stop_after_verif) {
+                create_program();
+                // Appeler la passe 2
 
-        if (!stop_after_verif) {
-            create_program();
-            // Appeler la passe 2
-
-            //dump_mips_program(outfile);
-            free_program();
-        }
+                //dump_mips_program(outfile);
+                free_program();
+            }
         free_global_strings();
+        free_tree(root);
     }
 }
-
 
 
 void yyerror(node_t * program_root, char * s) {
     fprintf(stderr, "Error line %d: %s\n", yylineno, s);
     exit(1);
+}
+
+void yyerror_passe1(node_t * noeud, char * s) {
+    couleur("31");
+    printf( "Error line %d: %s\n", (*noeud)->lineno, s);
+    couleur("0");
+    //exit(1);
 }

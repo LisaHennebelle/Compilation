@@ -2313,7 +2313,6 @@ int main(int argc, char ** argv) {
     fclose(yyin);
     analyse_tree(program_root);
     yylex_destroy();
-	free_tree(program_root);
     return 0;
 }
 

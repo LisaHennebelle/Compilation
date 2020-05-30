@@ -1,0 +1,66 @@
+differents tests à faire sur minictest.c :
+
+/*meme fichier avec autres erreurs pour le test
+
+// declaration multiple de type void
+void a, b = 1;
+bool boo;
+
+void main()
+{
+		int c = 3;
+
+}
+//declaration simple de type void ==> indique une declaration multiple 0.o
+int a, b = 1;
+void boo;
+
+void main()
+{
+		int c = 3;
+
+}
+
+// mauvais type de main
+int a, b = 1;
+bool boo;
+
+int main()
+{
+		int c = 3;
+
+}
+
+//mauvais nom de main
+int a, b = 1;
+bool boo;
+
+void patatou()
+{
+		int c = 3;
+}
+//mauvaise condition de if
+void a, b = 1;
+bool boo;
+
+void main()
+{
+		int c = 3;
+		if (a + b)
+		{
+			int patatou = 1;
+		}
+
+}
+
+//operation entre deux operandes de types differents
+void a, b = 1;
+bool boo;
+
+void main()
+{
+		int c = 3;
+		boo = boo + b;
+
+}
+*/
