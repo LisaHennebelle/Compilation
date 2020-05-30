@@ -433,7 +433,7 @@ ident : TOK_IDENT
             if (mainflag != 1)
             {
                 //printf("global idf %s\n", yylval.strval);
-                $$ = make_node(NODE_IDENT, 0, typetemp,nident, -1, 1, yylval.strval);
+                $$ = make_node(NODE_IDENT, 0, typetemp, nident, -1, 1, yylval.strval);
                 free(yylval.strval);
             } //   type =  TYPE_NONE,TYPE_INT,TYPE_BOOL,TYPE_STRING,TYPE_VOID
             else
@@ -441,13 +441,13 @@ ident : TOK_IDENT
                 if (strcmp (yylval.strval, "main") == 0)
                 {
                     //printf("main idf %s\n", yylval.strval);
-                    $$ = make_node(NODE_IDENT, 0, typetemp,nident,-1, 1, yylval.strval);
+                    $$ = make_node(NODE_IDENT, 0, typetemp, nident,-1, 1, yylval.strval);
                     free(yylval.strval);
                 }
                 else
                 {
                     //printf("local idf %s\n", yylval.strval);
-                    $$ = make_node(NODE_IDENT, 0, typetemp,nident, -1, 0, yylval.strval);
+                    $$ = make_node(NODE_IDENT, 0, typetemp, nident, -1, 0, yylval.strval);
                     free(yylval.strval);
                 }
             }
@@ -465,9 +465,12 @@ node_t make_node(node_nature nature, int32_t nops, ...) {
     retour = (node_s *) malloc(sizeof(node_s));
 	retour->nature = nature;
 	retour->nops = nops;
+    retour->opr = (node_s **)malloc(sizeof(node_s*) * nops);
+    retour->ident = malloc(sizeof(char)*30);
+    retour->str = malloc(sizeof(char)*30);
     for (int i = 0; i < nops; i++)
     {
-            retour->opr[i] = va_arg(ap,node_t);
+        retour->opr[i] = va_arg(ap,node_t);
     }
     switch(nature)
     {
@@ -476,7 +479,7 @@ node_t make_node(node_nature nature, int32_t nops, ...) {
             retour->decl_node =va_arg(ap,node_t); // argument supp à la position nops + 2 = declaration de noeud
             retour->offset    =va_arg(ap,int32_t ); // argument supp à la position nops + 3 = declaration de l'emplacement mémoire de la variable int32_t + 4 = declaration globale?
             retour->global_decl=(bool)va_arg(ap,int); // argument supp à la position nops + 4 = declaration globale?
-            retour->ident   = va_arg(ap, char*); // argument supp à la position nops + 5 =  identifiant
+            strcpy(retour->ident,va_arg(ap, char*)); // argument supp à la position nops + 5 =  identifiant
             break;
         case NODE_AFFECT :
             retour->type      =va_arg(ap,node_type); // argument supp à la position nops + 1 = type de noeud
@@ -508,7 +511,7 @@ node_t make_node(node_nature nature, int32_t nops, ...) {
             break;
         case NODE_STRINGVAL :
             retour->type = TYPE_STRING;
-            retour->str = va_arg(ap,char*);
+            strcpy(retour->str, va_arg(ap,char*));
 			retour->offset = va_arg(ap,int32_t);
                 //printf("stringval affecté: %s\noffset: %d\n",retour->str, retour->offset);
             break;
@@ -543,7 +546,7 @@ node_t make_node(node_nature nature, int32_t nops, ...) {
 
     va_end(ap);
 
-	if(nbtraces >= 2)
+	if(nbtraces == 2)
 	{
 		couleur("34");
 		printf("NODE %s\n", node_nature2string(retour->nature));
@@ -590,7 +593,11 @@ void parcours_rec(node_t n) {
             if ((n->opr[0])->type == TYPE_VOID)
             {
                 yyerror_passe1(&n, "declaration de type void");
-            }
+            }/*
+            if ((n->opr[0])->type != (n->opr[0])->type)
+            {
+                yyerror_passe1(&n, "la valeur assignée est de type différent au déclaré");
+            }*/
             break;
 
         case NODE_IF:
@@ -635,11 +642,11 @@ void parcours_rec(node_t n) {
             }
             break;
         case NODE_AFFECT:
-        if (((n->opr[0])->type) != ((n->opr[1])->type))
-        {
-            yyerror_passe1(&n, "Affectation entre deux opérandes de type différents\n");
-        }
-        break;
+            if (((n->opr[0])->type) != ((n->opr[1])->type))
+            {
+                yyerror_passe1(&n, "Affectation entre deux opérandes de type différents\n");
+            }
+            break;
         case NODE_LE:
         case NODE_GE:
         case NODE_AND:
@@ -661,7 +668,6 @@ void parcours_rec(node_t n) {
 
 
    for (int32_t i = 0; i < n->nops; i += 1) {
-
         parcours_rec(n->opr[i]);
     }
 
@@ -675,29 +681,35 @@ static void lancer_parcours(node_t root) {
     parcours_rec(root);
 }
 //////////////////////////////////////////////////////////////////
-void free_tree(node_t node)
+void free_tree(node_t node, int tab)
 {
 
     if (node == NULL) {
         return;
     }
+    for(int i = 0; i < tab; i++) printf("\t");
     printf("freeing node %s\n", node_nature2string(node->nature));
+    for(int i = 0; i < tab; i++) printf("\t");
     printf("nops = %d\n", node->nops);
+    tab++;
     for (int32_t i = 0; i < node->nops; i += 1) {
-            printf("attempt to free %s\n",node_nature2string((node->opr[i])->nature));
-            free_tree(node->opr[i]);
+            //printf("attempt to free %s\n",node_nature2string((node->opr[i])->nature));
+            free_tree(node->opr[i], tab);
     }
+    free(node->opr);
+    free(node->ident);
+    free(node->str);
 
     free(node);
+    for(int i = 0; i < tab-1; i++) printf("\t");
+    printf("free was successful\n");
 }
-
-
 
 void analyse_tree(node_t root) {
 
         if (!stop_after_syntax) {
         // Appeler la passe 1
-            lancer_parcours(root);
+            //lancer_parcours(root);
             if (!stop_after_verif) {
                 create_program();
                 // Appeler la passe 2
@@ -706,7 +718,7 @@ void analyse_tree(node_t root) {
                 free_program();
             }
         free_global_strings();
-        free_tree(root);
+        free_tree(root, 0);
     }
 }
 

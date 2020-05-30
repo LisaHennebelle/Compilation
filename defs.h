@@ -85,7 +85,7 @@ typedef struct _node_s {
     int32_t stack_size;
 
     int32_t nops; // nombre d'enfants ou taille du tableau opr
-    struct _node_s * opr[5]; // tableau de pointeurs vers noeuds enfants
+    struct _node_s ** opr; // tableau de pointeurs vers noeuds enfants
 
     struct _node_s * decl_node;
 

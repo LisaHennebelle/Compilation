@@ -14,7 +14,7 @@ void yyerror(char *);
 int yyparse(node_t * program_root);
 int fileno(FILE * stream);
 void analyse_tree(node_t root);
-void free_tree(node_t root);
+void free_tree(node_t root, int tab);
 
 char * infile = NULL;
 char * outfile = NULL;
@@ -262,7 +262,7 @@ int yywrap(void) {
 
 void print_token(char* tok)
 {
-	if(nbtraces)
+	if(nbtraces == 1)
 		printf("%s\n", tok);
 }
 
@@ -281,9 +281,9 @@ int main(int argc, char ** argv) {
 	yyparse(&program_root);
 	printf("yacc fin\n");
 	//creation de contexte pour le test
-	context_t cont_test= create_context();
-	free_context(cont_test);
-	if(nbtraces >= 3)
+	//context_t cont_test= create_context();
+	//free_context(cont_test);
+	if(nbtraces == 3)
 	{
 		txtname = "tree.dot";
 		dump_tree(program_root,txtname); // afficher le tree
@@ -291,7 +291,9 @@ int main(int argc, char ** argv) {
 
 	printf("program root : %s\n" ,node_nature2string(program_root->nature));
     fclose(yyin);
-    analyse_tree(program_root);
+    //analyse_tree(program_root);
     yylex_destroy();
+	printf("program root : %s\n" ,node_nature2string(program_root->nature));
+	free_tree(program_root, 0);
     return 0;
 }
