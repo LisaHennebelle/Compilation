@@ -293,7 +293,6 @@ int main(int argc, char ** argv) {
     fclose(yyin);
     //analyse_tree(program_root);
     yylex_destroy();
-	printf("program root : %s\n" ,node_nature2string(program_root->nature));
 	free_tree(program_root, 0);
     return 0;
 }

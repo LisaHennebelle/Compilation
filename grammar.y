@@ -128,7 +128,8 @@ listdeclnonnull: vardecl
                 //cptvar ++;
                 //printf ("nombre d'enfants de la liste : %d\n", cptvar);
                 //printf("<REGLE> listdecl non nulle : vardecl $$ = %s\n", node_nature2string($$->nature));
-				$$ = make_node(NODE_LIST, 2, $1);
+				//$$ = make_node(NODE_LIST, 2, $1);
+                $$ = $1;
 			}
             | listdeclnonnull vardecl
             {
@@ -461,14 +462,29 @@ ident : TOK_IDENT
 node_t make_node(node_nature nature, int32_t nops, ...) {
 	va_list ap; /*liste des arguments supplémentaires*/
     va_start(ap,nops);
-    node_t retour;
+    node_t retour, aux;
     retour = (node_s *) malloc(sizeof(node_s));
 	retour->nature = nature;
 	retour->nops = nops;
     retour->opr = (node_s **)malloc(sizeof(node_s*) * nops);
     retour->ident = malloc(sizeof(char)*30);
     retour->str = malloc(sizeof(char)*30);
-    for (int i = 0; i < nops; i++)
+    retour->decl_node = NULL;
+    /*if(nature == NODE_LIST && nops == 2)
+    {
+        aux = va_arg(ap, node_t);
+        retour->opr[0] = aux->opr[0];
+        retour->opr[1] = va_arg(ap, node_t);
+        printf("node_list\n");
+        printf("%s\n", node_nature2string(retour->opr[0]->nature));
+        printf("%s\n", node_nature2string(retour->opr[1]->nature));
+        free(aux->opr);
+        free(aux->ident);
+        free(aux->str);
+        free(aux);
+
+    }
+    else*/ for (int i = 0; i < nops; i++)
     {
         retour->opr[i] = va_arg(ap,node_t);
     }
@@ -594,7 +610,7 @@ void parcours_rec(node_t n) {
             {
                 yyerror_passe1(&n, "declaration de type void");
             }/*
-            if ((n->opr[0])->type != (n->opr[0])->type)
+            if ((n->opr[0])->type != (n->opr[1])->type)
             {
                 yyerror_passe1(&n, "la valeur assignée est de type différent au déclaré");
             }*/
@@ -687,11 +703,11 @@ void free_tree(node_t node, int tab)
     if (node == NULL) {
         return;
     }
-    for(int i = 0; i < tab; i++) printf("\t");
+    /*for(int i = 0; i < tab; i++) printf("\t");
     printf("freeing node %s\n", node_nature2string(node->nature));
     for(int i = 0; i < tab; i++) printf("\t");
     printf("nops = %d\n", node->nops);
-    tab++;
+    tab++;*/
     for (int32_t i = 0; i < node->nops; i += 1) {
             //printf("attempt to free %s\n",node_nature2string((node->opr[i])->nature));
             free_tree(node->opr[i], tab);
@@ -701,8 +717,8 @@ void free_tree(node_t node, int tab)
     free(node->str);
 
     free(node);
-    for(int i = 0; i < tab-1; i++) printf("\t");
-    printf("free was successful\n");
+    /*for(int i = 0; i < tab-1; i++) printf("\t");
+    printf("free was successful\n");*/
 }
 
 void analyse_tree(node_t root) {

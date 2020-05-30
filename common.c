@@ -125,10 +125,11 @@ static int32_t dump_tree2dot_rec(FILE * f, node_t n, int32_t node_num) {
             {
                 node_t decl_node = n->decl_node;
                 fprintf(f, "    N%d [shape=record, label=\"{{NODE %s|Type: %s}|{<decl>Decl      |Ident: %s|Offset: %d}}\"];\n", node_num, node_nature2string(n->nature), node_type2string(n->type), n->ident, n->offset);
-                if (decl_node != NULL && decl_node != n) {
+                //enlevé car donnait erreur sur valgrind, remettre après finir passe 1
+                /*if (decl_node != NULL && decl_node != n) {
                     fprintf(f, "    edge[tailclip=false];\n");
                     fprintf(f, "    \"N%d\":decl:c -> \"N%d\" [style=dashed]\n", node_num, decl_node->node_num);
-                }
+                }*/
                 break;
             }
         case NODE_INTVAL:

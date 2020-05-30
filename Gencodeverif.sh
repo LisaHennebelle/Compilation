@@ -132,11 +132,10 @@ cd ../KO
 	cp --copy-contents ${fichierref[0]}  ${tableau_indi[$i]}
 	sed -i '7i\if ((var1%2)== 0){ bool var3 = var2 + 1; }' ${tableau_indi[$i]}
 	more ${tableau_indi[2]}
-	i=$[$i+1]
 	#remplacage de caractères
 	bouclewhile 3
 
-	declare -i nbboucleVK=$i+${#tab_carac[@]}
+	declare -i nbboucleVK=${#tab_carac[@]}
 
 # Test de Gencode
 cd ../../Gencode/OK
@@ -206,7 +205,7 @@ make # mettre à jour le compilateur minicc
 	do
 	        echo "**********************************************************"
 			echo ${tableau_indi[$i]}
-			echo "syntaxe ok"
+			echo "verif ok"
 	        ./minicc -v Tests/Verif/OK/${tableau_indi[$i]} #appel avec l'option -v
 			echo "**********************************************************"
 			i=$[$i+1]
@@ -219,7 +218,8 @@ make # mettre à jour le compilateur minicc
 	do
 	        echo "**********************************************************"
 			echo ${tableau_indi[$i]}
-			echo "syntaxe ok"
+			echo "verif ko"
+			more Tests/Verif/KO/${tableau_indi[$i]}
 	        ./minicc -v Tests/Verif/KO/${tableau_indi[$i]} #appel avec l'option -v
 			echo "**********************************************************"
 			i=$[$i+1]
@@ -227,12 +227,12 @@ make # mettre à jour le compilateur minicc
 
 #compilation des fichiers de Gencode/OK
 	declare -i i=0
-	echo "Compilation des fichiers de GEncode OK"
+	echo "Compilation des fichiers de Gencode OK"
 	while [ $i -lt $nbboucleGO ]
 	do
 	        echo "**********************************************************"
 			echo ${tableau_indi[$i]}
-			echo "syntaxe ok"
+			echo "gencode ok"
 	        ./minicc Tests/Gencode/OK/${tableau_indi[$i]}
 			echo "**********************************************************"
 			i=$[$i+1]
@@ -244,7 +244,7 @@ make # mettre à jour le compilateur minicc
 	do
 	        echo "**********************************************************"
 			echo ${tableau_indi[$i]}
-			echo "syntaxe ok"
+			echo "gencode ko"
 	        ./minicc Tests/Gencode/KO/${tableau_indi[$i]}
 			echo "**********************************************************"
 			i=$[$i+1]
