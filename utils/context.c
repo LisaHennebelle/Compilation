@@ -53,7 +53,6 @@ noeud_t init_noeud_context(int lettre)
 {
   noeud_t noeud = malloc(sizeof(noeud_s));
   noeud->idf_existant = false;
-  //printf("init_noeud_context 1\n");
   for(int i = 0; i < NB_ELEM_ALPHABET; i++)
   {
       noeud->suite_idf[i] = NULL;
@@ -70,22 +69,12 @@ bool context_add_element(context_t context, char * idf, void * data)// ajoute l�
     noeud_t actuel = context->root;
     int idf_len = strlen(idf);
     int lettre, let_indice;
-    //printf("RECURSIVITE\n");
     for(int i = 0; i < idf_len; i++)
     {
         lettre = idf[i];
         let_indice = caractere_indice(lettre);
-        //////// juste verification
-        /*printf("suite idf : %c %d\n" , lettre, let_indice);
-        for(int j = 0; j < 63; j++)
-        { //VERIFICATION des noeuds déjà créés dans le noeud actuel
-            if(actuel->suite_idf[j])
-                printf("actuel->suite_idf[%d]\n", j);
-        }*/
-        /////// juste verification
         if(!(actuel->suite_idf[let_indice]))
         {
-            //printf("MALLOOOOOCCC\n");
             actuel->suite_idf[let_indice] = init_noeud_context(lettre);
         }
         actuel = actuel->suite_idf[let_indice];
@@ -112,7 +101,6 @@ void * get_data(context_t context, char * idf)//retourne le noeud précédemment
     while(i < idf_len && noeud->suite_idf[car])
     {
         noeud = noeud->suite_idf[car];
-        //printf("car=%d\t%c i=%d\n", car, idf[i], i);
         if(idf[++i])
             car = caractere_indice(idf[i]);
     }
@@ -152,11 +140,8 @@ void free_context(context_t context) // liberer la memoire allouée pour le cont
 int main(void)
 {
     ///////////VERIFICATION DE CONTEXT
-    //printf("hello context\n");
     context_s *context = create_context();
     printf("MAIN\n");
-    /*if(context->root) printf("context->root\n");
-    if(context->root->suite_idf) printf("context->root->suite_idf\n");*/
     int i = 0;
     while(context->root->suite_idf[i])
     {

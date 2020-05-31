@@ -210,7 +210,6 @@ make # mettre à jour le compilateur minicc
 	        echo "**********************************************************"
 			echo ${tableau_indi[$i]}
 			echo "verif ok"
-			more Tests/Verif/OK/${tableau_indi[$i]}
 	        ./minicc -v Tests/Verif/OK/${tableau_indi[$i]} #appel avec l'option -v
 			echo "**********************************************************"
 			i=$[$i+1]
@@ -238,7 +237,6 @@ make # mettre à jour le compilateur minicc
 	        echo "**********************************************************"
 			echo ${tableau_indi[$i]}
 			echo "gencode ok"
-			more Tests/Gencode/OK/${tableau_indi[$i]}
 	        ./minicc Tests/Gencode/OK/${tableau_indi[$i]}
 			echo "**********************************************************"
 			i=$[$i+1]

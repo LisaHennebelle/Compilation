@@ -11,7 +11,6 @@
 
 #include "defs.h"
 #include "common.h"
-//#include "utils/context.h"
 
 extern char * infile;
 extern char * outfile;
@@ -39,7 +38,6 @@ void parse_args(int argc, char ** argv) {
 	extern char * optarg;
     extern int optind;
 	nbtraces = 0;
-    //c = getopt(argc, argv,"nt:" );
     while (c != -1)
     {
         c = getopt(argc, argv,"bo:t:r:svh" );
@@ -125,11 +123,6 @@ static int32_t dump_tree2dot_rec(FILE * f, node_t n, int32_t node_num) {
             {
                 node_t decl_node = n->decl_node;
                 fprintf(f, "    N%d [shape=record, label=\"{{NODE %s|Type: %s}|{<decl>Decl      |Ident: %s|Offset: %d}}\"];\n", node_num, node_nature2string(n->nature), node_type2string(n->type), n->ident, n->offset);
-                //enlevé car donnait erreur sur valgrind, remettre après finir passe 1
-                /*if (decl_node != NULL && decl_node != n) {
-                    fprintf(f, "    edge[tailclip=false];\n");
-                    fprintf(f, "    \"N%d\":decl:c -> \"N%d\" [style=dashed]\n", node_num, decl_node->node_num);
-                }*/
                 break;
             }
         case NODE_INTVAL:
@@ -205,10 +198,7 @@ static int32_t dump_tree2dot_rec(FILE * f, node_t n, int32_t node_num) {
     int32_t curr_node_num = node_num + 1;
 
         for (int32_t i = 0; i < n->nops; i += 1) {
-        
-            //printf("boucle enfants %s\n", node_nature2string(n->opr[i]->nature));
             int32_t new_node_num = dump_tree2dot_rec(f, n->opr[i], curr_node_num);
-
             fprintf(f, "    edge[tailclip=true];\n");
             fprintf(f, "    N%d -> N%d\n", node_num, curr_node_num);
             curr_node_num = new_node_num + 1;
@@ -220,7 +210,6 @@ static int32_t dump_tree2dot_rec(FILE * f, node_t n, int32_t node_num) {
 
 static void dump_tree2dot(FILE * f, node_t root) {
     assert(root->nature == NODE_PROGRAM);
-   //printf("nature program ok\n");
     int32_t curr_node_num = 1;
     dump_tree2dot_rec(f, root, curr_node_num);
 }
@@ -229,14 +218,11 @@ static void dump_tree2dot(FILE * f, node_t root) {
 void dump_tree(node_t prog_root, const char * dotname) {
 
     FILE * f;
-   //printf("function dump tree\n");
     f = fopen(dotname, "w");
     if (f == NULL) {printf("il y a eu un pb d'ouverture du fichier\n");}
     fprintf(f, "digraph global_vars {\n");
     int32_t check =  prog_root->nops;
-   //printf("nops vautavant l'appel à dump tree %d \n",check);
     dump_tree2dot(f, prog_root);
-   //printf("fin dump tree\n");
     fprintf(f, "}");
     fclose(f);
 	printf("file closed\n");
