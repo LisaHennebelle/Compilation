@@ -64,3 +64,27 @@ void main()
 
 }
 */
+
+
+//        /*case NODE_DECL:
+            offset = env_add_element(n->opr[0]->ident, n->opr[0], 4);
+            if(offset < 0)
+            {
+                yyerror_passe1(&n, "Redefinition d'une variable\n");
+                previousdef =  get_decl_node(n->ident);
+                if (previousdef == NULL)
+                {
+                    printf("element non trouvé dans l'environnement\n");
+                }
+                else
+                {
+                    printf("Precedente definition : ligne %d\n", previousdef->lineno);
+                }
+
+            }
+            else
+            {
+                printf("nouvelle declaration dans le contexte\n");
+                n->opr[0]->offset = offset;
+            }
+            break;*/

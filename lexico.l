@@ -47,7 +47,7 @@ extern int yydebug;
 
 LETTRE          [a-zA-Z]
 CHIFFRE         [0-9]
-ENTIER          ("-")?[0-9]{CHIFFRE}*
+ENTIER          [0-9]{CHIFFRE}*
 IDF             {LETTRE}({LETTRE}|{CHIFFRE}|'_')*
 ASCII           [\040-\176]
 CHAINE_CAR      ({ASCII})+
@@ -278,14 +278,9 @@ int main(int argc, char ** argv) {
 	node_t program_root;
     yyin = fopen(infile, "r");
 	yyparse(&program_root);
-	if(nbtraces == 3)
-	{
-		txtname = "tree.dot";
-		dump_tree(program_root,txtname); // afficher le tree
-	}
+	analyse_tree(program_root);
 
 	fclose(yyin);
-    analyse_tree(program_root);
     yylex_destroy();
 	//free_tree(program_root, 0);
     return 0;

@@ -205,7 +205,8 @@ static int32_t dump_tree2dot_rec(FILE * f, node_t n, int32_t node_num) {
     int32_t curr_node_num = node_num + 1;
 
         for (int32_t i = 0; i < n->nops; i += 1) {
-            printf("boucle enfants %s\n", node_nature2string(n->opr[i]->nature));
+        
+            //printf("boucle enfants %s\n", node_nature2string(n->opr[i]->nature));
             int32_t new_node_num = dump_tree2dot_rec(f, n->opr[i], curr_node_num);
 
             fprintf(f, "    edge[tailclip=true];\n");

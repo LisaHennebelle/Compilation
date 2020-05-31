@@ -48,6 +48,7 @@ node_type typetemp;
 int cptenfants = 1;/*nombre de vardecl quand il y a plusieurs declaration en liste*/
 int cptvar = 0;/*compteur de declaration de variables ligne apres ligne*/
 bool globalpasse1 = false; /* false: main, true: declarations globales*/
+bool errorflag = false; /*flag d'erreur dans la passe 1*/
 /* prototypes */
 int yylex(void);
 extern int yylineno;
@@ -56,9 +57,10 @@ void yyerror(node_t * program_root, char * s);
 void yyerror_passe1(node_t * noeud, char * s);
 void analyse_tree(node_t root);
 node_t make_node(node_nature nature, int nops, ...);
+void print_context(char * msg);
 /* A completer */
 
-#line 47 "grammar.y"
+#line 49 "grammar.y"
 #ifdef YYSTYPE
 #undef  YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1
@@ -71,7 +73,7 @@ typedef union {
     node_t ptr;
 } YYSTYPE;
 #endif /* !YYSTYPE_IS_DECLARED */
-#line 75 "y.tab.c"
+#line 77 "y.tab.c"
 
 /* compatibility with bison */
 #ifdef YYPARSE_PARAM
@@ -530,7 +532,7 @@ typedef struct {
 } YYSTACKDATA;
 /* variables for the parser stack */
 static YYSTACKDATA yystack;
-#line 460 "grammar.y"
+#line 464 "grammar.y"
 /* A completer et/ou remplacer avec d'autres fonctions */
 
 node_t make_node(node_nature nature, int32_t nops, ...) {
@@ -650,39 +652,35 @@ void parcours_rec(node_t n) {
             if ( n->opr[0] != NULL ) // si il y a des déclarations globales
             {
                 push_global_context();
-                printf("pushing global context\n");
+                print_context("Pushing global context\n");
                 globalpasse1 = true;
             }
             break;
         case NODE_BLOCK:
             push_context();
-            printf("pushing simple context\n");
+            print_context("Pushing simple context\n");
             break;
         case NODE_IDENT:
-            if(!globalpasse1) // dans main
+            if(!globalpasse1) // dans le main
             {
                 previousdef = get_decl_node(n->ident);
-                if ( previousdef == NULL)
+                if ( previousdef == NULL || previousdef == n->decl_node)
                 {
-                    printf("pas de declaration précédente de l'ident %s\n", n->ident);
+                    if( strcmp(n->ident, "main") != 0)
+                    {
+                        printf("Erreur près du signe %s\n", n->ident);
+                        yyerror_passe1(&n,"pas de declaration précédente de l'ident");
+                    }
                 }
                 else
                 {
-                    printf("affectation de type : %s prend %s\n", n->ident , node_type2string(previousdef->type));
                     n->type = previousdef->type;
                 }
             }
             break;
-        case NODE_INTVAL:
-        case NODE_BOOLVAL:
-            break;
         case NODE_STRINGVAL:
             offset = add_string(n->str);
             n->offset = offset;
-            break;
-        case NODE_TYPE:
-            break;
-        case NODE_LIST:
             break;
         case NODE_DECLS:
 	        if ((n->opr[0])->type == TYPE_VOID)
@@ -690,11 +688,11 @@ void parcours_rec(node_t n) {
 	            yyerror_passe1(&n, "Déclaration de variable de type void");
 	        }
             break;
-        /*case NODE_DECL:
+        case NODE_DECL:
             offset = env_add_element(n->opr[0]->ident, n->opr[0], 4);
-            if (offset <0)
+            if (offset < 0)
             {
-                printf("Houston on a un probleme\n");
+                printf("Probleme offset\n");
             }
             for (i = 0 ; i < n->nops; i++)
             {
@@ -703,8 +701,145 @@ void parcours_rec(node_t n) {
                     (n->opr[i])->decl_node = n;
                 }
             }
-            break;*/
+            break;
 
+        case NODE_FUNC:
+        //env
+            if (globalpasse1)
+            {
+                //pop_context(); // pop du contexte global
+                print_context("Poping global context\n");
+                globalpasse1 = false;
+            }
+            reset_env_current_offset();
+            print_context("Resetting current context\n");
+        //fin env
+            if ((n->opr[1])->type != TYPE_VOID)
+            {
+                yyerror_passe1(&(n->opr[1]), "Le main n'a pas le bon type, type void attendu \n");
+            }
+            if (strcmp( ((n->opr[1])->ident), "main") != 0)
+            {
+                printf("nature du noeud: %s\n", node_nature2string((n->opr[1])->nature));
+                printf("nom du main: %s\n", (n->opr[1])->ident);
+                yyerror_passe1(&(n->opr[1]), "La fonction principale ne s'appelle pas main \n");
+            }
+            break;
+
+        default:
+            break;
+    }
+    //appel a la fonction recursive sur tous les enfants
+   for (int32_t i = 0; i < n->nops; i += 1) {
+        parcours_rec(n->opr[i]);
+    }
+
+    switch(n->nature) //fin de contexte
+    {
+        case NODE_BLOCK:
+            pop_context();
+            print_context("poping context\n");
+            break;
+
+        case NODE_AFFECT:
+            n->type = (n->opr[0])->type;
+            if (((n->opr[0])->type) != ((n->opr[1])->type))
+            {
+                yyerror_passe1(&n, "Affectation entre deux opérandes de type différents\n");
+                printf(">Type et nature a gauche : %s et %s\n", node_type2string((n->opr[0])->type), node_nature2string((n->opr[0])->nature));
+                printf(">Type et nature a droite : %s et %s\n", node_type2string((n->opr[1])->type), node_nature2string((n->opr[1])->nature));
+            }
+            //printf(">Type et nature a gauche : %s et %s\n", node_type2string((n->opr[0])->type), node_nature2string((n->opr[0])->nature));
+            //printf(">Type et nature a droite : %s et %s\n", node_type2string((n->opr[1])->type), node_nature2string((n->opr[1])->nature));
+            break;
+
+        case NODE_PLUS:
+        case NODE_MINUS:
+        case NODE_MUL:
+        case NODE_DIV:
+        case NODE_MOD:
+        case NODE_BAND:
+        case NODE_BOR:
+        case NODE_BXOR:
+        case NODE_SLL:
+        case NODE_SRL:
+        case NODE_SRA:
+            /* type_op_binaire(int,int) = int */
+            if(n->opr[0]->type != TYPE_INT)
+            {
+                yyerror_passe1(&n, "Le premier élément de l'opération n'est pas entier\n");
+            }
+            if(n->opr[1]->type != TYPE_INT)
+            {
+                yyerror_passe1(&n, "Le deuxième élément de l'opération n'est pas entier\n");
+            }
+            n->type = TYPE_INT;
+            break;
+        case NODE_EQ:
+        case NODE_NE:
+            /* type_op_binaire(int,int) = bool */
+            /* type_op_binaire(bool,bool) = bool */
+            if( (n->opr[0]->type == TYPE_INT && n->opr[1]->type != TYPE_INT) ||
+                (n->opr[0]->type == TYPE_BOOL && n->opr[1]->type != TYPE_BOOL) )
+            {
+                if (nbtraces == 5)
+                {
+                    printf("types de op1 : %s et op2 : %s \n", node_type2string((n->opr[0])->type) , node_type2string((n->opr[1])->type));
+                }
+
+                yyerror_passe1(&n, "Les éléments ne sont pas de même type\n");
+            }
+            n->type = TYPE_BOOL;
+            break;
+        case NODE_LT:
+        case NODE_GT:
+        case NODE_LE:
+        case NODE_GE:
+            /* type_op_binaire(int,int) = bool */
+            if (nbtraces == 5)
+            {
+                printf("types de op1 : %s et op2 : %s \n", node_type2string((n->opr[0])->type) , node_type2string((n->opr[1])->type));
+            }
+            if(n->opr[0]->type != TYPE_INT)
+            {
+                yyerror_passe1(&n, "Le premier élément de l'opération n'est pas entier\n");
+            }
+            if(n->opr[1]->type != TYPE_INT)
+            {
+                yyerror_passe1(&n, "Le deuxième élément de l'opération n'est pas entier\n");
+            }
+            n->type = TYPE_BOOL;
+            break;
+        case NODE_AND:
+        case NODE_OR:
+            /* type_op_binaire(bool,bool) = bool */
+            if(n->opr[0]->type != TYPE_BOOL)
+            {
+                yyerror_passe1(&n, "Le premier élément de l'opération n'est pas booléen\n");
+            }
+            if(n->opr[1]->type != TYPE_BOOL)
+            {
+                yyerror_passe1(&n, "Le deuxième élément de l'opération n'est pas booléen\n");
+            }
+            n->type = TYPE_BOOL;
+            break;
+        case NODE_UMINUS:
+        case NODE_BNOT:
+            /* type_op_unaire(int) = int */
+            if((n->opr[0])->type != TYPE_INT)
+            {
+                yyerror_passe1(&n ,"Essai de operation unaire sur un non int\n");
+            }
+            n->type= TYPE_INT;
+            break;
+        case NODE_NOT:
+            /* type_op_unaire(bool) = bool */
+            if(n->opr[0]->type != TYPE_BOOL)
+            {
+                yyerror_passe1(&n, "Essai de operation unaire sur un non bool\n");
+            }
+            n->type = TYPE_BOOL;
+            break;
         case NODE_IF:
         case NODE_WHILE:
             if((n->opr[0])->type != TYPE_BOOL)
@@ -720,154 +855,13 @@ void parcours_rec(node_t n) {
                 yyerror_passe1(&n, "Expression dans une boucle n'est pas booleenne\n");
             }
             break;
-
-        case NODE_PRINT:
-            break;
-        case NODE_FUNC:
-        //env
-            if (globalpasse1)
-            {
-                //pop_context(); // pop du contexte global
-                printf("poping global context\n");
-                globalpasse1 = false;
-            }
-            reset_env_current_offset();
-            printf("resetting current context\n");
-        //fin env
-            if ((n->opr[1])->type != TYPE_VOID)
-            {
-                yyerror_passe1(&(n->opr[1]), "Le main n'a pas le bon type, type void attendu \n");
-            }
-            if (strcmp( ((n->opr[1])->ident), "main") != 0)
-            {
-                printf("nature du noeud: %s\n", node_nature2string((n->opr[1])->nature));
-                printf("nom du main: %s\n", (n->opr[1])->ident);
-                yyerror_passe1(&(n->opr[1]), "La fonction principale ne s'appelle pas main \n");
-            }
-            break;
-            case NODE_PLUS:
-            case NODE_MINUS:
-            case NODE_MUL:
-            case NODE_DIV:
-            case NODE_MOD:
-            case NODE_BAND:
-            case NODE_BOR:
-            case NODE_BXOR:
-            case NODE_SLL:
-            case NODE_SRL:
-            case NODE_SRA:
-                /* type_op_binaire(int,int) = int */
-                if(n->opr[0]->type != TYPE_INT)
-                {
-                    yyerror_passe1(&n, "Le premier élément de l'opération n'est pas entier\n");
-                }
-                if(n->opr[1]->type != TYPE_INT)
-                {
-                    yyerror_passe1(&n, "Le deuxième élément de l'opération n'est pas entier\n");
-                }
-                n->type = TYPE_INT;
-                printf("node %s prend le type INT\n", node_nature2string(n->nature));
-                break;
-            case NODE_EQ:
-            case NODE_NE:
-                /* type_op_binaire(int,int) = bool */
-                /* type_op_binaire(bool,bool) = bool */
-                if( (n->opr[0]->type == TYPE_INT && n->opr[1]->type != TYPE_INT) ||
-                    (n->opr[0]->type == TYPE_BOOL && n->opr[1]->type != TYPE_BOOL) )
-                {
-                    printf("types de op1 : %s et op2 : %s \n", node_type2string((n->opr[0])->type) , node_type2string((n->opr[1])->type));
-                    yyerror_passe1(&n, "Les éléments ne sont pas de même type\n");
-                }
-                n->type = TYPE_BOOL;
-                break;
-            case NODE_LT:
-            case NODE_GT:
-            case NODE_LE:
-            case NODE_GE:
-                /* type_op_binaire(int,int) = bool */
-                printf("types de op1  : %s et op2 : %s \n", node_type2string((n->opr[0])->type) , node_type2string((n->opr[1])->type));
-                if(n->opr[0]->type != TYPE_INT)
-                {
-                    yyerror_passe1(&n, "Le premier élément de l'opération n'est pas entier\n");
-                }
-                if(n->opr[1]->type != TYPE_INT)
-                {
-                    yyerror_passe1(&n, "Le deuxième élément de l'opération n'est pas entier\n");
-                }
-                n->type = TYPE_BOOL;
-                break;
-            case NODE_AND:
-            case NODE_OR:
-                /* type_op_binaire(bool,bool) = bool */
-                if(n->opr[0]->type != TYPE_BOOL)
-                {
-                    yyerror_passe1(&n, "Le premier élément de l'opération n'est pas booléen\n");
-                }
-                if(n->opr[1]->type != TYPE_BOOL)
-                {
-                    yyerror_passe1(&n, "Le deuxième élément de l'opération n'est pas booléen\n");
-                }
-                n->type = TYPE_BOOL;
-                break;
-            case NODE_UMINUS:
-            case NODE_BNOT:
-            case NODE_NOT:
-                /* type_op_unaire */
-                break;
-
-        default:
-            break;
-    }
-
-
-   for (int32_t i = 0; i < n->nops; i += 1) {
-        parcours_rec(n->opr[i]);
-    }
-
-    switch(n->nature) //fin de contexte
-    {
-        case NODE_BLOCK:
-            pop_context();
-            printf("poping context\n");
-            break;
         case NODE_DECL:
-            offset = env_add_element(n->opr[0]->ident, n->opr[0], 4);
-            if(offset < 0)
+            if( n->opr[1] && (n->opr[0])->type != (n->opr[1])->type )
             {
-                yyerror_passe1(&n, "Redefinition d'une variable\n");
-                previousdef =  get_decl_node(n->ident);
-                if (previousdef == NULL)
-                {
-                    printf("element non trouvé dans l'environnement\n");
-                }
-                else
-                {
-                    printf("Precedente definition : ligne %d\n", previousdef->lineno);
-                }
+                yyerror_passe1(&n,"Erreur de type dans la declaration\n");
+            }
 
-            }
-            else
-            {
-                printf("nouvelle declaration dans le contexte\n");
-                n->opr[0]->offset = offset;
-            }
             break;
-        case NODE_AFFECT:
-            n->type = (n->opr[0])->type;
-            previousdef = get_decl_node((n->opr[0])->ident);
-            if (previousdef == NULL) // si l'identifiant a affecter n'a pas ete défini
-            {
-                printf("identifiant : %s\n",(n->opr[0])->ident );
-                yyerror_passe1(&n, "L'identifiant à affecter n'a pas été défini\n");
-            }
-            if (((n->opr[0])->type) != ((n->opr[1])->type))
-            {
-                yyerror_passe1(&n, "Affectation entre deux opérandes de type différents\n");
-                printf(">Type et nature a gauche : %s et %s\n", node_type2string((n->opr[0])->type), node_nature2string((n->opr[0])->nature));
-                printf(">Type et nature a droite : %s et %s\n", node_type2string((n->opr[1])->type), node_nature2string((n->opr[1])->nature));
-            }
-            break;
-
         default:
             break;
     }
@@ -912,14 +906,25 @@ void analyse_tree(node_t root) {
 
         if (!stop_after_syntax) {
         // Appeler la passe 1
-            lancer_parcours(root);
-            if (!stop_after_verif) {
-                create_program();
-                // Appeler la passe 2
+        lancer_parcours(root);
+        //si jamais il y a eu une detection d'erreur au cours de la passe 1
+        if(errorflag)
+        {
+            exit(1);
+        }
+    	if(nbtraces == 3)
+    	{
+    		char * txtname = "tree.dot";
+    		dump_tree(root,txtname); // afficher le tree
+    	}
 
-                //dump_mips_program(outfile);
-                free_program();
-            }
+        if (!stop_after_verif) {
+            create_program();
+            // Appeler la passe 2
+
+            //dump_mips_program(outfile);
+            free_program();
+        }
         free_global_strings();
         free_tree(root, 0);
     }
@@ -933,11 +938,20 @@ void yyerror(node_t * program_root, char * s) {
 
 void yyerror_passe1(node_t * noeud, char * s) {
     couleur("31");
+    errorflag = true;
     printf( "Error line %d: %s\n", (*noeud)->lineno, s);
     couleur("0");
     //exit(1);
 }
-#line 941 "y.tab.c"
+
+void print_context(char* msg)
+{
+    if(nbtraces == 5)
+    {
+        printf("%s", msg);
+    }
+}
+#line 955 "y.tab.c"
 
 #if YYDEBUG
 #include <stdio.h>		/* needed for printf */
@@ -1140,7 +1154,7 @@ yyreduce:
     switch (yyn)
     {
 case 1:
-#line 100 "grammar.y"
+#line 102 "grammar.y"
 	{
             /*printf("<REGLE> program : liste non nulle et main\n");*/
             yyval.ptr = make_node(NODE_PROGRAM, 2, yystack.l_mark[-1].ptr, yystack.l_mark[0].ptr);
@@ -1150,7 +1164,7 @@ case 1:
         }
 break;
 case 2:
-#line 108 "grammar.y"
+#line 110 "grammar.y"
 	{
             /*printf("<REGLE> program : main\n");*/
             yyval.ptr = make_node(NODE_PROGRAM, 2, NULL, yystack.l_mark[0].ptr);
@@ -1159,21 +1173,21 @@ case 2:
         }
 break;
 case 3:
-#line 116 "grammar.y"
+#line 118 "grammar.y"
 	{
             /*printf("<REGLE> listdecl : listdeclnonnull\n");*/
             yyval.ptr = yystack.l_mark[0].ptr;
 		}
 break;
 case 4:
-#line 121 "grammar.y"
+#line 123 "grammar.y"
 	{
 			/*printf("<REGLE> listdecl : epsilon");*/
 			yyval.ptr = NULL;
 		}
 break;
 case 5:
-#line 127 "grammar.y"
+#line 129 "grammar.y"
 	{
                 /*cptvar ++;*/
                 /*printf ("nombre d'enfants de la liste : %d\n", cptvar);*/
@@ -1183,7 +1197,7 @@ case 5:
 			}
 break;
 case 6:
-#line 135 "grammar.y"
+#line 137 "grammar.y"
 	{
                 /*printf("<REGLE> listdeclnonnulle : listdeclnonnull vardecl\n");*/
                 /*printf("$1 = %s\n$2 = %s\n", node_nature2string($1->nature), node_nature2string($2->nature));*/
@@ -1193,7 +1207,7 @@ case 6:
 			}
 break;
 case 7:
-#line 144 "grammar.y"
+#line 146 "grammar.y"
 	{
                 /*printf("<REGLE> vardecl : type listtypedecl;\n");*/
                 /*printf("$1 = %s\n$2 = %s\n", node_nature2string($1->nature), node_nature2string($2->nature));*/
@@ -1201,7 +1215,7 @@ case 7:
 			}
 break;
 case 8:
-#line 151 "grammar.y"
+#line 153 "grammar.y"
 	{
             /*printf("<REGLE> type : TOK_INT\n");*/
 			yyval.ptr = make_node(NODE_TYPE, 0, TYPE_INT);
@@ -1209,7 +1223,7 @@ case 8:
 		}
 break;
 case 9:
-#line 157 "grammar.y"
+#line 159 "grammar.y"
 	{
             /*printf("<REGLE> type : TOK_BOOL\n");*/
 			yyval.ptr = make_node(NODE_TYPE, 0, TYPE_BOOL);
@@ -1217,7 +1231,7 @@ case 9:
 		}
 break;
 case 10:
-#line 163 "grammar.y"
+#line 165 "grammar.y"
 	{
             /*printf("<REGLE> type : TOK_VOID\n");*/
 			yyval.ptr = make_node(NODE_TYPE, 0, TYPE_VOID);
@@ -1225,14 +1239,14 @@ case 10:
 		}
 break;
 case 11:
-#line 170 "grammar.y"
+#line 172 "grammar.y"
 	{
                     /*printf("<REGLE> listtypedecl : decl\n");*/
 					yyval.ptr = yystack.l_mark[0].ptr;
 				}
 break;
 case 12:
-#line 175 "grammar.y"
+#line 177 "grammar.y"
 	{
                     /*printf("<REGLE> listtypedecl : listtypedecl, decl\n");*/
                     /*printf("$1 = %s\n$3 = %s\n", node_nature2string($1->nature), node_nature2string($3->nature));*/
@@ -1240,7 +1254,7 @@ case 12:
 				}
 break;
 case 13:
-#line 182 "grammar.y"
+#line 184 "grammar.y"
 	{
             /*printf("<REGLE> decl : ident\n");*/
             /*printf("$1 = %s\n", node_nature2string($1->nature));*/
@@ -1248,7 +1262,7 @@ case 13:
 		}
 break;
 case 14:
-#line 188 "grammar.y"
+#line 190 "grammar.y"
 	{
 			/*printf("<REGLE> decl : ident = expr\n");*/
             /*printf("$1 = %s\n$3 = %s\n", node_nature2string($1->nature), node_nature2string($3->nature));*/
@@ -1256,7 +1270,7 @@ case 14:
 		}
 break;
 case 15:
-#line 196 "grammar.y"
+#line 198 "grammar.y"
 	{
     			/*printf("<REGLE> maindecl: type ident ( ) block\n");*/
                 /*printf("$1 = %s\n$2 = %s\n$5 = %s\n", node_nature2string($1->nature), node_nature2string($2->nature), node_nature2string($5->nature));*/
@@ -1266,236 +1280,238 @@ case 15:
 			}
 break;
 case 16:
-#line 205 "grammar.y"
+#line 207 "grammar.y"
 	{
 				yyval.ptr = yystack.l_mark[0].ptr;
 			}
 break;
 case 17:
-#line 209 "grammar.y"
+#line 211 "grammar.y"
 	{
 				yyval.ptr = NULL;
 			}
 break;
 case 18:
-#line 213 "grammar.y"
+#line 215 "grammar.y"
 	{
 					yyval.ptr = yystack.l_mark[0].ptr;
 				}
 break;
 case 19:
-#line 217 "grammar.y"
+#line 219 "grammar.y"
 	{
 					yyval.ptr = make_node(NODE_LIST, 2, yystack.l_mark[-1].ptr, yystack.l_mark[0].ptr);
 				}
 break;
 case 20:
-#line 222 "grammar.y"
+#line 224 "grammar.y"
 	{
 			yyval.ptr = yystack.l_mark[-1].ptr;
 		}
 break;
 case 21:
-#line 226 "grammar.y"
+#line 228 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_IF, 3, yystack.l_mark[-4].ptr, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 22:
-#line 230 "grammar.y"
+#line 232 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_IF, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 23:
-#line 234 "grammar.y"
+#line 236 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_WHILE, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 24:
-#line 238 "grammar.y"
+#line 240 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_FOR, 4, yystack.l_mark[-6].ptr ,yystack.l_mark[-4].ptr, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 25:
-#line 242 "grammar.y"
+#line 244 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_DOWHILE, 2, yystack.l_mark[-5].ptr, yystack.l_mark[-2].ptr);
 		}
 break;
 case 26:
-#line 246 "grammar.y"
+#line 248 "grammar.y"
 	{
 			yyval.ptr = yystack.l_mark[0].ptr;
 		}
 break;
 case 27:
-#line 250 "grammar.y"
+#line 252 "grammar.y"
 	{
 			yyval.ptr = NULL;
 		}
 break;
 case 28:
-#line 254 "grammar.y"
+#line 256 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_PRINT, 1, yystack.l_mark[-2].ptr);
 		}
 break;
 case 29:
-#line 259 "grammar.y"
+#line 261 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_BLOCK, 2, yystack.l_mark[-2].ptr, yystack.l_mark[-1].ptr);
 		}
 break;
 case 30:
-#line 264 "grammar.y"
+#line 266 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_MUL, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 31:
-#line 268 "grammar.y"
+#line 270 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_DIV, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 32:
-#line 272 "grammar.y"
+#line 274 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_PLUS, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 33:
-#line 276 "grammar.y"
+#line 278 "grammar.y"
 	{
+            printf("node minus généré\n");
 			yyval.ptr = make_node(NODE_MINUS, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 34:
-#line 280 "grammar.y"
+#line 283 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_MOD, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 35:
-#line 284 "grammar.y"
+#line 287 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_LT, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 36:
-#line 288 "grammar.y"
+#line 291 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_GT, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 37:
-#line 292 "grammar.y"
+#line 295 "grammar.y"
 	{
+            printf("node uminus généré\n");
 			yyval.ptr = make_node(NODE_UMINUS, 1, yystack.l_mark[0].ptr);
 		}
 break;
 case 38:
-#line 296 "grammar.y"
+#line 300 "grammar.y"
 	{
 			yyval.ptr = make_node(NODE_GE, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 39:
-#line 300 "grammar.y"
+#line 304 "grammar.y"
 	{
             /*printf("$1 = %s\n$3 = %s\n", node_nature2string($1->nature), node_nature2string($3->nature));*/
 			yyval.ptr = make_node(NODE_LE, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 40:
-#line 305 "grammar.y"
+#line 309 "grammar.y"
 	{
             /*printf("$1 = %s\n$3 = %s\n", node_nature2string($1->nature), node_nature2string($3->nature));*/
 			yyval.ptr = make_node(NODE_EQ, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 41:
-#line 310 "grammar.y"
+#line 314 "grammar.y"
 	{
             /*printf("$1 = %s\n$3 = %s\n", node_nature2string($1->nature), node_nature2string($3->nature));*/
 			yyval.ptr = make_node(NODE_NE, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 42:
-#line 315 "grammar.y"
+#line 319 "grammar.y"
 	{
             /*printf("$1 = %s\n$3 = %s\n", node_nature2string($1->nature), node_nature2string($3->nature));*/
 			yyval.ptr = make_node(NODE_AND, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 43:
-#line 320 "grammar.y"
+#line 324 "grammar.y"
 	{
             /*printf("$1 = %s\n$3 = %s\n", node_nature2string($1->nature), node_nature2string($3->nature));*/
 			yyval.ptr = make_node(NODE_OR, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 44:
-#line 325 "grammar.y"
+#line 329 "grammar.y"
 	{
             /*printf("$1 = %s\n$3 = %s\n", node_nature2string($1->nature), node_nature2string($3->nature));*/
 			yyval.ptr = make_node(NODE_BAND, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 45:
-#line 330 "grammar.y"
+#line 334 "grammar.y"
 	{
             /*printf("$1 = %s\n$3 = %s\n", node_nature2string($1->nature), node_nature2string($3->nature));*/
 			yyval.ptr = make_node(NODE_BOR, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 46:
-#line 335 "grammar.y"
+#line 339 "grammar.y"
 	{
             /*printf("$1 = %s\n$3 = %s\n", node_nature2string($1->nature), node_nature2string($3->nature));*/
 			yyval.ptr = make_node(NODE_BXOR, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 47:
-#line 340 "grammar.y"
+#line 344 "grammar.y"
 	{
             /*printf("$1 = %s\n$3 = %s\n", node_nature2string($1->nature), node_nature2string($3->nature));*/
 			yyval.ptr = make_node(NODE_SRL, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 48:
-#line 345 "grammar.y"
+#line 349 "grammar.y"
 	{
             /*printf("$1 = %s\n$3 = %s\n", node_nature2string($1->nature), node_nature2string($3->nature));*/
 			yyval.ptr = make_node(NODE_SRA, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 49:
-#line 350 "grammar.y"
+#line 354 "grammar.y"
 	{
             /*printf("$1 = %s\n$3 = %s\n", node_nature2string($1->nature), node_nature2string($3->nature));*/
 			yyval.ptr = make_node(NODE_SLL, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr);
 		}
 break;
 case 50:
-#line 355 "grammar.y"
+#line 359 "grammar.y"
 	{
             /*printf("$2 = %s\n", node_nature2string($2->nature));*/
 			yyval.ptr = make_node(NODE_NOT, 1, yystack.l_mark[0].ptr);
 		}
 break;
 case 51:
-#line 360 "grammar.y"
+#line 364 "grammar.y"
 	{
             /*printf("$2 = %s\n",node_nature2string($2->nature));*/
 			yyval.ptr = make_node(NODE_BNOT, 1, yystack.l_mark[0].ptr);
 		}
 break;
 case 52:
-#line 365 "grammar.y"
+#line 369 "grammar.y"
 	{
 			/*printf("<REGLE> expr : TOK_LPAR expr TOK_RPAR\n");*/
             /*printf("$2 = %s\n",node_nature2string($2->nature));*/
@@ -1503,7 +1519,7 @@ case 52:
 		}
 break;
 case 53:
-#line 371 "grammar.y"
+#line 375 "grammar.y"
 	{
 			/*printf("<REGLE> expr : ident TOK_AFFECT expr $$ = %s\n", node_nature2string($$->nature));*/
             /*printf("$1 = %s\n$3 = %s\n", node_nature2string($1->nature), node_nature2string($3->nature));*/
@@ -1511,67 +1527,67 @@ case 53:
 		}
 break;
 case 54:
-#line 377 "grammar.y"
+#line 381 "grammar.y"
 	{
 			/*printf("<REGLE> expr : TOK_INTVAL $$ = %s\n", node_nature2string($$->type));*/
 			yyval.ptr = make_node(NODE_INTVAL, 0, yylval.intval );
 		}
 break;
 case 55:
-#line 382 "grammar.y"
+#line 386 "grammar.y"
 	{
 			/*printf("<REGLE> expr : ident\n");*/
 			yyval.ptr = yystack.l_mark[0].ptr;
 		}
 break;
 case 56:
-#line 387 "grammar.y"
+#line 391 "grammar.y"
 	{
 			/*printf("<REGLE> expr: BOOLVAL TRUE $$ = %s\n", node_nature2string($$->nature));*/
             yyval.ptr = make_node(NODE_BOOLVAL, 0,1);
         }
 break;
 case 57:
-#line 392 "grammar.y"
+#line 396 "grammar.y"
 	{
 			/*printf("<REGLE> expr:BOOLVAL false $$ = %s\n", node_nature2string($$->nature));*/
             yyval.ptr = make_node(NODE_BOOLVAL, 0,0 );
         }
 break;
 case 58:
-#line 397 "grammar.y"
+#line 401 "grammar.y"
 	{
             yyval.ptr = make_node(NODE_STRINGVAL, 0, yylval.strval, sizeof(yylval.strval) );
             free(yylval.strval);
         }
 break;
 case 59:
-#line 404 "grammar.y"
+#line 408 "grammar.y"
 	{
 					yyval.ptr = make_node(NODE_LIST, 2, yystack.l_mark[-2].ptr, yystack.l_mark[0].ptr); /* a verifier*/
 				}
 break;
 case 60:
-#line 408 "grammar.y"
+#line 412 "grammar.y"
 	{
 					yyval.ptr = yystack.l_mark[0].ptr;
 				}
 break;
 case 61:
-#line 414 "grammar.y"
+#line 418 "grammar.y"
 	{
 				yyval.ptr = yystack.l_mark[0].ptr;
 			}
 break;
 case 62:
-#line 418 "grammar.y"
+#line 422 "grammar.y"
 	{ /* make node (node print, )*/
 				yyval.ptr = make_node(NODE_STRINGVAL, 0, yylval.strval, sizeof(yylval.strval) );
                 free(yylval.strval);
 			}
 break;
 case 63:
-#line 425 "grammar.y"
+#line 429 "grammar.y"
 	{
 			/*printf("ident : TOK_IDENT\n");*/
             /* argument supp à la position nops:*/
@@ -1604,7 +1620,7 @@ case 63:
             }
 		}
 break;
-#line 1608 "y.tab.c"
+#line 1624 "y.tab.c"
     }
     yystack.s_mark -= yym;
     yystate = *yystack.s_mark;
