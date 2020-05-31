@@ -664,11 +664,11 @@ void parcours_rec(node_t n) {
                 previousdef = get_decl_node(n->ident);
                 if ( previousdef == NULL)
                 {
-                    printf("pas de declaration précédente\n");
+                    printf("pas de declaration précédente de l'ident %s\n", n->ident);
                 }
                 else
                 {
-                    printf("affectation de type\n");
+                    printf("affectation de type : %s prend %s\n", n->ident , node_type2string(previousdef->type));
                     n->type = previousdef->type;
                 }
             }
@@ -689,16 +689,21 @@ void parcours_rec(node_t n) {
 	        {
 	            yyerror_passe1(&n, "Déclaration de variable de type void");
 	        }
-
-        case NODE_DECL:
-        for (i = 0 ; i < n->nops; i++)
-        {
-            if ((n->opr[i]) && (n->opr[i])->nature == NODE_IDENT)
-            {
-                (n->opr[i])->decl_node = n;
-            }
-        }
             break;
+        /*case NODE_DECL:
+            offset = env_add_element(n->opr[0]->ident, n->opr[0], 4);
+            if (offset <0)
+            {
+                printf("Houston on a un probleme\n");
+            }
+            for (i = 0 ; i < n->nops; i++)
+            {
+                if ((n->opr[i]) && (n->opr[i])->nature == NODE_IDENT)
+                {
+                    (n->opr[i])->decl_node = n;
+                }
+            }
+            break;*/
 
         case NODE_IF:
         case NODE_WHILE:
@@ -740,82 +745,75 @@ void parcours_rec(node_t n) {
                 yyerror_passe1(&(n->opr[1]), "La fonction principale ne s'appelle pas main \n");
             }
             break;
-        case NODE_PLUS:
-        case NODE_MINUS:
-        case NODE_MUL:
-        case NODE_DIV:
-        case NODE_MOD:
-        case NODE_BAND:
-        case NODE_BOR:
-        case NODE_BXOR:
-        case NODE_SLL:
-        case NODE_SRL:
-        case NODE_SRA:
-            /* type_op_binaire(int,int) = int */
-            if(n->opr[0]->type != TYPE_INT)
-            {
-                yyerror_passe1(&n, "Le premier élément de l'opération n'est pas entier\n");
-            }
-            if(n->opr[1]->type != TYPE_INT)
-            {
-                yyerror_passe1(&n, "Le deuxième élément de l'opération n'est pas entier\n");
-            }
-            n->type = TYPE_INT;
-            break;
-        case NODE_EQ:
-        case NODE_NE:
-            /* type_op_binaire(int,int) = bool */
-            /* type_op_binaire(bool,bool) = bool */
-            if( (n->opr[0]->type == TYPE_INT && n->opr[1]->type != TYPE_INT) ||
-                (n->opr[0]->type == TYPE_BOOL && n->opr[1]->type != TYPE_BOOL) )
-            {
-                printf("types de op1 : %s et op2 : %s \n", node_type2string((n->opr[0])->type) , node_type2string((n->opr[1])->type));
-                yyerror_passe1(&n, "Les éléments ne sont pas de même type\n");
-            }
-            n->type = TYPE_BOOL;
-            break;
-        case NODE_LT:
-        case NODE_GT:
-        case NODE_LE:
-        case NODE_GE:
-            /* type_op_binaire(int,int) = bool */
-            printf("types de op1  : %s et op2 : %s \n", node_type2string((n->opr[0])->type) , node_type2string((n->opr[1])->type));
-            if(n->opr[0]->type != TYPE_INT)
-            {
-                yyerror_passe1(&n, "Le premier élément de l'opération n'est pas entier\n");
-            }
-            if(n->opr[1]->type != TYPE_INT)
-            {
-                yyerror_passe1(&n, "Le deuxième élément de l'opération n'est pas entier\n");
-            }
-            n->type = TYPE_BOOL;
-            break;
-        case NODE_AND:
-        case NODE_OR:
-            /* type_op_binaire(bool,bool) = bool */
-            if(n->opr[0]->type != TYPE_BOOL)
-            {
-                yyerror_passe1(&n, "Le premier élément de l'opération n'est pas booléen\n");
-            }
-            if(n->opr[1]->type != TYPE_BOOL)
-            {
-                yyerror_passe1(&n, "Le deuxième élément de l'opération n'est pas booléen\n");
-            }
-            n->type = TYPE_BOOL;
-            break;
-        case NODE_UMINUS:
-        case NODE_BNOT:
-        case NODE_NOT:
-            /* type_op_unaire */
-            break;
-        case NODE_AFFECT:
-            n->type = (n->opr[0])->type;
-            if (((n->opr[0])->type) != ((n->opr[1])->type))
-            {
-                yyerror_passe1(&n, "Affectation entre deux opérandes de type différents\n");
-                printf(">Type a gauche : %s\n", node_type2string((n->opr[0])->type));
-                printf(">Type a droite : %s\n", node_type2string((n->opr[1])->type));
-            }
+            case NODE_PLUS:
+            case NODE_MINUS:
+            case NODE_MUL:
+            case NODE_DIV:
+            case NODE_MOD:
+            case NODE_BAND:
+            case NODE_BOR:
+            case NODE_BXOR:
+            case NODE_SLL:
+            case NODE_SRL:
+            case NODE_SRA:
+                /* type_op_binaire(int,int) = int */
+                if(n->opr[0]->type != TYPE_INT)
+                {
+                    yyerror_passe1(&n, "Le premier élément de l'opération n'est pas entier\n");
+                }
+                if(n->opr[1]->type != TYPE_INT)
+                {
+                    yyerror_passe1(&n, "Le deuxième élément de l'opération n'est pas entier\n");
+                }
+                n->type = TYPE_INT;
+                printf("node %s prend le type INT\n", node_nature2string(n->nature));
+                break;
+            case NODE_EQ:
+            case NODE_NE:
+                /* type_op_binaire(int,int) = bool */
+                /* type_op_binaire(bool,bool) = bool */
+                if( (n->opr[0]->type == TYPE_INT && n->opr[1]->type != TYPE_INT) ||
+                    (n->opr[0]->type == TYPE_BOOL && n->opr[1]->type != TYPE_BOOL) )
+                {
+                    printf("types de op1 : %s et op2 : %s \n", node_type2string((n->opr[0])->type) , node_type2string((n->opr[1])->type));
+                    yyerror_passe1(&n, "Les éléments ne sont pas de même type\n");
+                }
+                n->type = TYPE_BOOL;
+                break;
+            case NODE_LT:
+            case NODE_GT:
+            case NODE_LE:
+            case NODE_GE:
+                /* type_op_binaire(int,int) = bool */
+                printf("types de op1  : %s et op2 : %s \n", node_type2string((n->opr[0])->type) , node_type2string((n->opr[1])->type));
+                if(n->opr[0]->type != TYPE_INT)
+                {
+                    yyerror_passe1(&n, "Le premier élément de l'opération n'est pas entier\n");
+                }
+                if(n->opr[1]->type != TYPE_INT)
+                {
+                    yyerror_passe1(&n, "Le deuxième élément de l'opération n'est pas entier\n");
+                }
+                n->type = TYPE_BOOL;
+                break;
+            case NODE_AND:
+            case NODE_OR:
+                /* type_op_binaire(bool,bool) = bool */
+                if(n->opr[0]->type != TYPE_BOOL)
+                {
+                    yyerror_passe1(&n, "Le premier élément de l'opération n'est pas booléen\n");
+                }
+                if(n->opr[1]->type != TYPE_BOOL)
+                {
+                    yyerror_passe1(&n, "Le deuxième élément de l'opération n'est pas booléen\n");
+                }
+                n->type = TYPE_BOOL;
+                break;
+            case NODE_UMINUS:
+            case NODE_BNOT:
+            case NODE_NOT:
+                /* type_op_unaire */
+                break;
 
         default:
             break;
@@ -853,6 +851,23 @@ void parcours_rec(node_t n) {
                 printf("nouvelle declaration dans le contexte\n");
                 n->opr[0]->offset = offset;
             }
+            break;
+        case NODE_AFFECT:
+            n->type = (n->opr[0])->type;
+            previousdef = get_decl_node((n->opr[0])->ident);
+            if (previousdef == NULL) // si l'identifiant a affecter n'a pas ete défini
+            {
+                printf("identifiant : %s\n",(n->opr[0])->ident );
+                yyerror_passe1(&n, "L'identifiant à affecter n'a pas été défini\n");
+            }
+            if (((n->opr[0])->type) != ((n->opr[1])->type))
+            {
+                yyerror_passe1(&n, "Affectation entre deux opérandes de type différents\n");
+                printf(">Type et nature a gauche : %s et %s\n", node_type2string((n->opr[0])->type), node_nature2string((n->opr[0])->nature));
+                printf(">Type et nature a droite : %s et %s\n", node_type2string((n->opr[1])->type), node_nature2string((n->opr[1])->nature));
+            }
+            break;
+
         default:
             break;
     }
@@ -922,7 +937,7 @@ void yyerror_passe1(node_t * noeud, char * s) {
     couleur("0");
     //exit(1);
 }
-#line 926 "y.tab.c"
+#line 941 "y.tab.c"
 
 #if YYDEBUG
 #include <stdio.h>		/* needed for printf */
@@ -1589,7 +1604,7 @@ case 63:
             }
 		}
 break;
-#line 1593 "y.tab.c"
+#line 1608 "y.tab.c"
     }
     yystack.s_mark -= yym;
     yystate = *yystack.s_mark;

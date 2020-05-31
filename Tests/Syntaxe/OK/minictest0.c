@@ -3,12 +3,12 @@ void main() {
 	int bin1 = 230, bin2 = 12, bin3;
 	bool var2 = (true && false), booleen;
 	if (var2 != true) {
-	  var1 = 1;
+	  var1 = 1; //affectation entre deux operandes de type different :bool et int
 	}
 	else {
-	  var1 = 2;
-	}
-	while(nb<=5){nb=nb+1;}
+	  var1 = 2; // affectation entre deux operandes de type different :bool et int
+  } // expression dans une boucle n'est pas booleenne
+	while(nb<=5){nb=nb+1;} // expression dans une boucle n'est pas booleene // 1er element de l'operation pas entier
 	bin1 = bin1 >> 2;
 	bin3 = bin1 | bin2;
 	bin2 = bin1 ^ bin3;
