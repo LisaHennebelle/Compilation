@@ -8,16 +8,16 @@ done
 echo $tableau_indi
 cd Tests/Syntaxe/OK
 #declaration et ecriture d'un fichier de reference
-declare -a fichierref=("minictestSyntaxe.c")
+declare -a fichierref=("minictestOriginal.c")
 echo "void main() {" 							>  ${fichierref[0]}
 echo "	int var1 = 15, i, nb = 0;" 				>> ${fichierref[0]}
 echo "	int bin1 = 230, bin2 = 12, bin3;" 		>> ${fichierref[0]}
 echo "	bool var2 = (true && false), booleen;" 	>> ${fichierref[0]}
 echo "	if (var2 == true) {" 					>> ${fichierref[0]}
-echo "	  var1 = 1;" 							>> ${fichierref[0]}
+echo "		var1 = 1;" 							>> ${fichierref[0]}
 echo "	}" 										>> ${fichierref[0]}
 echo "	else {" 								>> ${fichierref[0]}
-echo "	  var1 = 2;" 							>> ${fichierref[0]}
+echo "		var1 = 2;" 							>> ${fichierref[0]}
 echo "	}" 										>> ${fichierref[0]}
 echo "	while(nb<=5){nb=nb+1;}" 				>> ${fichierref[0]}
 echo "	bin1 = bin1 >> 2;" 						>> ${fichierref[0]}
@@ -86,85 +86,86 @@ cd ../KO
 							"s/if/&&/g"
 							"s/2;/2/g"
 							"s/5;/5/g"
-							"s/15/false/g"
+							"s/15,/15/g"
 							"s/;}/}/g"
 							"s/+1;/}/g"
-							"s/>>/>/g"
+							"s/>>/></g"
 							"s/else/els/g"
 							"s/</<</g"
 							"s/print/printf/g"
 							"s/{nb=nb+1;}/do{nb=nb+1;}/g")
 
-	declare -a fichierref=("minictestSyntaxe.c")
-	declare -a fichiersrc=("../OK/minictestSyntaxe.c")
+	declare -a fichierref=("minictestOriginal.c")
+	declare -a fichiersrc=("../OK/minictestOriginal.c")
 	cp --copy-contents ${fichiersrc[0]}  ${fichierref[0]} #copie du fichier de reference de Syntaxe ok à syntaxe ko
 	declare -i nbboucleSK=${#tab_carac[@]}
 	bouclewhile $nbboucleSK
 
 	# Tests de verification
 cd ../../Verif/OK
-	echo "/*/*/*/*/*/*/*/*/*/*/*/*/*/*/* Verification verif OK /*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
+	echo "/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/* Verification verif OK /*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
 	sudo cp -r ../../Syntaxe/OK/* .
-	declare -i nbbouclesVO=$nbboucleSO
+	declare -i nbboucleVO=$nbboucleSO
 
 cd ../KO
-	echo "/*/*/*/*/*/*/*/*/*/*/*/*/*/*/* Verification verif KO /*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
-	declare -a fichierref=("minictestVerif.c")
-	declare -a fichiersrc=("../OK/minictestSyntaxe.c")
+	echo "/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/* Verification verif KO /*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
+	declare -a fichierref=("minictestOriginal.c")
+	declare -a fichiersrc=("../OK/minictestOriginal.c")
 	declare -a tab_carac=(	"s/true/tru/g"
-	 						"s/true/'true'/g"
+	 						"s/15/bin3/g"
 							"s/true/1/g" )
 	declare -i nbboucleVK=${#tab_carac[@]}
 
+	cp --copy-contents ${fichiersrc[0]}  ${fichierref[0]} #copie du fichier de reference de Syntaxe ok à syntaxe ko
 	#remplacage de caractères
 	bouclewhile $nbboucleVK
+
 	#modification du fichier de reference pour le rendre incorrect
 	declare -i i=$nbboucleVK
 
-	cp --copy-contents ${fichiersrc[0]}  ${fichierref[0]} #copie du fichier de reference de Syntaxe ok à syntaxe ko
-	cp --copy-contents ${fichierref[0]}  ${tableau_indi[$i]}
+	cp --copy-contents ${fichierref[0]}  ${tableau_indi[$nbboucleVK]}
 	#creation de fichiers par ajout de lignes
-	sed -i '7i\if ((var1%2)== 0){ bool var2 = false; }' ${tableau_indi[$i]} #redeclaration de var2
-	more ${tableau_indi[0]}
-	i=$[$i+1]
+	sed -i '7i\		if ((var1%2)== 0){ bin4 = false; }' ${tableau_indi[$nbboucleVK]} #redeclaration de var2
+	#more ${tableau_indi[0]}
+	nbboucleVK=$[$nbboucleVK+1]
 
-	cp --copy-contents ${fichierref[0]}  ${tableau_indi[$i]}
-	sed -i '7i\if ((var1%2)== 0){ var2 = 1; }' ${tableau_indi[$i]}
-	more ${tableau_indi[1]}
-	i=$[$i+1]
+	cp --copy-contents ${fichierref[0]}  ${tableau_indi[$nbboucleVK]}
+	sed -i '7i\if ((var1%2)== 0){ var2 = 1; }' ${tableau_indi[$nbboucleVK]}
+	#more ${tableau_indi[1]}
+	nbboucleVK=$[$nbboucleVK+1]
 
-	cp --copy-contents ${fichierref[0]}  ${tableau_indi[$i]}
-	sed -i '7i\if ((var1%2)== 0){ bool var3 = var2 + 1; }' ${tableau_indi[$i]}
-	more ${tableau_indi[2]}
-	i=$[$i+1]
+	cp --copy-contents ${fichierref[0]}  ${tableau_indi[$nbboucleVK]}
+	sed -i '7i\if ((var1%2)== 0){ bool var3 = var2 + 1; }' ${tableau_indi[$nbboucleVK]}
+	#more ${tableau_indi[2]}
+	nbboucleVK=$[$nbboucleVK+1]
 
-	$nbboucleVK=$i
 
 # Test de Gencode
 cd ../../Gencode/OK
-	echo "/*/*/*/*/*/*/*/*/*/*/*/*/*/*/* Verification Gencode OK /*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
+	echo "/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/ Verification Gencode OK /*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/"
 	sudo cp -r ../../Syntaxe/OK/* .
-	pwd
-	ls
 	declare -i nbboucleGO=$nbboucleSO
 
 cd ../KO
-	echo "/*/*/*/*/*/*/*/*/*/*/*/*/*/*/* Verification Gencode KO /*/*/*/*/*/*/*/*/*/*/*/*/*/*/*"
+	echo "/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/ Verification Gencode KO /*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/"
 
-	declare -a tab_carac=(  "s/15/4294967295/g"#depassement de la memoire car manipulé par la suite
+	declare -a fichierref=("minictestOriginal.c")
+	declare -a fichiersrc=("../OK/minictestOriginal.c")
+	declare -a tab_carac=(	"s/15/4294967295/g" #depassement de la memoire car manipulé par la suite
 							"s/+1/+4294967295/g"
 							"s/+1/*4294967295/g"
-							"s/3;/0;/g"#division par 0
-							"s/10;/0;/g")#modulo 0
-	declare -a fichierref=("minictestVerif.c")
-	declare -a fichiersrc=("../OK/minictestSyntaxe.c")
-	#modification du fichier de reference pour le rendre incorrect
-	cp --copy-contents ${fichiersrc[0]}  ${fichierref[0]} #copie du fichier de reference de Syntaxe ok à syntaxe ko
-	sed -i '7 i\ 		var1 = var1 / 3; int var4 =  var1 % 10;' ${fichierref[0]}
-	more ${fichierref[0]}
-	#lancer la fonction sur 5 boucles
+							"s/13;/0;/g" #division par 0
+							"s/10;/0;/g") #modulo 0
 	declare -i nbboucleGK=${#tab_carac[@]}
+
+	cp --copy-contents ${fichiersrc[0]}  ${fichierref[0]} #copie du fichier de reference de Syntaxe ok à gencode ko
+	#modification du fichier de reference pour le rendre incorrect
+	cp --copy-contents ${fichierref[0]}  ${tableau_indi[$nbboucleGK]}
+	sed -i '6 i\		int var4 =  var1 % 10; var1 = var1 / 13;' ${fichierref[0]}
+
+	#lancer la fonction sur 5 boucles
 	bouclewhile $nbboucleGK
+
 
 cd ../../.. # retour au dossier source de Tests
 # --------------------------------------------------COMPILATION ----------------------------------------#
@@ -209,6 +210,7 @@ make # mettre à jour le compilateur minicc
 	        echo "**********************************************************"
 			echo ${tableau_indi[$i]}
 			echo "verif ok"
+			more Tests/Verif/OK/${tableau_indi[$i]}
 	        ./minicc -v Tests/Verif/OK/${tableau_indi[$i]} #appel avec l'option -v
 			echo "**********************************************************"
 			i=$[$i+1]
@@ -236,6 +238,7 @@ make # mettre à jour le compilateur minicc
 	        echo "**********************************************************"
 			echo ${tableau_indi[$i]}
 			echo "gencode ok"
+			more Tests/Gencode/OK/${tableau_indi[$i]}
 	        ./minicc Tests/Gencode/OK/${tableau_indi[$i]}
 			echo "**********************************************************"
 			i=$[$i+1]
@@ -248,6 +251,7 @@ make # mettre à jour le compilateur minicc
 	        echo "**********************************************************"
 			echo ${tableau_indi[$i]}
 			echo "gencode ko"
+			more Tests/Gencode/KO/${tableau_indi[$i]}
 	        ./minicc Tests/Gencode/KO/${tableau_indi[$i]}
 			echo "**********************************************************"
 			i=$[$i+1]

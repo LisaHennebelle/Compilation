@@ -282,6 +282,6 @@ int main(int argc, char ** argv) {
 
 	fclose(yyin);
     yylex_destroy();
-	free_tree(program_root, 0);
+	//free_tree(program_root, 0);
     return 0;
 }
