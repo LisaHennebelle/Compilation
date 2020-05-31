@@ -28,7 +28,8 @@ extern int mainflag;
 node_type typetemp;
 int cptenfants = 1;//nombre de vardecl quand il y a plusieurs declaration en liste
 int cptvar = 0;//compteur de declaration de variables ligne apres ligne
-
+bool globalpasse1 = false; // false: main, true: declarations globales
+bool errorflag = false; //flag d'erreur dans la passe 1
 /* prototypes */
 int yylex(void);
 extern int yylineno;
@@ -37,6 +38,7 @@ void yyerror(node_t * program_root, char * s);
 void yyerror_passe1(node_t * noeud, char * s);
 void analyse_tree(node_t root);
 node_t make_node(node_nature nature, int nops, ...);
+void print_context(char * msg);
 /* A completer */
 
 %}
@@ -470,21 +472,7 @@ node_t make_node(node_nature nature, int32_t nops, ...) {
     retour->ident = malloc(sizeof(char)*30);
     retour->str = malloc(sizeof(char)*30);
     retour->decl_node = NULL;
-    /*if(nature == NODE_LIST && nops == 2)
-    {
-        aux = va_arg(ap, node_t);
-        retour->opr[0] = aux->opr[0];
-        retour->opr[1] = va_arg(ap, node_t);
-        printf("node_list\n");
-        printf("%s\n", node_nature2string(retour->opr[0]->nature));
-        printf("%s\n", node_nature2string(retour->opr[1]->nature));
-        free(aux->opr);
-        free(aux->ident);
-        free(aux->str);
-        free(aux);
-
-    }
-    else*/ for (int i = 0; i < nops; i++)
+    for (int i = 0; i < nops; i++)
     {
         retour->opr[i] = va_arg(ap,node_t);
     }
@@ -581,70 +569,77 @@ void parcours_rec(node_t n) {
         return ;
     }
     char str[32];
+    int i, pos;
+    bool decl;
+    node_t previousdef;
+    //debut de contexte
     switch (n->nature) {
         case NODE_PROGRAM:
-            push_global_context();
+            if ( n->opr[0] != NULL ) // si il y a des déclarations globales
+            {
+                push_global_context();
+                print_context("Pushing global context\n");
+                globalpasse1 = true;
+            }
             break;
         case NODE_BLOCK:
             push_context();
+            print_context("Pushing simple context\n");
             break;
         case NODE_IDENT:
-            //offset =  env_add_element(n->ident, n, 4);// associe ident et noeud node. size = taille a allouer
-            //n->offset = offset; // valeur de retour : taille a allouer si positive ou nulle, pb si negative, a associer à l'offset d'un element
-            break;
-        case NODE_INTVAL:
-        case NODE_BOOLVAL:
+            if(!globalpasse1) // dans le main
+            {
+                previousdef = get_decl_node(n->ident);
+                if ( previousdef == NULL || previousdef == n->decl_node)
+                {
+                    if( strcmp(n->ident, "main") != 0)
+                    {
+                        printf("Erreur près du signe %s\n", n->ident);
+                        yyerror_passe1(&n,"pas de declaration précédente de l'ident");
+                    }
+                }
+                else
+                {
+                    n->type = previousdef->type;
+                }
+            }
             break;
         case NODE_STRINGVAL:
             offset = add_string(n->str);
             n->offset = offset;
-            break;
-        case NODE_TYPE:
-            break;
-        case NODE_LIST:
             break;
         case NODE_DECLS:
 	        if ((n->opr[0])->type == TYPE_VOID)
 	        {
 	            yyerror_passe1(&n, "Déclaration de variable de type void");
 	        }
-	        break;
+            break;
         case NODE_DECL:
-            /*if ((n->opr[0])->type == TYPE_VOID)
+            offset = env_add_element(n->opr[0]->ident, n->opr[0], 4);
+            if (offset < 0)
             {
-                yyerror_passe1(&n, "Déclaration de type void");
-            }*//*
-            if ((n->opr[0])->type != (n->opr[1])->type)
-            {
-                yyerror_passe1(&n, "la valeur assignée est de type différent au déclaré");
-            }*/
-            break;
-
-        case NODE_IF:
-            printf("node if\n");
-        case NODE_WHILE:
-            printf("node while\n");
-            if((n->opr[0])->type != TYPE_BOOL)
-            {
-                printf("type %s %s\n", node_type2string(n->opr[0]->type), node_nature2string(n->opr[0]->nature));
-                yyerror_passe1(&n, "Expression dans une boucle n'est pas booleenne\n");
+                printf("Probleme offset\n");
             }
-            break;
-        case NODE_DOWHILE:
-            printf("node dowhile\n");
-        case NODE_FOR:
-            printf("node for\n");
-
-            if((n->opr[1])->type != TYPE_BOOL)
+            for (i = 0 ; i < n->nops; i++)
             {
-                yyerror_passe1(&n, "Expression dans une boucle n'est pas booleenne\n");
+                if ((n->opr[i]) && (n->opr[i])->nature == NODE_IDENT)
+                {
+                    (n->opr[i])->decl_node = n;
+                }
             }
             break;
 
-        case NODE_PRINT:
-            break;
         case NODE_FUNC:
+        //env
+            if (globalpasse1)
+            {
+                //pop_context(); // pop du contexte global
+                print_context("Poping global context\n");
+                globalpasse1 = false;
+            }
             reset_env_current_offset();
+            print_context("Resetting current context\n");
+        //fin env
             if ((n->opr[1])->type != TYPE_VOID)
             {
                 yyerror_passe1(&(n->opr[1]), "Le main n'a pas le bon type, type void attendu \n");
@@ -656,6 +651,34 @@ void parcours_rec(node_t n) {
                 yyerror_passe1(&(n->opr[1]), "La fonction principale ne s'appelle pas main \n");
             }
             break;
+
+        default:
+            break;
+    }
+    //appel a la fonction recursive sur tous les enfants
+   for (int32_t i = 0; i < n->nops; i += 1) {
+        parcours_rec(n->opr[i]);
+    }
+
+    switch(n->nature) //fin de contexte
+    {
+        case NODE_BLOCK:
+            pop_context();
+            print_context("poping context\n");
+            break;
+
+        case NODE_AFFECT:
+            n->type = (n->opr[0])->type;
+            if (((n->opr[0])->type) != ((n->opr[1])->type))
+            {
+                yyerror_passe1(&n, "Affectation entre deux opérandes de type différents\n");
+                printf(">Type et nature a gauche : %s et %s\n", node_type2string((n->opr[0])->type), node_nature2string((n->opr[0])->nature));
+                printf(">Type et nature a droite : %s et %s\n", node_type2string((n->opr[1])->type), node_nature2string((n->opr[1])->nature));
+            }
+            //printf(">Type et nature a gauche : %s et %s\n", node_type2string((n->opr[0])->type), node_nature2string((n->opr[0])->nature));
+            //printf(">Type et nature a droite : %s et %s\n", node_type2string((n->opr[1])->type), node_nature2string((n->opr[1])->nature));
+            break;
+
         case NODE_PLUS:
         case NODE_MINUS:
         case NODE_MUL:
@@ -674,20 +697,25 @@ void parcours_rec(node_t n) {
             }
             if(n->opr[1]->type != TYPE_INT)
             {
-                yyerror_passe1(&n, "Le deuxième élément de l'opération n'est pas booléen\n");
+                yyerror_passe1(&n, "Le deuxième élément de l'opération n'est pas entier\n");
             }
+            n->type = TYPE_INT;
             break;
         case NODE_EQ:
         case NODE_NE:
+            /* type_op_binaire(int,int) = bool */
+            /* type_op_binaire(bool,bool) = bool */
             if( (n->opr[0]->type == TYPE_INT && n->opr[1]->type != TYPE_INT) ||
                 (n->opr[0]->type == TYPE_BOOL && n->opr[1]->type != TYPE_BOOL) )
-            { /* type_op_binaire(int,int) = bool */
-                printf("NODE %s types de op1  : %s et op2 : %s \n", node_nature2symb(n->nature),
-                node_type2string((n->opr[0])->type) , node_type2string((n->opr[1])->type));
+            {
+                if (nbtraces == 5)
+                {
+                    printf("types de op1 : %s et op2 : %s \n", node_type2string((n->opr[0])->type) , node_type2string((n->opr[1])->type));
+                }
+
                 yyerror_passe1(&n, "Les éléments ne sont pas de même type\n");
             }
-            else
-                printf("good\n\n");
+            n->type = TYPE_BOOL;
             break;
         case NODE_LT:
         case NODE_GT:
@@ -704,6 +732,7 @@ void parcours_rec(node_t n) {
             {
                 yyerror_passe1(&n, "Le deuxième élément de l'opération n'est pas entier\n");
             }
+            n->type = TYPE_BOOL;
             break;
         case NODE_AND:
         case NODE_OR:
@@ -718,53 +747,52 @@ void parcours_rec(node_t n) {
             {
                 yyerror_passe1(&n, "Le deuxième élément de l'opération n'est pas booléen\n");
             }
+            n->type = TYPE_BOOL;
             break;
         case NODE_UMINUS:
         case NODE_BNOT:
-        case NODE_NOT:
-            /* type_op_unaire */
-            break;
-        case NODE_AFFECT:
-            if (((n->opr[0])->type) != ((n->opr[1])->type))
+            /* type_op_unaire(int) = int */
+            if((n->opr[0])->type != TYPE_INT)
             {
-                printf(">Type a gauche : %s %s\n", node_type2string((n->opr[0])->type), node_nature2string((n->opr[0])->nature));
-                printf(">Type a droite : %s %s\n", node_type2string((n->opr[1])->type), node_nature2string((n->opr[1])->nature));
-                yyerror_passe1(&n, "Affectation entre deux opérandes de type différents\n");
+                yyerror_passe1(&n ,"Essai de operation unaire sur un non int\n");
+            }
+            n->type= TYPE_INT;
+            break;
+        case NODE_NOT:
+            /* type_op_unaire(bool) = bool */
+            if(n->opr[0]->type != TYPE_BOOL)
+            {
+                yyerror_passe1(&n, "Essai de operation unaire sur un non bool\n");
+            }
+            n->type = TYPE_BOOL;
+            break;
+        case NODE_IF:
+        case NODE_WHILE:
+            if((n->opr[0])->type != TYPE_BOOL)
+            {
+                yyerror_passe1(&n, "Expression dans une boucle n'est pas booleenne\n");
             }
             break;
+        case NODE_DOWHILE:
+        case NODE_FOR:
 
-                break;
-        default:
-                break;
-    }
-
-
-   for (int32_t i = 0; i < n->nops; i += 1) {
-        parcours_rec(n->opr[i]);
-    }
-
-    switch(n->nature)
-    {
-        case NODE_BLOCK:
-            pop_context();
+            if((n->opr[1])->type != TYPE_BOOL)
+            {
+                yyerror_passe1(&n, "Expression dans une boucle n'est pas booleenne\n");
+            }
             break;
         case NODE_DECL:
-            offset = env_add_element(n->opr[0]->ident, n->opr[0], 4);
-            if(offset < 0)
+            if( n->opr[1] && (n->opr[0])->type != (n->opr[1])->type )
             {
-                yyerror_passe1(&n, "Variable déjà déclarée\n");
+                yyerror_passe1(&n,"Erreur de type dans la declaration\n");
             }
-            else
-            {
-                n->opr[0]->offset = offset;
-            }
+
+            break;
         default:
             break;
     }
 
 }
-
-
 
 static void lancer_parcours(node_t root) {
     assert(root->nature == NODE_PROGRAM);
@@ -808,14 +836,25 @@ void analyse_tree(node_t root) {
 
         if (!stop_after_syntax) {
         // Appeler la passe 1
-            lancer_parcours(root);
-            if (!stop_after_verif) {
-                create_program();
-                // Appeler la passe 2
+        lancer_parcours(root);
+        //si jamais il y a eu une detection d'erreur au cours de la passe 1
+        if(errorflag)
+        {
+            exit(1);
+        }
+    	if(nbtraces == 3)
+    	{
+    		char * txtname = "tree.dot";
+    		dump_tree(root,txtname); // afficher le tree
+    	}
 
-                //dump_mips_program(outfile);
-                free_program();
-            }
+        if (!stop_after_verif) {
+            create_program();
+            // Appeler la passe 2
+
+            //dump_mips_program(outfile);
+            free_program();
+        }
         free_global_strings();
         free_tree(root, 0);
     }
@@ -829,7 +868,16 @@ void yyerror(node_t * program_root, char * s) {
 
 void yyerror_passe1(node_t * noeud, char * s) {
     couleur("31");
+    errorflag = true;
     printf( "Error line %d: %s\n", (*noeud)->lineno, s);
     couleur("0");
     //exit(1);
+}
+
+void print_context(char* msg)
+{
+    if(nbtraces == 5)
+    {
+        printf("%s", msg);
+    }
 }

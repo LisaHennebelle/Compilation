@@ -1,8 +1,8 @@
-int a, b = 1;
 bool boo;
-
+int b;
 void main()
 {
 	int c = 3;
-	//boo = boo + b;
+	int a = b;
+
 }
