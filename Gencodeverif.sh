@@ -114,8 +114,12 @@ cd ../KO
 	declare -a tab_carac=(	"s/true/tru/g"
 	 						"s/true/'true'/g"
 							"s/true/1/g" )
+	declare -i nbboucleVK=${#tab_carac[@]}
+
+	#remplacage de caractères
+	bouclewhile $nbboucleVK
 	#modification du fichier de reference pour le rendre incorrect
-	declare -i i=0
+	declare -i i=$nbboucleVK
 
 	cp --copy-contents ${fichiersrc[0]}  ${fichierref[0]} #copie du fichier de reference de Syntaxe ok à syntaxe ko
 	cp --copy-contents ${fichierref[0]}  ${tableau_indi[$i]}
@@ -132,10 +136,9 @@ cd ../KO
 	cp --copy-contents ${fichierref[0]}  ${tableau_indi[$i]}
 	sed -i '7i\if ((var1%2)== 0){ bool var3 = var2 + 1; }' ${tableau_indi[$i]}
 	more ${tableau_indi[2]}
-	#remplacage de caractères
-	bouclewhile 3
+	i=$[$i+1]
 
-	declare -i nbboucleVK=${#tab_carac[@]}
+	$nbboucleVK=$i
 
 # Test de Gencode
 cd ../../Gencode/OK

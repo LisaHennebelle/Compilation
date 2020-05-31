@@ -289,10 +289,10 @@ int main(int argc, char ** argv) {
 		dump_tree(program_root,txtname); // afficher le tree
 	}
 
-	printf("program root : %s\n" ,node_nature2string(program_root->nature));
+	//printf("program root : %s\n" ,node_nature2string(program_root->nature));
     fclose(yyin);
-    analyse_tree(program_root);
+    //analyse_tree(program_root);
     yylex_destroy();
-	//free_tree(program_root, 0);
+	free_tree(program_root, 0);
     return 0;
 }

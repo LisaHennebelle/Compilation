@@ -2487,14 +2487,19 @@ void parcours_rec(node_t n) {
             break;
 
         case NODE_IF:
+            printf("node if\n");
         case NODE_WHILE:
+            printf("node while\n");
             if((n->opr[0])->type != TYPE_BOOL)
             {
+                printf("type %s %s\n", node_type2string(n->opr[0]->type), node_nature2string(n->opr[0]->nature));
                 yyerror_passe1(&n, "Expression dans une boucle n'est pas booleenne\n");
             }
             break;
         case NODE_DOWHILE:
+            printf("node dowhile\n");
         case NODE_FOR:
+            printf("node for\n");
 
             if((n->opr[1])->type != TYPE_BOOL)
             {
@@ -2540,19 +2545,23 @@ void parcours_rec(node_t n) {
             break;
         case NODE_EQ:
         case NODE_NE:
-            printf("types de op1  : %s et op2 : %s \n", node_type2string((n->opr[0])->type) , node_type2string((n->opr[1])->type));
+            printf("NODE %s types de op1  : %s et op2 : %s \n", node_nature2symb(n->nature),
+                node_type2string((n->opr[0])->type) , node_type2string((n->opr[1])->type));
             if( (n->opr[0]->type == TYPE_INT && n->opr[1]->type != TYPE_INT) ||
                 (n->opr[0]->type == TYPE_BOOL && n->opr[1]->type != TYPE_BOOL) )
             { /* type_op_binaire(int,int) = bool */
                 yyerror_passe1(&n, "Les éléments ne sont pas de même type\n");
             }
+            else
+                printf("good\n\n");
             break;
         case NODE_LT:
         case NODE_GT:
         case NODE_LE:
         case NODE_GE:
             /* type_op_binaire(int,int) = bool */
-            printf("types de op1  : %s et op2 : %s \n", node_type2string((n->opr[0])->type) , node_type2string((n->opr[1])->type));
+            printf("NODE %s types de op1  : %s et op2 : %s \n", node_nature2symb(n->nature),
+                node_type2string((n->opr[0])->type) , node_type2string((n->opr[1])->type));
             if(n->opr[0]->type != TYPE_INT)
             {
                 yyerror_passe1(&n, "Le premier élément de l'opération n'est pas entier\n");
@@ -2564,6 +2573,8 @@ void parcours_rec(node_t n) {
             break;
         case NODE_AND:
         case NODE_OR:
+            printf("NODE %s types de op1  : %s et op2 : %s \n", node_nature2symb(n->nature),
+                node_type2string((n->opr[0])->type) , node_type2string((n->opr[1])->type));
             /* type_op_binaire(bool,bool) = bool */
             if(n->opr[0]->type != TYPE_BOOL)
             {
@@ -2582,9 +2593,9 @@ void parcours_rec(node_t n) {
         case NODE_AFFECT:
             if (((n->opr[0])->type) != ((n->opr[1])->type))
             {
+                printf(">Type a gauche : %s %s\n", node_type2string((n->opr[0])->type), node_nature2string((n->opr[0])->nature));
+                printf(">Type a droite : %s %s\n", node_type2string((n->opr[1])->type), node_nature2string((n->opr[1])->nature));
                 yyerror_passe1(&n, "Affectation entre deux opérandes de type différents\n");
-                printf(">Type a gauche : %s\n", node_type2string((n->opr[0])->type));
-                printf(">Type a droite : %s\n", node_type2string((n->opr[1])->type));
             }
             break;
 
@@ -2636,10 +2647,14 @@ void free_tree(node_t node, int tab)
     {
         for(int i = 0; i < tab; i++) printf("    ");
         printf("freeing node %s\n", node_nature2string(node->nature));
+        if(node->nature == NODE_IDENT) {
+            for(int i = 0; i < tab; i++) printf("    ");
+            printf("type %s\n", node_type2string(node->type));
+        }
         for(int i = 0; i < tab; i++) printf("    ");
         printf("nops = %d\n", node->nops);
+        tab++;
     }
-    tab++;
     for (int32_t i = 0; i < node->nops; i += 1) {
             //printf("attempt to free %s\n",node_nature2string((node->opr[i])->nature));
             free_tree(node->opr[i], tab);
@@ -2647,7 +2662,6 @@ void free_tree(node_t node, int tab)
     free(node->opr);
     free(node->ident);
     free(node->str);
-
     free(node);
     if(nbtraces == 4)
     {
