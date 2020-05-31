@@ -47,9 +47,9 @@ extern int yydebug;
 
 LETTRE          [a-zA-Z]
 CHIFFRE         [0-9]
-ASCII           [\040-\176]
 ENTIER          ("-")?[0-9]{CHIFFRE}*
 IDF             {LETTRE}({LETTRE}|{CHIFFRE}|'_')*
+ASCII           [\040-\176]
 CHAINE_CAR      ({ASCII})+
 CHAINE          '"'({CHAINE_CAR}|'\"'|'\n')*'"'
 COMMENTAIRE     "//"({ASCII})*[\n]
@@ -270,8 +270,7 @@ int main(int argc, char ** argv) {
     /* A completer */
 	const char* txtname;
 
-	//printf("-----parse args-----\n");
-    parse_args(argc, argv);
+	parse_args(argc, argv);
     #if YYDEBUG
     yydebug = 1;
     #endif
@@ -279,18 +278,13 @@ int main(int argc, char ** argv) {
 	node_t program_root;
     yyin = fopen(infile, "r");
 	yyparse(&program_root);
-	printf("yacc fin\n");
-	//creation de contexte pour le test
-	//context_t cont_test= create_context();
-	//free_context(cont_test);
 	if(nbtraces == 3)
 	{
 		txtname = "tree.dot";
 		dump_tree(program_root,txtname); // afficher le tree
 	}
 
-	printf("program root : %s\n" ,node_nature2string(program_root->nature));
-    fclose(yyin);
+	fclose(yyin);
     analyse_tree(program_root);
     yylex_destroy();
 	//free_tree(program_root, 0);

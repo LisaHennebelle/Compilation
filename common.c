@@ -119,7 +119,7 @@ static int32_t dump_tree2dot_rec(FILE * f, node_t n, int32_t node_num) {
         fprintf(f, "    N%d [shape=record, label=\"{{NULL}}\"];\n", node_num);
         return node_num;
     }
-
+    printf("essai de dump tree sur %s de type %s\n", node_nature2string(n->nature), node_type2string(n->type));
     switch (n->nature) {
         case NODE_IDENT:
             {
@@ -166,6 +166,7 @@ static int32_t dump_tree2dot_rec(FILE * f, node_t n, int32_t node_num) {
         case NODE_FOR:
         case NODE_DOWHILE:
         case NODE_PRINT:
+            printf("essai pour noeud %s\n", node_nature2string(n->nature));
             fprintf(f, "    N%d [shape=record, label=\"{{NODE %s|Nb. ops: %d}}\"];\n", node_num, node_nature2string(n->nature), n->nops);
             break;
         case NODE_FUNC:
@@ -197,26 +198,20 @@ static int32_t dump_tree2dot_rec(FILE * f, node_t n, int32_t node_num) {
             fprintf(f, "    N%d [shape=record, label=\"{{NODE %s|Type: %s|Nb. ops: %d}}\"];\n", node_num, node_nature2string(n->nature), node_type2string(n->type), n->nops);
             break;
         default:
-           //printf("*** Error in %s: unknow nature : %s\n", __func__, node_nature2string(n->nature));
+            printf("*** Error in %s: unknow nature : %s\n", __func__, node_nature2string(n->nature));
             assert(false);
     }
-       //printf("n->node_num\n");
     n->node_num = node_num;
-       //printf("n->node_num reussi %d\n", node_num);
     int32_t curr_node_num = node_num + 1;
-   //printf("current node_num = %d\n", curr_node_num);
-   //printf("nops =%d\n", n->nops);
 
         for (int32_t i = 0; i < n->nops; i += 1) {
-           printf("boucle enfants %s\n", node_nature2string(n->opr[i]->nature));
+            printf("boucle enfants %s\n", node_nature2string(n->opr[i]->nature));
             int32_t new_node_num = dump_tree2dot_rec(f, n->opr[i], curr_node_num);
 
             fprintf(f, "    edge[tailclip=true];\n");
             fprintf(f, "    N%d -> N%d\n", node_num, curr_node_num);
             curr_node_num = new_node_num + 1;
         }
-
-   //printf("je suis passe par la\n");
     return curr_node_num - 1;
 }
 

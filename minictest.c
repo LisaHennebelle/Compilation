@@ -1,8 +1,9 @@
-int a, b = 1;
 bool boo;
-
+int a,b =1;
 void main()
 {
 	int c = 3;
-	//boo = boo + b;
+	a = b;
+	boo = b + boo;
+
 }
